@@ -1,0 +1,46 @@
+#' @title Iteration Deflation Algorithm
+#' @description Performs Iteration Deflation Algorithm
+#' @usage IDA(X, Y, W)
+#' @param X data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.
+#' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
+#' @param W weight matrix where columns represent the \eqn{A} components and rows the \eqn{k} X variables.
+#' @author Angela Andreella
+#' @return Returns a matrix of scores vectors \code{Tscore}.
+#' @export
+#' @importFrom compositions clrInv
+#'
+
+IDA <- function(X, Y, W){
+
+  #check if Y must be transformed
+  if(sum(Y[,1])!=1){
+    Y <- matrix(as.numeric(clrInv(Y)), ncol = ncol(Y))
+  }
+
+  n <- nrow(X)
+  A <- ncol(W)
+
+  E <- R <- Q <- list()
+
+  E[[1]] <- X
+  R[[1]] <- Y
+  Tscore <- matrix(NA, nrow = n, ncol = A)
+
+  for(a in seq(A)){
+
+    #score vector t_i
+    Tscore[,a] <- E[[a]] %*% W[,a]
+
+    #Orthogonal projection matrix of scores
+    Q[[a]] <- diag(n) - Tscore[,a] %*% solve(t(Tscore[,a]) %*% Tscore[,a]) %*% t(Tscore[,a])
+
+    #Deflation step
+
+    #X-deflation step
+    E[[a+1]] <- Q[[a]] %*% E[[a]] #residual matrix X
+    #Y-deflation step
+    R[[a+1]] <- Q[[a]] %*% R[[a]] #residual matrix Y
+  }
+
+  return(Tscore)
+}

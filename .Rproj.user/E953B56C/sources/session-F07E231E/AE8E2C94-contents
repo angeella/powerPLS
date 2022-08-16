@@ -1,0 +1,15 @@
+
+x1 <- matrix((1 + rnorm(n1, sd = 0.1))*cos(runif(n1)), nrow = n1)
+x2 <- matrix((1.5 + rnorm(n2, sd = 0.1))*sin(runif(n1)), nrow = n1)
+
+rand_mat <- rbind(x1,x2)
+plot(density(rand_mat))
+
+
+rand <- matrix(runif(n*q), nrow = n)
+out <- svd(rand)
+str(out)
+
+X <- out$v * as.vector(rand_mat) 
+
+Y <- c(rep(1, n1), rep(2, n2))

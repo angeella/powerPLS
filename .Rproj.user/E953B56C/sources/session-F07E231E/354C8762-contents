@@ -1,0 +1,55 @@
+#' @title post transformed PLS
+#' @description Performs post transformed PLS
+#' @usage ptPLSc(X, Y, W)
+#' @param X data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.
+#' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
+#' @param W weight matrix where columns represent the \eqn{A} components and rows the \eqn{k} X variables.
+#' @author Angela Andreella
+#' @return Returns a matrix of scores vectors \code{Tscore}.
+#' @export
+#' @importFrom compositions clrInv
+#' @return Returns a list with the following objects:
+#' - \code{W}: matrix of weigths
+#' - \code{6}: post transformation matrix
+#' - \code{M}: number of orthogonal components.
+
+ptPLSc <- function(X, Y, W){
+
+
+  #TODO::put check if Y is transformed.
+  n <- nrow(X)
+  A <- ncol(W)
+
+  ###########################STEP1###########################
+  out <- svd(t(Y) %*% X %*% W)
+  V <- out$v
+  M <- sum(Re(out$d) > 10^-8)
+  #number of orthogonal components
+  V <- V[,1:M]
+  J <- ifelse(is.null(dim(V)), length(V), dim(V)[1])
+  AA <- diag(J) - (V %*% solve(t(V)%*% V) %*% t(V))
+
+  #Compute orthogonal part
+  out1 <- eigen(AA)
+  #  M <- sum(Re(out1$values) > 0)
+  G0 <- Re(out1$vector[,1:M])
+
+  #Compute predictive part
+  dG0 <- ifelse(is.null(dim(G0)), length(G0), dim(G0)[1])
+  Ap <- diag(dG0) - (G0 %*% solve(t(G0)%*% G0) %*% t(G0))
+  out2 <- eigen(Ap)
+  if(A - M == 0){Gp <- NULL}else{
+    Gp <- Re(out2$vector[,1:(A - M)])
+  }
+
+  G <- cbind(G0,Gp)
+  colnames(G) <- NULL
+
+  #apply G to weight matrix
+  Wtilde <- W %*% G #nX times ncomp
+
+  return(list(Wtilde = Wtilde,
+              G = G,
+              M = M))
+
+}

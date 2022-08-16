@@ -1,0 +1,26 @@
+{
+    "id": "26510AFE",
+    "path": "~/Rpackage/powerPLS/R/computeSampleSize.R",
+    "project_path": "R/computeSampleSize.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1660674709842.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "53,0",
+        "scrollLine": "21"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1660656550,
+    "encoding": "ISO8859-1",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1660656550,
+    "read_only": false,
+    "read_only_alternatives": []
+}

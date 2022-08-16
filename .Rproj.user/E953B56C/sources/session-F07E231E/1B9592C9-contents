@@ -1,0 +1,35 @@
+rm(list = ls())
+library(powerPLS)
+n = 50
+q = 60
+p = 2
+A = 4
+
+out <- sim_pilotData(n = n, p = p, q = q, A = A, structured.noise = sample(c(10:100), n),
+                     d.class = 100, prop = 0.5)
+
+Y <- dummies::dummy(out$Y)
+
+out1 <- eigenTest(X = out$X, Y = out$Y,
+                 nperm = 999,
+                 A = 4,
+                 X.scaling = TRUE, Y.prob = TRUE)
+
+out <- mdatools::plsda(x= out$X, c = as.factor(out$Y), ncomp = 4, cv = 1) #out$ncomp.selected = 4
+summary(out)
+
+eps <- 0.01
+Y[which(Y==0)]<-eps
+Y[which(Y==1)]<-1-(ncol(Y)-1)*eps
+P <- matrix(clr(Y), ncol = ncol(Y))
+Mm <- apply(P, 2, mean)
+s <- apply(P, 2, sd)
+P <- (P - Mm)/s
+P <- as.matrix(P)
+
+out2 <- computeWT(X = out$X, Y = P, A = A)
+out <- ptPLSc(X = out$X, Y = P, W = out2$W)
+
+
+
+

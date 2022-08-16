@@ -1,0 +1,26 @@
+{
+    "id": "1830A374",
+    "path": "~/Rpackage/powerPLS/R/eigenTest.R",
+    "project_path": "R/eigenTest.R",
+    "type": "r_source",
+    "hash": "3410414182",
+    "contents": "",
+    "dirty": false,
+    "created": 1660671827569.0,
+    "source_on_save": false,
+    "relative_order": 7,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "17,51",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1660673247,
+    "encoding": "ISO8859-1",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1660673247777,
+    "read_only": false,
+    "read_only_alternatives": []
+}

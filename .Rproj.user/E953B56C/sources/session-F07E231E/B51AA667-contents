@@ -1,0 +1,52 @@
+
+out_svd <- svd(Tscore)
+TscoreOrt <- out_svd$u %*% t(out_svd$v)
+out_vm <- matrix(NA, ncol = 4, nrow = nrow(TscoreOrt))
+
+TscoreOrt <- sapply(c(1:4), function(x) (TscoreOrt[,x] - mean(TscoreOrt[,x]))/sd(TscoreOrt[,x]))
+
+for(i in seq(A)){
+  
+  
+  out_vm[,i] <- as.vector(rvmf(n = 1, mu = TscoreOrt[,i], k = 0))
+  
+}
+
+dim(out_vm)
+
+plot(density((out_vm)[,1] ))
+plot(density(TscoreOrt[,1]))
+plot(density(Tscore[,1]))
+
+out <- rmvnorm(n = 56, mu = TscoreOrt[1,], sigma = solve(diag(out_svd$d)))
+
+out <- simulate_kde(TscoreOrt[,1:2])
+
+plot(density(out[,1]))
+
+
+library(rstiefel)
+
+out1 <- rmf.matrix.gibbs(out_svd$u %*% t(out_svd$v), Tscore)
+
+plot(density((out1[,1])))
+plot(density((out_svd$u %*% t(out_svd$v))[,1]))
+plot(density(TscoreOrt[,1]))
+
+
+out <- rvmf(n = 1, mu = TscoreOrt[,1], k = 0)
+
+out <- simulate_kde(x = Tscore[,1:2], n = 59)
+
+plot(out$random.values, Tscore[,1])
+plot(density(out$random.values))
+plot(density(Tscore[,1]))
+
+out <- simulate_kde(x = Tscore[,2], n = 59)
+plot(density(out$random.values))
+plot(density(Tscore[,2]))
+
+
+plot(density(out[,4]))
+plot(density(Tscore[,4]))
+

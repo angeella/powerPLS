@@ -1,0 +1,1358 @@
+#################################################################
+# le funzioni sono richiamabili una volta lanciato il comando   #
+# source("PLSC.R")						#
+# le variabili sono in colonna e le osservazioni in riga        #
+#################################################################
+
+library(compositions)
+
+#################################################################
+# Y = data.frame che specifica la classe			#
+# eps = valore di eps						#
+#################################################################
+
+Ycomp<-function(Y,eps) {
+
+	#Ytrain<-dummy(Y)
+
+  Ytrain <- Y
+
+	Ytrain[which(Ytrain==0)]<-eps
+
+	Ytrain[which(Ytrain==1)]<-1-(ncol(Ytrain)-1)*eps
+
+	return(Ytrain)
+
+}
+
+
+
+#################################################################
+# X è una lista di stringhe indicanti la classe			#
+# Y è la dummy Y-matrix per PLS-DA				#
+#################################################################
+
+dummy<-function(X) {
+
+	X1<-X
+
+	l<-levels(X1[,])
+
+	k<-length(l)
+
+	Nclass<-rep(0,k)
+
+	n<-length(X1[,])
+
+	Yr<-matrix(rep(0,n*k),ncol=k)
+
+	for (i in 1:k) {
+
+		Yr[which(X1==l[i]),i]<-1
+
+	}
+
+	colnames(Yr)<-l
+
+	rownames(Yr)<-rownames(X1)
+
+	return(Yr)
+
+}
+
+
+
+#################################################################
+# scala la matrice X						#
+# X = matrice dei dati						#
+# scaling = 1 mean centering					#
+#	    2 autoscaling					#
+#	    3 Pareto and mean centering				#
+#################################################################
+
+scal<-function(X,scaling) {
+
+	Xtrain<-X
+
+	if (scaling==1) {
+
+		cent<-matrix(apply(Xtrain,2,mean),ncol=1)
+
+		fscal<-rep(1,ncol(Xtrain))
+
+	}
+
+	if (scaling==2) {
+
+		cent<-matrix(apply(Xtrain,2,mean),ncol=1)
+
+		fscal<-apply(Xtrain,2,sd)
+
+		fscal[which(fscal==0)]<-1
+
+	}
+
+	if (scaling==3) {
+
+		cent<-matrix(apply(Xtrain,2,mean),ncol=1)
+
+		fscal<-(apply(Xtrain,2,sd))^0.5
+
+		fscal[which(fscal==0)]<-1
+
+	}
+
+	Xtrain<-(Xtrain-t(matrix(rep(t(cent),nrow(Xtrain)),ncol=nrow(Xtrain))))%*%diag(1/fscal)
+
+	return(Xtrain)
+
+}
+
+
+
+#################################################################
+# PLSC								#
+# X = matrix dei predittori					#
+# Y = data.frame che specifica la classe			#
+#     data.frame(class=as.factor(Y[,]))				#
+# A = numero di componenti del modello				#
+# scaling = 1 mean centering					#
+#	    2 autoscaling					#
+#	    3 Pareto and mean centering				#
+# eps = valore di eps						#
+# type = "clr"							#
+#	 "ilr"							#
+#################################################################
+
+PLSC<-function(X,Y,A,scaling,eps,type) {
+
+	Ytrain<-Ycomp(Y,eps)
+
+	Ymean<-meanComp(Ytrain)
+
+	Ytrain<-diff(Ytrain,matrix(rep(1,nrow(X)),ncol=1)%*%Ymean)
+
+	Y1<-matrix(ilr(Ytrain),ncol=(ncol(Ytrain)-1))
+
+	Y2<-matrix(clr(Ytrain),ncol=ncol(Ytrain))
+
+	V<-t(solve(t(Y1)%*%Y1)%*%t(Y1)%*%Y2)
+
+	Xtrain<-X
+
+	if (scaling==1) {
+
+		Xcent<-matrix(apply(Xtrain,2,mean),ncol=1)
+
+		Xfscal<-rep(1,ncol(Xtrain))
+
+	}
+
+	if (scaling==2) {
+
+		Xcent<-matrix(apply(Xtrain,2,mean),ncol=1)
+
+		Xfscal<-apply(Xtrain,2,sd)
+
+		Xfscal[which(Xfscal==0)]<-1
+
+	}
+
+	if (scaling==3) {
+
+		Xcent<-matrix(apply(Xtrain,2,mean),ncol=1)
+
+		Xfscal<-(apply(Xtrain,2,sd))^0.5
+
+		Xfscal[which(Xfscal==0)]<-1
+
+	}
+
+	Xtrain<-(Xtrain-t(matrix(rep(t(Xcent),nrow(Xtrain)),ncol=nrow(Xtrain))))%*%diag(1/Xfscal)
+
+	colnames(Xtrain)<-colnames(X)
+
+	W<-matrix(rep(-999,ncol(X)*A),ncol=A)
+
+	rownames(W)<-colnames(X)
+
+	colnames(W)<-paste("w",seq(1,A),sep="")
+
+	T<-matrix(rep(-999,nrow(X)*A),ncol=A)
+
+	rownames(T)<-rownames(X)
+
+	colnames(T)<-paste("t",seq(1,A),sep="")
+
+	alpha<-rep(-999,A)
+
+	names(alpha)<-paste("alpha",seq(1,A),sep="")
+
+	LS<-rep(-999,(A+1))
+
+	names(LS)<-paste("normF_A",seq(0,A),sep="")
+
+	if (type=="clr") {
+
+		E<-Xtrain
+
+		F<-Ytrain
+
+		C<-matrix(rep(-999,ncol(Ytrain)*A),ncol=A)
+
+		rownames(C)<-colnames(Ytrain)
+
+		colnames(C)<-paste("c",seq(1,A),sep="")
+
+		for (i in 1:A) {
+
+			LS[i]<-normS(F)$nS
+
+			Fs<-matrix(clr(F),ncol=ncol(Ytrain))
+
+			d<-svd(t(Fs)%*%E)
+
+			W[,i]<-d$v[,1]
+
+			C[,i]<-t(Fs)%*%E%*%W[,i]/d$d[1]
+
+			alpha[i]<-d$d[1]/(t(W[,i])%*%t(E)%*%E%*%W[,i])
+
+			T[,i]<-E%*%W[,i]
+
+			F<-diff(F,matrix(clrInv(alpha[i]*E%*%W[,i]%*%t(C[,i])),ncol=ncol(F)))
+
+			E<-E-(T[,i]%*%t(T[,i])%*%E/sum(T[,i]^2))
+
+		}
+
+		LS[A+1]<-normS(F)$nS
+
+		Bsc<-W%*%solve(t(W)%*%t(Xtrain)%*%Xtrain%*%W)%*%t(W)%*%t(Xtrain)%*%matrix(clr(Ytrain),ncol=ncol(Ytrain))
+
+		P<-t(Xtrain)%*%T%*%solve(t(T)%*%T)
+
+		Ws<-W%*%solve(t(P)%*%W)
+
+		log<-max(abs(clr(diff(Ytrain,add(matrix(clrInv(Xtrain%*%Bsc),ncol=ncol(F)),F)))))
+
+	}
+
+	if (type=="ilr") {
+
+		E<-Xtrain
+
+		F<-Ytrain
+
+		C<-matrix(rep(-999,(ncol(Ytrain)-1)*A),ncol=A)
+
+		colnames(C)<-paste("c",seq(1,A),sep="")
+
+		for (i in 1:A) {
+
+			LS[i]<-normS(F)$nS
+
+			Fs<-matrix(ilr(F),ncol=(ncol(Ytrain)-1))
+
+			d<-svd(t(Fs)%*%E)
+
+			W[,i]<-d$v[,1]
+
+			C[,i]<-t(Fs)%*%E%*%W[,i]/d$d[1]
+
+			alpha[i]<-d$d[1]/(t(W[,i])%*%t(E)%*%E%*%W[,i])
+
+			T[,i]<-E%*%W[,i]
+
+			F<-diff(F,matrix(ilrInv(alpha[i]*E%*%W[,i]%*%t(C[,i])),ncol=ncol(F)))
+
+			E<-E-(T[,i]%*%t(T[,i])%*%E/sum(T[,i]^2))
+
+		}
+
+		LS[A+1]<-normS(F)$nS
+
+		Bsc<-W%*%solve(t(W)%*%t(Xtrain)%*%Xtrain%*%W)%*%t(W)%*%t(Xtrain)%*%matrix(ilr(Ytrain),ncol=(ncol(Ytrain)-1))
+
+		P<-t(Xtrain)%*%T%*%solve(t(T)%*%T)
+
+		Ws<-W%*%solve(t(P)%*%W)
+
+		log<-max(abs(ilr(diff(Ytrain,add(matrix(ilrInv(Xtrain%*%Bsc),ncol=ncol(F)),F)))))
+
+	}
+
+	R2Y<-1-LS[2:length(LS)]/LS[1]
+
+	R2Y<-R2Y-c(0,R2Y[-length(R2Y)])
+
+	VIP<-matrix(rep(0,ncol(X)),ncol=1)
+
+	rownames(VIP)<-colnames(X)
+
+	colnames(VIP)<-c("VIP")
+
+	for (i in 1:ncol(X)) {
+
+		VIP[i,1]<-0
+
+		for (j in 1:A) {
+
+		VIP[i,1]<-VIP[i,1]+W[i,j]*W[i,j]*R2Y[j]
+
+		}
+
+		VIP[i,1]<-(ncol(X)*VIP[i,1]/sum(R2Y))^0.5
+
+	}
+
+# post-transformation
+
+	if (type=="clr") {
+
+		Yt<-matrix(clr(Ytrain),ncol=ncol(Ytrain))
+
+		d1<-svd(t(Yt)%*%Xtrain%*%W)
+
+		No<-0
+
+		Np<-length(which(d1$d>10^-8))
+
+		if (A<=Np) Wspt<-Ws
+
+		if (A>Np) {
+
+			Vt<-matrix(d1$v[,1:Np],ncol=Np)
+
+			Qv<-diag(1,ncol(W))-Vt%*%t(Vt)
+
+			d2<-eigen(Qv)
+
+			No<-length(which(d2$values>10^-8))
+
+			Go<-matrix(d2$vectors[,1:No],ncol=No)
+
+			Qgo<-diag(1,ncol(W))-Go%*%t(Go)
+
+			d3<-eigen(Qgo)
+
+			Np<-length(which(d3$values>10^-8))
+
+			Gp<-matrix(d3$vectors[,1:Np],ncol=Np)
+
+			G<-cbind(Go,Gp)
+
+			Wpt<-W%*%G
+
+			Wspt<-IDA(Xtrain,Ytrain,Wpt)$Ws
+
+		}
+
+	Tpt<-Xtrain%*%Wspt
+
+	log<-list(logTpt=max(abs(Xtrain%*%Wspt-Tpt)),logTp=t(Tpt)%*%Yt)
+
+	Tp<-Tpt[,(ncol(Tpt)-Np+1):ncol(Tpt)]
+
+	}
+
+	if (type=="ilr") {
+
+		Yt<-matrix(ilr(Ytrain),ncol=(ncol(Ytrain)-1))
+
+		d1<-svd(t(Yt)%*%Xtrain%*%W)
+
+		No<-0
+
+		Np<-length(which(d1$d>10^-8))
+
+		if (A<=Np) Wspt<-Ws
+
+		if (A>Np) {
+
+			Vt<-matrix(d1$v[,1:Np],ncol=Np)
+
+			Qv<-diag(1,ncol(W))-Vt%*%t(Vt)
+
+			d2<-eigen(Qv)
+
+			No<-length(which(d2$values>10^-8))
+
+			Go<-matrix(d2$vectors[,1:No],ncol=No)
+
+			Qgo<-diag(1,ncol(W))-Go%*%t(Go)
+
+			d3<-eigen(Qgo)
+
+			Np<-length(which(d3$values>10^-8))
+
+			Gp<-matrix(d3$vectors[,1:Np],ncol=Np)
+
+			G<-cbind(Go,Gp)
+
+			Wpt<-W%*%G
+
+			Wspt<-IDA(Xtrain,Ytrain,Wpt)$Ws
+
+		}
+
+	Tpt<-Xtrain%*%Wspt
+
+	log<-list(logTpt=max(abs(Xtrain%*%Wspt-Tpt)),logTp=t(Tpt)%*%Yt)
+
+	Tp<-Tpt[,(ncol(Tpt)-Np+1):ncol(Tpt)]
+
+	}
+
+	plsc<-list(A=A,scaling=scaling,eps=eps,type=type,X=X,Y=Y,Xtrain=Xtrain,Ytrain=Ytrain,W=W,Ws=Ws,Bsc=Bsc,T=T,Tpt=Tpt,Tp=Tp,C=C,alpha=alpha,normF=LS,log=log,Ymean=Ymean,Xcent=Xcent,Xfscal=Xfscal,V=V,VIP=VIP)
+
+	return(plsc)
+
+}
+
+
+
+#################################################################
+# predict the class						#
+# m = PLSC model obtained by PLSC o PLSC.CV			#
+# Xtest = matrix of the predictors of the test set		#
+#################################################################
+
+predict.PLSC<-function(m,Xtest) {
+
+	X1<-(Xtest-t(matrix(rep(t(m$Xcent),nrow(Xtest)),ncol=nrow(Xtest))))%*%diag(1/m$Xfscal)
+
+	Y1<-X1%*%m$Bsc
+
+	T1<-X1%*%m$Ws
+
+	if (m$type=="clr") Ypred<-add(matrix(clrInv(Y1),ncol=ncol(Y1)),matrix(rep(1,nrow(Xtest)),ncol=1)%*%m$Ymean)
+
+	if (m$type=="ilr") Ypred<-add(matrix(ilrInv(X1%*%m$Bsc),ncol=(ncol(Y1)+1)),matrix(rep(1,nrow(Xtest)),ncol=1)%*%m$Ymean)
+
+	Ypred<-matrix(Ypred,ncol=ncol(Ypred))
+
+	colnames(Ypred)<-colnames(m$Ytrain)
+
+	pred<-rep("none",nrow(Xtest))
+
+	for (i in 1:nrow(Ypred)) {
+
+		pred[i]<-colnames(m$Ytrain)[which(Ypred[i,]==max(Ypred[i,]))[1]]
+
+	}
+
+	r<-list(pred=data.frame(classPred=pred),Ppred=Ypred,Tpred=T1)
+
+	return(r)
+
+}
+
+
+
+#################################################################
+# N-fold full cross-validation per PLSC				#
+# X = matrix dei predittori					#
+# Y = data.frame che specifica la classe			#
+#     data.frame(class=as.factor(Y[,]))				#
+# A = numero di componenti del modello				#
+# NCV = numero dei gruppi in CV					#
+# scaling = 1 mean centering					#
+#	    2 autoscaling					#
+#	    3 Pareto and mean centering				#
+# eps = valore di eps						#
+# type = "clr"							#
+#	 "ilr"							#
+#################################################################
+
+PLSC.CV<-function(X,Y,A,NCV,scaling,eps,type) {
+
+	ref<-PLSC(X,Y,A,scaling,eps,type)
+
+	calc<-predict.PLSC(ref,X)$pred
+
+	calc<-cbind(Y,calc)
+
+	tcalc<-table(calc)
+
+	l<-levels(Y[,])
+
+	tcalc1<-matrix(rep(0,length(l)^2),ncol=length(l))
+
+	rownames(tcalc1)<-l
+
+	colnames(tcalc1)<-paste("pred",l,sep="")
+
+	for (i in 1:length(colnames(tcalc1))) {
+
+		for (j in 1:length(colnames(tcalc))) {
+
+			if (l[i]==colnames(tcalc)[j]) tcalc1[,i]<-tcalc[,j]
+		}
+
+	}
+
+	tcalc<-tcalc1
+
+	err<-1-sum(diag(tcalc))/sum(tcalc)
+
+	F1calc<-rep(-999,nrow(tcalc))
+
+	names(F1calc)<-paste("F1score",l,sep="")
+
+	for (i in 1:nrow(tcalc)) {
+
+		PRE<-tcalc[i,i]/sum(tcalc[i,])
+
+		CCR<-tcalc[i,i]/sum(tcalc[,i])
+
+		F1calc[i]<-2*PRE*CCR/(PRE+CCR)
+
+		if(is.na(F1calc[i])) F1calc[i]<-0
+
+	}
+
+	MCCcalc<-MCC(tcalc)
+
+	segment<-rep(-999,nrow(X))
+
+	for (i in 1:length(l)) {
+
+		segment[which(Y==l[i])]<-rep(seq(1,NCV),(trunc(length(which(Y==l[i]))/NCV)+1))[1:length(which(Y==l[i]))]
+
+	}
+
+	Ntest<-rep(-999,NCV)
+
+	for (i in 1:NCV) {
+
+		if (length(which(segment==i))!=1) CVXtest<-X[which(segment==i),]
+
+		if (length(which(segment==i))==1) CVXtest<-matrix(X[which(segment==i),],nrow=1)
+
+		CVXtrain<-X[which(segment!=i),]
+
+		CVYtest<-Y[which(segment==i),]
+
+		Ntest[i]<-nrow(CVXtest)
+
+		CVYtrain<-Y[which(segment!=i),]
+
+		mcv<-PLSC(CVXtrain,as.data.frame(CVYtrain),A,scaling,eps,type)
+
+		predcv<-predict.PLSC(mcv,CVXtest)
+
+		if (i==1) CV<-cbind(CVYtest,predcv$pred)
+
+		if (i!=1) CV<-rbind(CV,cbind(CVYtest,predcv$pred))
+
+		if (i==1) PCV<-data.frame(class=CVYtest,predcv$Ppred)
+
+		if (i!=1) PCV<-rbind(PCV,data.frame(class=CVYtest,predcv$Ppred))
+
+	}
+
+	tcv<-table(CV)
+
+	tcv1<-matrix(rep(0,length(l)^2),ncol=length(l))
+
+	rownames(tcv1)<-l
+
+	colnames(tcv1)<-paste("predcv",l,sep="")
+
+	for (i in 1:length(colnames(tcv1))) {
+
+		for (j in 1:length(colnames(tcv))) {
+
+			if (l[i]==colnames(tcv)[j]) tcv1[,i]<-tcv[,j]
+		}
+
+	}
+
+	tcv<-tcv1
+
+	errCV<-1-sum(diag(tcv))/sum(tcv)
+
+	F1cv<-rep(-999,nrow(tcv))
+
+	names(F1cv)<-paste("F1scoreCV",l,sep="")
+
+	for (i in 1:nrow(tcv)) {
+
+		PRE<-tcv[i,i]/sum(tcv[i,])
+
+		CCR<-tcv[i,i]/sum(tcv[,i])
+
+		F1cv[i]<-2*PRE*CCR/(PRE+CCR)
+
+		if(is.na(F1cv[i])) F1cv[i]<-0
+
+	}
+
+	MCCcv<-MCC(tcv)
+
+	plscCV<-list(A=A,scaling=scaling,NCV=NCV,eps=eps,type=type,X=X,Y=Y,Xtrain=ref$Xtrain,Ytrain=ref$Ytrain,W=ref$W,Ws=ref$Ws,Bsc=ref$Bsc,T=ref$T,C=ref$C,alpha=ref$alpha,normF=ref$normF,log=ref$log,Ymean=ref$Ymean,Xcent=ref$Xcent,Xfscal=ref$Xfscal,V=ref$V,MCC=MCCcalc,MCCcv=MCCcv,logCV=CV,logPCV=PCV,VIP=ref$VIP,table=tcalc,err=err,tableCV=tcv,errCV=errCV,F1score=F1calc,F1scoreCV=F1cv,Ntest=Ntest)
+
+	return(plscCV)
+
+}
+
+
+
+#################################################################
+# repeated N-fold full cross-validation per PLSC		#
+# X = matrix dei predittori					#
+# Y = data.frame che specifica la classe			#
+#     data.frame(class=as.factor(Y[,]))				#
+# A = numero di componenti del modello				#
+# NCV = numero dei gruppi in CV					#
+# Nrep = ripetizioni CV; Nrep deve essere un intero dispari	#
+# scaling = 1 mean centering					#
+#	    2 autoscaling					#
+#	    3 Pareto and mean centering				#
+# eps = valore di eps						#
+# type = "clr"							#
+#	 "ilr"							#
+# plot = "y" riporta i plot in output				#
+#################################################################
+
+PLSC.repeatedCV<-function(X,Y,A,NCV,Nrep,scaling,eps,type,plot) {
+
+	l<-levels(Y[,])
+
+	r<-matrix(rep(-999,(Nrep*(length(l)+2))),nrow=Nrep)
+
+	colnames(r)<-c("MCCcv",paste("F1scoreCV",l,sep=""),"errCV")
+
+	rownames(r)<-paste("run",seq(1,Nrep),sep="")
+
+	Ntest<-matrix(rep(-999,Nrep*NCV),ncol=NCV)
+
+	pb<-winProgressBar(title ="cross-validation",min=0,max=Nrep,width=300)
+
+	for (i in 1:Nrep) {
+
+		set.seed(i)
+
+		Xrep<-X
+
+		for (j in 1:length(l)) {
+
+			X1<-X[which(Y==l[j]),]
+
+			X1<-X1[sample(seq(1:nrow(X1))),]
+
+			Xrep[which(Y==l[j]),]<-X1
+
+		}
+
+		m<-PLSC.CV(Xrep,Y,A,NCV,scaling,eps,type)
+
+		Ntest[i,]<-m$Ntest
+
+		r[i,1]<-m$MCCcv
+
+		r[i,2:(ncol(r)-1)]<-m$F1scoreCV
+
+		r[i,ncol(r)]<-m$errCV
+
+		if (i==1) model<-list(m)
+
+		if (i!=1) model<-c(model,list(m))
+
+		Sys.sleep(0.001)
+
+		setWinProgressBar(pb,i,title=paste("cross-validation",round(i/Nrep*100,0),"% done"))
+
+	}
+
+	close(pb)
+
+	if (plot=="y") {
+
+		q<-round(quantile(r[,1],c(0.1,0.5,0.9)),3)
+
+		dev.new()
+
+		boxplot(r,main=paste(Nrep,"-repeated ",NCV,"-fold cross-validation",sep=""),sub=paste("MCCcv=",q[2]," [",q[1],"-",q[3],"]",sep=""))
+
+	}
+
+	m<-model[[which(r[,1]==median(r[,1]))[1]]]
+
+	plsccv<-list(X=X,Y=Y,model=m,log=r,Ntest=Ntest)
+
+	return(plsccv)
+
+}
+
+
+
+#################################################################
+# PLSC optimization based on					#
+# repeated N-fold full cross-validation per PLSC		#
+# X = matrix dei predittori					#
+# Y = data.frame che specifica la classe			#
+#     data.frame(class=as.factor(Y[,]))				#
+# Amax = massimo numero di componenti del modello		#
+# NCV = numero dei gruppi in CV					#
+# Nrep = ripetizioni CV; rep deve essere un intero dispari	#
+# scaling = 1 mean centering					#
+#	    2 autoscaling					#
+#	    3 Pareto and mean centering				#
+# eps = valore di eps						#
+# type = "clr"							#
+#	 "ilr"							#
+#################################################################
+
+PLSC.optimize<-function(X,Y,Amax,NCV,Nrep,scaling,eps,type) {
+
+	k<-rep(-999,Amax)
+
+	names(k)<-paste("A",seq(1,Amax),sep="")
+
+	pb2<-winProgressBar(title ="Optimization",min=0,max=Amax,width=300)
+
+	for (i in 1:Amax) {
+
+		m<-PLSC.repeatedCV(X,Y,i,NCV,Nrep,scaling,eps,type,"n")
+
+		k[i]<-m$model$MCCcv
+
+		if (i==1) searchmodel<-list(m$model)
+
+		if (i!=1) searchmodel<-c(searchmodel,list(m$model))
+
+		Sys.sleep(0.001)
+
+		setWinProgressBar(pb2,i,title=paste("Optimization",round(i/Amax*100,0),"% done"))
+
+	}
+
+	close(pb2)
+
+	opt<-which(k==max(k))[1]
+
+	r<-list(Aopt=opt,modelopt=searchmodel[[opt]],log=k)
+
+	return(r)
+
+}
+
+
+
+#################################################################
+# permutation test						#
+# m = PLSC model obtained by PLSC.repeatedCV			#
+# Nperm = numero di random permutation				#
+# seed = seme per la generazione dei numeri casuali		#
+# plot = "y" riporta i plot in output				#
+#################################################################
+
+PLSC.permutationtest<-function(m,Nperm,seed,plot) {
+
+	r<-matrix(rep(-999,(Nperm+1)*(ncol(m$log)+2)),ncol=(ncol(m$log)+2))
+
+	colnames(r)<-c("MCC",colnames(m$log),"MCC(Y,Yperm)")
+
+	rownames(r)<-c("ref",paste("PermID",seq(1:Nperm),sep=""))
+
+	scalp<-m$model$scaling
+
+	Xp<-m$X
+
+	Yp<-m$Y
+
+	NCVp<-m$model$NCV
+
+	Nrepp<-nrow(m$log)
+
+	Ap<-m$model$A
+
+	epsp<-m$model$eps
+
+	typep<-m$model$type
+
+	r[1,1]<-m$model$MCC
+
+	r[1,2]<-m$model$MCCcv
+
+	r[1,3:(ncol(r)-2)]<-m$model$F1scoreCV
+
+	r[1,(ncol(r)-1)]<-m$model$errCV
+
+	r[1,ncol(r)]<-1
+
+	pb<-winProgressBar(title ="Permutation test",min=0,max=Nperm,width=300)
+
+	for (i in 1:Nperm) {
+
+		set.seed(i+seed)
+
+		Yperm<-data.frame(Yp[sample(seq(1:nrow(Yp))),1])
+
+		colnames(Yperm)<-paste(colnames(Yp),"perm",sep="")
+
+		p<-permutation(length(levels(Yp[,])))
+
+		t<-table(cbind(Yp,Yperm))
+
+		c<-rep(-999,nrow(p))
+
+		for (j in 1:nrow(p)) {
+
+			c[j]<-MCC(t[,p[j,]])
+
+		}
+
+		sim<-max(c)
+
+		tryCatch({mp<-PLSC.repeatedCV(Xp,Yperm,Ap,NCVp,Nrepp,scalp,epsp,typep,"n")
+
+		r[i+1,1]<-mp$model$MCC
+
+		r[i+1,2]<-mp$model$MCCcv
+
+		r[i+1,3:(ncol(r)-2)]<-mp$model$F1scoreCV
+
+		r[i+1,(ncol(r)-1)]<-mp$model$errCV
+
+		r[i+1,ncol(r)]<-sim},error=function(e){})
+
+		Sys.sleep(0.001)
+
+		setWinProgressBar(pb,i,title=paste("Permutation test",round(i/Nperm*100,0),"% done"))
+
+	}
+
+	close(pb)
+
+	if (length(which(r[,ncol(r)]==-999))!=0) r<-r[-which(r[,ncol(r)]==-999),]
+
+	if (plot=="y") {
+
+		dev.new()
+
+		plot(r[,1]~r[,ncol(r)],pch=17,col="blue",ylim=c(min(r[,1:2])-0.1,max(r[,1:2])+0.1),xlim=c(min(r[,ncol(r)])-0.1,1.1),xlab="MCC(Y,Yperm)",ylab="MCC/MCCcv",main=paste("Permutation test Nperm=",(nrow(r)-1),sep=""))
+
+		par(new=TRUE)
+
+		plot(r[,2]~r[,ncol(r)],pch=15,col="green",ylim=c(min(r[,1:2])-0.1,max(r[,1:2])+0.1),xlim=c(min(r[,ncol(r)])-0.1,1.1),xlab="",ylab="",main="")
+
+		dev.new()
+
+		boxplot(r[2:nrow(r),1:(ncol(r)-1)],ylim=c(min(r[,1:(ncol(r)-1)]),1),main=paste("Permutation test Nperm=",Nperm,sep=""))
+
+		points(r[1,1:(ncol(r)-1)],pch=16,col="red")
+
+	}
+
+	p<-rep(-999,(ncol(r)-1))
+
+	names(p)<-colnames(r)[1:(ncol(r)-1)]
+
+	for (i in 1:length(p)) {
+
+		if (i!=length(p)) p[i]<-length(which(r[,i]>=r[1,i]))/(nrow(r)-1)
+
+		if (i==length(p)) p[i]<-length(which(r[,i]<=r[1,i]))/(nrow(r)-1)
+
+	}
+
+	p[which(p>1)]<-1
+
+	perm<-list(score=r[1,1:(ncol(r)-1)],p.value=p,log=r)
+
+	return(perm)
+
+}
+
+
+
+meanComp<-function(X) {
+
+	p<-rep(-999,ncol(X))
+
+	for (i in 1:ncol(X)) {
+
+		p[i]<-X[1,i]
+
+		for (j in 2:nrow(X)) {
+
+			p[i]<-p[i]*X[j,i]
+
+		}
+
+		p[i]<-p[i]^(1/nrow(X))
+
+	}
+
+	m<-p/sum(p)
+
+	return(m)
+
+}
+
+
+
+# calcola A-B in Sn
+
+diff<-function(A,B) {
+
+	C<-A
+
+	for (i in 1:nrow(A)) {
+
+		C[i,]<-difference(A[i,],B[i,])$difference
+
+	}
+
+	return(C)
+
+}
+
+
+
+# calcola A+B in Sn
+
+add<-function(A,B) {
+
+	C<-A
+
+	for (i in 1:nrow(A)) {
+
+		C[i,]<-addition(A[i,],B[i,])$add
+
+	}
+
+	return(C)
+
+}
+
+
+
+# calcola a-b in S
+
+difference<-function(a,b) {
+
+	b1<-1/b
+
+	b1<-b1/sum(b1)
+
+	dif<-a*b1
+
+	dif<-dif/sum(dif)
+
+	log<-max(abs(dif-as.vector(clrInv(clr(a)-clr(b)))))
+
+	r<-list(difference=dif,log=log)
+
+	return(r)
+
+}
+
+
+
+# calcola a+b in S
+
+addition<-function(a,b) {
+
+	s<-a*b
+
+	s<-s/sum(s)
+
+	log<-max(abs(s-as.vector(clrInv(clr(a)+clr(b)))))
+
+	r<-list(add=s,log=log)
+
+	return(r)
+
+}
+
+
+
+# calcola la norma di A in S
+
+normS<-function(A) {
+
+	n<-0
+
+	for (i in 1:nrow(A)) {
+
+		n<-n+sum(clr(A[i,])^2)
+
+	}
+
+	As<-matrix(clr(A),ncol=ncol(A))
+
+	log<-n-sum(diag(t(As)%*%As))
+
+	r<-list(nS=n,log=log)
+
+	return(r)
+
+}
+
+
+
+#################################################################
+# Stability selection approach for PLS2C based on VIP		#
+# X = matrix dei predittori					#
+# Y = matrice delle risposte					#
+#     data.frame(class=as.factor(Y[,]))				#
+# Amax = numero massimo di componenti del modello		#
+# NCV = numero di gruppo in CV					#
+# scaling = 1 mean centering					#
+#	    2 autoscaling					#
+#	    3 Pareto and mean centering				#
+# eps = valore di eps						#
+# type = "clr"							#
+#	 "ilr"							#
+# N = numero di gruppi estratti mediante bootstrap		#
+# beta = quantile per fitro su VIP, beta=0 è min		#
+# MIN = minimo numero di variabili del modello			#
+# alpha = significatività delle variabili			#
+# plot = "y" riporta i plot in output				#
+# path = percorso della directory per i file di log		#
+#################################################################
+
+PLSC.stability<-function(X,Y,Amax,NCV,scaling,eps,type,N,beta,MIN,alpha,plot,path) {
+
+	selectedREL<-matrix(rep(0,ncol(X)*N),ncol=N)
+
+	rownames(selectedREL)<-colnames(X)
+
+	colnames(selectedREL)<-paste("boot",seq(1,N),sep="")
+
+	selectedIRR<-selectedREL
+
+	kOOBREL<-rep(-999,N)
+
+	names(kOOBREL)<-paste("boot",seq(1,N),sep="")
+
+	kOOBIRR<-kOOBREL
+
+	Arel<-rep(-999,N)
+
+	names(Arel)<-paste("boot",seq(1,N),sep="")
+
+	Airr<-Arel
+
+	l2<-colnames(X)
+
+	pb1<-winProgressBar(title ="Stability selection",min=0,max=N,width=300)
+
+	for (i in 1:N) {
+
+		set.seed(i)
+
+		v1<-unique(sample(seq(1:nrow(X)),replace=TRUE))
+
+		X1<-X[v1,]
+
+		Y1<-data.frame(Y[v1,])
+
+		j<-1
+
+		repeat {
+
+			write.csv(cbind(Y1,X1),paste(path,"/LOGdataset.csv",sep=""))
+
+			model<-PLSC.optimize(X1,Y1,Amax,NCV,1,scaling,eps,type)$modelopt
+
+			if (j==1) {
+
+				searchmodel<-list(model)
+
+				kCV<-round(model$MCCcv,3)
+
+			}
+
+			if (j!=1) {
+
+				searchmodel<-c(searchmodel,list(model))
+
+				kCV<-c(kCV,round(model$MCCcv,3))
+
+			}
+
+			logVIP<-0
+
+			tryCatch({r<-PLSC(X1,Y1,model$A,scaling,eps,type)$VIP
+
+			logVIP<-1},error=function(e){})
+
+			if (logVIP==0) break
+
+			if (beta==0) {
+
+				if (length(which(r==min(r)))>=ncol(X1)-1) break
+
+				X1<-X1[,-which(r==min(r))]
+
+			}
+
+			if (beta!=0) {
+
+				if (length(which(r<quantile(r,c(beta))))>=ncol(X1)-1) break
+
+				X1<-X1[,-which(r<quantile(r,c(beta)))]
+
+			}
+
+			if (ncol(X1)<MIN) break
+
+			j<-j+1
+
+		}
+
+		Sys.sleep(0.001)
+
+		setWinProgressBar(pb1,i,title=paste("Stability selection",round(i/N*100,0),"% done"))
+
+		s<-length(which(kCV==max(kCV)))
+
+# relevant variables
+
+		mboot<-searchmodel[[which(kCV==max(kCV))[s]]]
+
+		Arel[i]<-mboot$A
+
+		l1<-colnames(mboot$X)
+
+		for (j in 1:length(l1)) {
+
+			selectedREL[which(l2==l1[j]),i]<-1
+
+		}
+
+		write.csv(selectedREL,paste(path,"/selectedREL.csv",sep=""))
+
+		XOOB<-X[-v1,which(selectedREL[,i]==1)]
+
+		YOOB<-data.frame(Y[-v1,])
+
+		OOBpred<-predict.PLSC(mboot,XOOB)$pred
+
+		toob<-table(cbind(YOOB,OOBpred))
+
+		if (ncol(toob)==1) toob<-cbind(toob,c(0.0001,0.0001))
+
+		kOOBREL[i]<-MCC(toob)
+
+# irrelevant variables
+
+		mbootIRR<-searchmodel[[which(kCV==max(kCV))[1]]]
+
+		Airr[i]<-mbootIRR$A
+
+		l1<-colnames(mbootIRR$X)
+
+		for (j in 1:length(l1)) {
+
+			selectedIRR[which(l2==l1[j]),i]<-1
+
+		}
+
+		write.csv(selectedIRR,paste(path,"/selectedIRR.csv",sep=""))
+
+		XOOB<-X[-v1,which(selectedIRR[,i]==1)]
+
+		YOOB<-data.frame(Y[-v1,])
+
+		OOBpred<-predict.PLSC(mbootIRR,XOOB)$pred
+
+		toob<-table(cbind(YOOB,OOBpred))
+
+		if (ncol(toob)==1) toob<-cbind(toob,c(0.0001,0.0001))
+
+		kOOBIRR[i]<-MCC(toob)
+
+	}
+
+	close(pb1)
+
+	z<-qnorm(1-(alpha/2),mean=0,sd=1)
+
+# relevant variables
+
+	thREL<-0.5*(1+z/(N^0.5))
+
+	RELscore<-apply(selectedREL,1,mean)
+
+	names(RELscore)<-colnames(X)
+
+	relevant<-names(RELscore)[which(RELscore>thREL)]
+
+# irrelevant variables
+
+	thIRR<-0.5*(1-z/(N^0.5))
+
+	IRRscore<-apply(selectedIRR,1,mean)
+
+	names(IRRscore)<-colnames(X)
+
+	irrelevant<-names(IRRscore)[which(IRRscore<thIRR)]
+
+	if (plot=="y") {
+
+		dev.new()
+
+		q<-round(quantile(kOOBREL,c(0.05,0.5,0.95)),3)
+
+		boxplot(kOOBREL,main="MCC out-of-bag RELEVANT",ylab="MCC",sub=paste("MCCoob=",q[2]," [",q[1],",",q[3],"]",sep=""))
+
+		dev.new()
+
+		q<-round(quantile(kOOBIRR,c(0.05,0.5,0.95)),3)
+
+		boxplot(kOOBIRR,main="MCC out-of-bag IRRELEVANT",ylab="MCC",sub=paste("MCCoob=",q[2]," [",q[1],",",q[3],"]",sep=""))
+
+		dev.new()
+
+		barplot(RELscore,names.arg=seq(1,ncol(X)),xlab="",ylab="RELscore",main="RELEVANT features",sub=paste("N relevant=",length(relevant),sep=""))
+
+		abline(h=thREL,lty=2,col="red")
+
+		dev.new()
+
+		barplot(IRRscore,names.arg=seq(1,ncol(X)),xlab="",ylab="IRRscore",main="IRRELEVANT features",sub=paste("N irrelevant=",length(irrelevant),sep=""))
+
+		abline(h=thIRR,lty=2,col="red")
+
+	}
+
+	r<-list(RELscore=RELscore,REL=relevant,AREL=Arel,IRRscore=IRRscore,IRR=irrelevant,AIRR=Airr,MCCoobREL=kOOBREL,MCCoobIRR=kOOBIRR,thREL=thREL,thIRR=thIRR)
+
+	return(r)
+
+}
+
+
+
+# genera tutte le permutazioni di (1,2,...,n)
+
+permutation<-function(n) {
+
+	N<-0
+
+	for (i in 1:n) {
+
+		N<-N+(n-i)*(n^(n-i))
+
+	}
+
+	perm<-matrix(rep(0,n*N),ncol=n)
+
+	for (j in 1:N) {
+
+		p<-j
+
+		r<-rep(0,n)
+
+		for (i in 1:n) {
+
+			q<-trunc(p/n)
+
+			r[n-i+1]<-p-q*n
+
+			p<-q
+
+			if (p<0) break
+
+		}
+
+		perm[j,]<-r
+
+	}
+
+	q<-0
+
+	for (i in 1:(n-1)) {
+
+		q<-q+i
+
+	}
+
+	perm<-perm[which(apply(perm,1,sum)==q),]
+
+	l<-rep(0,nrow(perm))
+
+	for (i in 1:nrow(perm)) {
+
+		if (length(unique(perm[i,]))==n) l[i]<-1
+
+	}
+
+	perm<-perm[which(l==1),]
+
+	perm<-perm+1
+
+	return(perm)
+
+}
+
+
+
+# calcola MCC per la matrice di confusione m
+# predizioni in colonna
+
+MCC<-function(m) {
+
+	c<-sum(diag(m))
+
+	s<-sum(m)
+
+	k<-nrow(m)
+
+	p<-apply(m,2,sum)
+
+	t<-apply(m,1,sum)
+
+	r<-(c*s-sum(p*t))/(((s*s-sum(p*p))*(s*s-sum(t*t)))^0.5)
+
+	if((c*s-sum(p*t))==0) {
+
+		r<-0
+
+		} else {
+
+		r<-(c*s-sum(p*t))/(((s*s-sum(p*p))*(s*s-sum(t*t)))^0.5)
+
+	}
+
+	return(r)
+
+}
+
+
+
+IDA<-function(X,Y,W) {
+
+	T<-matrix(rep(0,nrow(X)*ncol(W)),ncol=ncol(W))
+
+	E<-X
+
+	F<-Y
+
+	for (i in 1:ncol(W)) {
+
+		T[,i]<-E%*%W[,i]
+
+		Pt<-T[,i]%*%t(T[,i])/sum(T[,i]^2)
+
+		E<-E-Pt%*%E
+
+		F<-F-Pt%*%F
+
+	}
+
+	P<-t(X)%*%T%*%solve(t(T)%*%T)
+
+	Ws<-W%*%solve(t(P)%*%W)
+
+	ida<-list(T=T,W=W,Ws=Ws)
+
+	return(ida)
+
+}

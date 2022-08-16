@@ -1,0 +1,21 @@
+#' @title sample size calculation
+#' @description Compute optimal sample size calculation
+#' @usage computeSampleSize(d, A, nperm, A, scaling, post.transformation)
+#' @param d effect size
+#' @param nperm number of permutations
+#' @param A number of components
+#' @param post.transformation TRUE if you want to apply post transformation.
+#' @author Angela Andreella
+#' @return Returns the corresponding pvalues
+
+
+#add power?
+
+computeSampleSize <- function(d, nperm, A, Nsim, post.transformation){
+
+
+  print(d)
+
+
+
+}

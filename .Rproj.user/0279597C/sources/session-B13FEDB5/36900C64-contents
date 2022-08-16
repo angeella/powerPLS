@@ -1,0 +1,11 @@
+
+library(xlsx)
+library(powerPLS)
+db_quant <- read.xlsx("C:/Users/Admin/Documents/Post_Doc/Padova/PLS_hierarchical/PLS/data/dataset_umor_acqueo.xlsx",sheetIndex = 1,startRow = 2)
+#
+X = as.matrix(db_quant[, which(!(colnames(db_quant) %in% c("ID", "set", "PMI", "group", "K.Mm.")))])
+Y = ifelse(db_quant$group == "A", 1, 0)
+Y <- cbind(Y, ifelse(Y == 1, 0, 1))
+umorAcqueo <- list(X = X, Y = Y)
+
+usethis::use_data(umorAcqueo)
