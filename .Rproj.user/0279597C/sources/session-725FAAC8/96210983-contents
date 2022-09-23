@@ -1,0 +1,28 @@
+library(powerPLS)
+
+data("umorAcqueo")
+
+X <- umorAcqueo$X
+Y <- umorAcqueo$Y
+
+
+out <- computePower(X = X, Y = Y, A = 4,
+                    scaling = "auto-scaling",
+                    post.transformation = FALSE,
+                    seed = 123,Nsim = 100,nperm = 1000,alpha = 0.05)
+
+out_pt <- computePower(X = X, Y = Y, A = 4,
+                    scaling = "auto-scaling",
+                    post.transformation = TRUE,
+                    seed = 123,Nsim = 100,nperm = 1000,alpha = 0.05)
+
+
+out_ss <- computeSampleSize(d = umorAcqueo, nperm = 1000,
+                            A = 4, Nsim = 100,power = 0.8, N = 10,
+                            post.transformation = FALSE,
+                            scaling = "auto-scaling",seed = 123,alpha = 0.05)
+
+out_ss_pt <- computeSampleSize(d = umorAcqueo, nperm = 1000,
+                            A = 4, Nsim = 100,power = 0.8, N = 10,
+                            post.transformation = TRUE,
+                            scaling = "auto-scaling",seed = 123,alpha = 0.05)

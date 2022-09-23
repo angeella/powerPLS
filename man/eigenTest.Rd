@@ -15,8 +15,6 @@ eigenTest(X, Y, A, nperm, A, scaling, post.transformation)
 
 \item{A}{number of components}
 
-\item{X.scaling}{type of scaling for X.}
-
 \item{Y.prob}{TRUE if Y is already a probability data matrix.}
 
 \item{post.transformation}{TRUE if you want to apply post transformation.}

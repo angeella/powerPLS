@@ -1,6 +1,0 @@
-colSd <- function(X){
-  
-  out <- apply(X, 2, sd)
-  
-  return(out)
-}

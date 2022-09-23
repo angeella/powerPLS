@@ -3,9 +3,15 @@
 #' @usage computePower(X, Y, A, nperm, A, scaling, post.transformation)
 #' @param X data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
-#' @param nperm number of permutations
 #' @param A number of components
+#' @param X.scaling scaling X?
 #' @param post.transformation TRUE if you want to apply post transformation.
+#' @param seed fix seed
+#' @param n sample size
+#' @param Nsim number of simulations
+#' @param nperm number of permutations
+#' @param alpha level of significance
+#' @param eps epsilon value used to transformed Y in probability data matrix.
 #' @author Angela Andreella
 #' @return Returns the corresponding pvalues
 #' @export
@@ -27,19 +33,20 @@ computePower <- function(X, Y, A, scaling,
   pw <- 0
   pb <- progress_bar$new(total = Nsim)
   for(i in seq(Nsim)){
-    #Model the distribution of the X-data
-    outsim <- sim_XY(outPLS, n = n, seed = seed,
+    #Model the distribution of the X Y-data
+    outsim <- sim_XY(outPLS, n = n, seed = sample.int(1),
                      post.transformation = post.transformation, A = A)
-    #Model the distribution of the Y-data
+
     Xsim <- outsim$X_H1
     Ysim <- outsim$Y_H1
 
-    pv <- eigenTest(X = Xsim, Y = Ysim, A = A, nperm = nperm,
-                      scaling = scaling)
+    Ysim <- cbind(Ysim, ifelse(Ysim == 1, 0, 1))
+
+    pv <- eigenTest(X = Xsim, Y = Ysim, A = A, nperm = nperm)
 
 
 
-    if(pv[A] <= alpha){pw <- pw + 1}
+    if(pv$pv_adj[A] <= alpha){pw <- pw + 1}
     pb$tick()
     Sys.sleep(1 / Nsim)
   }

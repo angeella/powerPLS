@@ -1,26 +1,26 @@
 {
-    "id": "26510AFE",
-    "path": "~/Rpackage/powerPLS/R/computeSampleSize.R",
-    "project_path": "R/computeSampleSize.R",
+    "id": "C0CC06B3",
+    "path": "~/Rpackage/powerPLS/R/sim_XY.R",
+    "project_path": "R/sim_XY.R",
     "type": "r_source",
     "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1660674709842.0,
+    "created": 1660723261038.0,
     "source_on_save": false,
     "relative_order": 4,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "53,0",
-        "scrollLine": "21"
+        "cursorPosition": "77,41",
+        "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1660656550,
+    "lastKnownWriteTime": 1660731391,
     "encoding": "ISO8859-1",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1660656550,
+    "last_content_update": 1660731391596,
     "read_only": false,
     "read_only_alternatives": []
 }

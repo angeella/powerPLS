@@ -15,7 +15,19 @@ computePower(X, Y, A, nperm, A, scaling, post.transformation)
 
 \item{post.transformation}{TRUE if you want to apply post transformation.}
 
+\item{seed}{fix seed}
+
+\item{n}{sample size}
+
+\item{Nsim}{number of simulations}
+
 \item{nperm}{number of permutations}
+
+\item{alpha}{level of significance}
+
+\item{eps}{epsilon value used to transformed Y in probability data matrix.}
+
+\item{X.scaling}{scaling X?}
 }
 \value{
 Returns the corresponding pvalues

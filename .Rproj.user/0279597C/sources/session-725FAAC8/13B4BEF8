@@ -1,26 +1,26 @@
 {
-    "id": "8A306A4B",
-    "path": "~/Rpackage/powerPLS/R/sim_XY.R",
-    "project_path": "R/sim_XY.R",
+    "id": "13B4BEF8",
+    "path": "~/Rpackage/powerPLS/R/PLSc.R",
+    "project_path": "R/PLSc.R",
     "type": "r_source",
     "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1660674618897.0,
+    "created": 1663924112534.0,
     "source_on_save": false,
-    "relative_order": 3,
+    "relative_order": 10,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "31,29",
-        "scrollLine": "23"
+        "cursorPosition": "71,7",
+        "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1660656788,
+    "lastKnownWriteTime": 1660671680,
     "encoding": "ISO8859-1",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1660656788,
+    "last_content_update": 1660671680,
     "read_only": false,
     "read_only_alternatives": []
 }

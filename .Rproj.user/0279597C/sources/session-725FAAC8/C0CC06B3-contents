@@ -3,8 +3,8 @@
 #' @usage sim_XY(X, Y, A, nperm, A, scaling, post.transformation)
 #' @param out output from PLS2c
 #' @param n number of observations
-#' @param A
-#' @param post.transformation
+#' @param A number of components
+#' @param post.transformation TRUE if you want to perform post transformation.
 #' @param seed fix seed
 #' @author Angela Andreella
 #' @return Returns a simulated X matrix under the alternative hypothesis.
@@ -30,8 +30,10 @@ sim_XY <- function(out, n, seed = 123, post.transformation, A){
 
   if(A == M){
     T_scoreO <- T_score[,1:A]
-    sim_TO <- sapply(seq(A), function(x) simulate_kde(x = T_scoreO[,x], n = n)$random.values)
-    T_sim <- sim_TO #T target
+  sim_TO <- sapply(seq(A), function(x) simulate_kde(x = T_scoreO[,x], n = n)$random.values)
+    sim_TO <- sim_Tscore(Tscore = T_scoreO, n = n, seed = sample.int(1))
+
+     T_sim <- sim_TO #T target
 
   }else{
     T_scoreO <- T_score[,1:M]
@@ -50,10 +52,12 @@ sim_XY <- function(out, n, seed = 123, post.transformation, A){
     T_scoreP <- matrix(T_score[,((M+1):A)], ncol = ncp)
     sim_TO <- unlist(sapply(seq(ncol(T_scoreO)), function(x) simulate_kde(x = T_scoreO[,x], n = n)$random.values))
     sim_TP <- unlist(sapply(seq(ncol(T_scoreP)), function(x) simulate_kde(x = T_scoreP[,x], n = n)$random.values))
+    #sim_TO <- simulate_kde(x = T_scoreO, n = n)$random.values
+   # sim_TP <-simulate_kde(x = T_scoreP, n = n)$random.values
     T_sim <- cbind(sim_TO, sim_TP) #T target
   }
 
-
+  T_sim <- apply(T_sim, 2, function(x) scale(x, scale = FALSE))
   out1 <- svd(T_sim %*% t(T_score) %*% T_score)
 
   S <- (t(T_score) %*% T_score)
@@ -68,8 +72,10 @@ sim_XY <- function(out, n, seed = 123, post.transformation, A){
   X_H1 <- T_new %*% t(X_loading) + E_X
 
 
-  Y_H1 <- fitY(X = X_H1, B = B, Mm = 0, s = 1)
+  U <- runif(1, 0, 1)
+  Y_probH1 <- matrix(clrInv(X %*% B)$Y, ncol = 1)
 
+  Y_H1 <- sapply(c(1:nrow(Y)), function(x) ifelse(Y_probH1[x] > runif(1, 0, 1), 0, 1))
  # Y_H1 <- apply(Y_H1, 1, which.max)
 
 #  Y_H1 <- dummy(Y_H1)

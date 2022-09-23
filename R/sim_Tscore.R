@@ -9,6 +9,7 @@
 #' @importFrom ks kde
 #' @importFrom mvtnorm dmvnorm
 #' @importFrom mvtnorm rmvnorm
+#' @export
 
 
 sim_Tscore <- function(Tscore, n, seed){
@@ -28,6 +29,8 @@ sim_Tscore <- function(Tscore, n, seed){
 
   ## constant of accept reject method
 
+  density_norm = dmvnorm(eval.points, mean = mean_kd, sigma = cov_kd)
+
   const <- max(kd_est / density_norm)
 
   set.seed(seed)
@@ -35,12 +38,12 @@ sim_Tscore <- function(Tscore, n, seed){
   n.accepts     <- 0
   Tscore_sim <- matrix(NA, nrow = n, ncol = dim(Tscore)[2])
   m <- ncol(Tscore)
-  while (n.accepts < m) {
+  while (n.accepts < n) {
     y_sim <- rmvnorm(n = 1, mean = mean_kd, sigma = cov_kd)
     f <- kde(x = kd$x, eval.points = y_sim)$estimate
     g <- dmvnorm(y_sim, mean = mean_kd, sigma = cov_kd)
-    u <- runif(1,0,1)
-    if (u < f/(const*g)) {
+    u <- runif(1,0,0.005)
+    if (u < (f/(const*g))) {
       n.accepts <- n.accepts+1
       Tscore_sim[n.accepts,] = y_sim
     }

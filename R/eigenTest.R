@@ -5,7 +5,6 @@
 #' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
 #' @param nperm number of permutations
 #' @param A number of components
-#' @param X.scaling type of scaling for X.
 #' @param Y.prob TRUE if Y is already a probability data matrix.
 #' @param post.transformation TRUE if you want to apply post transformation.
 #' @author Angela Andreella
@@ -15,23 +14,7 @@
 #' @export
 
 
-eigenTest <- function(X, Y, nperm, A, X.scaling = FALSE, Y.prob = TRUE, eps = 0.01){
-
-  if(X.scaling == "auto-scaling"){
-    Mm <- apply(X, 2, mean)
-    s <- apply(X, 2, sd)
-    X <- (X - Mm)/s
-  }
-  if(X.scaling == "pareto-scaling"){
-    Mm <- 0
-    s <- apply(X, 2, sd)
-    X <- (X - Mm)/s
-  }
-  if(X.scaling == "mean-centering"){
-    Mm <- apply(X, 2, mean)
-    s <- 1
-    X <- (X - Mm)/s
-  }
+eigenTest <- function(X, Y, nperm, A, Y.prob = TRUE, eps = 0.01){
 
   if(!Y.prob){
     Y[which(Y==0)]<-eps

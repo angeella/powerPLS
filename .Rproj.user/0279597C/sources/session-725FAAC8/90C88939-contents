@@ -9,8 +9,8 @@ test_that("X-simulation works", {
 
   out <- sim_XY(out = out, n = nrow(X), seed = 123, post.transformation = TRUE, A = 4)
 
-  outX <- similarityMatrix(X = X, Y = out$X_H1)
-  eigen_d <- ifelse(is.character(all.equal(0, sum(round(outX$eigen_d)), tolerance = 3)), FALSE, TRUE)
+  outX <- similarityMatrix(X = apply(X,2, function(x) scale(x, scale = FALSE)), Y = out$X_H1)
+  eigen_d <- ifelse(is.character(all.equal(0, sum(round(outX$eigen_d)), tolerance = 6)), FALSE, TRUE)
   RV <- round(outX$RV)>0.5
 
   expect_equal(TRUE, eigen_d | RV)
