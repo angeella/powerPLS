@@ -4,7 +4,9 @@
 \alias{computePower}
 \title{power computations}
 \usage{
-computePower(X, Y, A, nperm, A, scaling, post.transformation)
+computePower(X, Y, A,
+post.transformation, scaling, n, seed = 123,
+Nsim, nperm, alpha, eps = 0.01, ...)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.}
@@ -26,6 +28,8 @@ computePower(X, Y, A, nperm, A, scaling, post.transformation)
 \item{nperm}{number of permutations}
 
 \item{alpha}{type I error}
+
+\item{eps}{see details}
 
 \item{...}{Futher parameters.}
 }

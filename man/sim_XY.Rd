@@ -4,7 +4,7 @@
 \alias{sim_XY}
 \title{simulate data matrix under the alternative hypothesis}
 \usage{
-sim_XY(X, Y, A, nperm, A, scaling, post.transformation)
+sim_XY(out, n, seed = 123, post.transformation, A)
 }
 \arguments{
 \item{out}{output from PLS2c}

@@ -1,11 +1,11 @@
 #' @title simulate data matrix under the alternative hypothesis
 #' @description simulate data matrix under the alternative hypothesis.
-#' @usage sim_XY(X, Y, A, nperm, A, scaling, post.transformation)
+#' @usage sim_XY(out, n, seed = 123, post.transformation, A)
 #' @param out output from PLS2c
 #' @param n number of observations
-#' @param A number of components
-#' @param post.transformation TRUE if you want to apply post transformation.
 #' @param seed fix seed
+#' @param post.transformation TRUE if you want to apply post transformation.
+#' @param A number of components
 #' @author Angela Andreella
 #' @return Returns a simulated matrix under the alternative hypothesis.
 #' @export

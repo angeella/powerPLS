@@ -1,6 +1,6 @@
 #' @title compute weight and score matrix PLSc
 #' @description compute weight matrix PLSc
-#' @usage computeWT(X, Y, A, scaling)
+#' @usage computeWT(X, Y, A)
 #' @param X data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
 #' @param A number of components

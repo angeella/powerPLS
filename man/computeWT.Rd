@@ -4,7 +4,7 @@
 \alias{computeWT}
 \title{compute weight and score matrix PLSc}
 \usage{
-computeWT(X, Y, A, scaling)
+computeWT(X, Y, A)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.}

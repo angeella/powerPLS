@@ -1,13 +1,13 @@
 #' @title randomization test
 #' @description Performs randomization test based on eigenvalues
-#' @usage eigenTest(X, Y, A, nperm, A, X.scaling, post.transformation)
+#' @usage eigenTest(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE, eps = 0.01)
 #' @param X data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
 #' @param nperm number of permutations
 #' @param A number of components
 #' @param scaling type of scaling
 #' @param Y.prob TRUE if Y describes the probability to being in the class.
-#' @param post.transformation TRUE if you want to apply post transformation.
+#' @param eps see details
 #' @author Angela Andreella
 #' @return Returns the corresponding pvalues
 #' @importFrom compositions clrInv

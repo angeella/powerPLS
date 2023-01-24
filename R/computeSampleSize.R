@@ -1,6 +1,7 @@
 #' @title sample size calculation
 #' @description Compute optimal sample size calculation
-#' @usage computeSampleSize(n, A, nperm, A, scaling, post.transformation)
+#' @usage computeSampleSize(n, X, Y, A, post.transformation, alpha, beta,
+#' nperm, Nsim, seed, scaling, ...)
 #' @param n two dimensional vector giving the minimum and maximum sample size
 #' to be considered
 #' @param X data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.

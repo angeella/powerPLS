@@ -1,18 +1,22 @@
 #' @title PLS
 #' @description Performs PLS two class
-#' @usage PLSc(X, Y, A, scaling, post.transformation = TRUE)
+#' @usage PLSc(X, Y, A, scaling, post.transformation, eps, Y.prob)
 #' @param X data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
 #' @param A number of components
 #' @param scaling type of scaling.
+#' @param post.transformation TRUE if you want to apply post transformation.
+#' @param eps see details.
 #' @param Y.prob TRUE if Y describes the probability to being in the class.
 #' @author Angela Andreella
 #' @return Returns a list with the following objects:
 #' - \code{W}: matrix of weigths
-#' - \code{X.loading}: matrix of X loading
-#' - \code{Y.loading}: matirx of Y loading
+#' - \code{X_loading}: matrix of X loading
+#' - \code{Y_loading}: matirx of Y loading
+#' - \code{X}: matrix of X data
+#' - \code{Y}: matirx of Y data
 #' - \code{T_score}: matrix of scores
-#' - \code{Y.fitted}: fitted Y matrix
+#' - \code{Y_fitted}: fitted Y matrix
 #' - \code{B}: Matrix regression coefficients
 #' - \code{M}: number of orthogonal components if post transformation is applied.
 #' @importFrom compositions ilrInv
@@ -118,7 +122,7 @@ PLSc <- function(X, Y, A, scaling, post.transformation,
   B = Wstar %*% t(Y_loading)
 
 
-  Y.fitted <- fitY(X = X, B = B, Mm = Mm, s = s)
+  Y_fitted <- fitY(X = X, B = B, Mm = Mm, s = s)
 
 
 

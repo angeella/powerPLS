@@ -1,9 +1,10 @@
 #' @title power computations
 #' @description Performs randomization test based on eigenvalues
-#' @usage computePower(X, Y, A, nperm, A, scaling, post.transformation)
+#' @usage computePower(X, Y, A,
+#' post.transformation, scaling, n, seed = 123,
+#' Nsim, nperm, alpha, eps = 0.01, ...)
 #' @param X data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the \eqn{k} classes and rows the \eqn{n} observations.
-#' @param nperm number of permutations
 #' @param A number of components
 #' @param post.transformation TRUE if you want to apply post transformation.
 #' @param scaling type of scaling.
@@ -12,6 +13,7 @@
 #' @param Nsim number of simulations
 #' @param nperm number of permutations
 #' @param alpha type I error
+#' @param eps see details
 #' @param ... Futher parameters.
 #' @author Angela Andreella
 #' @return Returns the corresponding pvalues

@@ -4,7 +4,7 @@
 \alias{eigenTest}
 \title{randomization test}
 \usage{
-eigenTest(X, Y, A, nperm, A, X.scaling, post.transformation)
+eigenTest(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE, eps = 0.01)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.}
@@ -19,7 +19,7 @@ eigenTest(X, Y, A, nperm, A, X.scaling, post.transformation)
 
 \item{Y.prob}{TRUE if Y describes the probability to being in the class.}
 
-\item{post.transformation}{TRUE if you want to apply post transformation.}
+\item{eps}{see details}
 }
 \value{
 Returns the corresponding pvalues

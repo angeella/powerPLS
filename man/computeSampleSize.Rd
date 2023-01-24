@@ -4,7 +4,8 @@
 \alias{computeSampleSize}
 \title{sample size calculation}
 \usage{
-computeSampleSize(n, A, nperm, A, scaling, post.transformation)
+computeSampleSize(n, X, Y, A, post.transformation, alpha, beta,
+nperm, Nsim, seed, scaling, ...)
 }
 \arguments{
 \item{n}{two dimensional vector giving the minimum and maximum sample size
