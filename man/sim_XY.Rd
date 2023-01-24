@@ -2,7 +2,7 @@
 % Please edit documentation in R/sim_XY.R
 \name{sim_XY}
 \alias{sim_XY}
-\title{simulate X data matrix under the alternative hypothesis}
+\title{simulate data matrix under the alternative hypothesis}
 \usage{
 sim_XY(X, Y, A, nperm, A, scaling, post.transformation)
 }
@@ -12,12 +12,16 @@ sim_XY(X, Y, A, nperm, A, scaling, post.transformation)
 \item{n}{number of observations}
 
 \item{seed}{fix seed}
+
+\item{post.transformation}{TRUE if you want to apply post transformation.}
+
+\item{A}{number of components}
 }
 \value{
-Returns a simulated X matrix under the alternative hypothesis.
+Returns a simulated matrix under the alternative hypothesis.
 }
 \description{
-simulate X data matrix under the alternative hypothesis.
+simulate data matrix under the alternative hypothesis.
 }
 \author{
 Angela Andreella

@@ -21,7 +21,7 @@
 
 
 
-computePower <- function(X, Y, A, scaling,
+computePower <- function(X, Y, A,
                           post.transformation, scaling, n, seed = 123,
                           Nsim, nperm, alpha, eps = 0.01, ...){
 
@@ -42,7 +42,7 @@ computePower <- function(X, Y, A, scaling,
     Ysim <- outsim$Y_H1
 
     pv <- eigenTest(X = Xsim, Y = Ysim, A = A, nperm = nperm,
-                    X.scaling = scaling, ...)
+                    scaling = scaling, ...)
 
 
 

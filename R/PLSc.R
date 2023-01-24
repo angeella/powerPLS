@@ -17,6 +17,9 @@
 #' - \code{M}: number of orthogonal components if post transformation is applied.
 #' @importFrom compositions ilrInv
 #' @importFrom compositions ilr
+#' @importFrom stats sd
+#' @importFrom stats model.matrix
+#'
 #' @export
 
 
@@ -101,28 +104,30 @@ PLSc <- function(X, Y, A, scaling, post.transformation,
 
     E[[1]] <- X
 
-    T.score <- IDA(X = X, Y = Y, W = Wtilde)
+    T_score <- IDA(X = X, Y = Y, W = Wtilde)
   }else{
     M <- NULL
   }
 
   #Compute loadings matrix
-  X.loading = t(X) %*% T.score %*% solve(t(T.score) %*% T.score)
-  Y.loading = t(Y) %*% T.score %*% solve(t(T.score) %*% T.score)
+  X_loading = t(X) %*% T_score %*% solve(t(T_score) %*% T_score)
+  Y_loading = t(Y) %*% T_score %*% solve(t(T_score) %*% T_score)
 
   #matrix coefficients
-  Wstar = W %*% solve(t(X.loading) %*%W)
-  B = Wstar %*% t(Y.loading)
+  Wstar = W %*% solve(t(X_loading) %*%W)
+  B = Wstar %*% t(Y_loading)
 
 
   Y.fitted <- fitY(X = X, B = B, Mm = Mm, s = s)
 
 
 
-  return(list(X.loading = X.loading,
-              Y.loading = Y.loading,
+  return(list(X_loading = X_loading,
+              Y_loading = Y_loading,
+              X = X,
+              Y = Y,
               B = B,
               M = M,
-              T.score = T.score,
-              Y.fitted = Y.fitted))
+              T_score = T_score,
+              Y_fitted = Y_fitted))
 }

@@ -15,6 +15,10 @@ eigenTest(X, Y, A, nperm, A, X.scaling, post.transformation)
 
 \item{A}{number of components}
 
+\item{scaling}{type of scaling}
+
+\item{Y.prob}{TRUE if Y describes the probability to being in the class.}
+
 \item{post.transformation}{TRUE if you want to apply post transformation.}
 }
 \value{

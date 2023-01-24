@@ -14,17 +14,21 @@ to be considered}
 
 \item{Y}{data matrix where columns represent the \eqn{k} classes and rows the \eqn{n} observations.}
 
-\item{nperm}{number of permutations}
-
 \item{A}{number of components}
-
-\item{Nsim}{number of simulations}
 
 \item{post.transformation}{TRUE if you want to apply post transformation.}
 
 \item{alpha}{level of type I error}
 
 \item{beta}{level of type II error}
+
+\item{nperm}{number of permutations}
+
+\item{Nsim}{number of simulations}
+
+\item{seed}{seed value}
+
+\item{scaling}{type of scaling.}
 
 \item{...}{Futher parameters.}
 }

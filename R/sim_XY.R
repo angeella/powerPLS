@@ -1,13 +1,13 @@
-#' @title simulate X data matrix under the alternative hypothesis
-#' @description simulate X data matrix under the alternative hypothesis.
+#' @title simulate data matrix under the alternative hypothesis
+#' @description simulate data matrix under the alternative hypothesis.
 #' @usage sim_XY(X, Y, A, nperm, A, scaling, post.transformation)
 #' @param out output from PLS2c
 #' @param n number of observations
-#' @param A
-#' @param post.transformation
+#' @param A number of components
+#' @param post.transformation TRUE if you want to apply post transformation.
 #' @param seed fix seed
 #' @author Angela Andreella
-#' @return Returns a simulated X matrix under the alternative hypothesis.
+#' @return Returns a simulated matrix under the alternative hypothesis.
 #' @export
 #' @importFrom simukde simulate_kde
 
@@ -23,10 +23,11 @@ sim_XY <- function(out, n, seed = 123, post.transformation, A){
     M <- A
   }
 
-  T_score <- out$T.score
-  X_loading <- out$X.loading
-  Y_loading <- out$Y.loading
+  T_score <- out$T_score
+  X_loading <- out$X_loading
+  Y_loading <- out$Y_loading
   B <- out$B
+  X <- out$X
 
   if(A == M){
     T_scoreO <- T_score[,1:A]

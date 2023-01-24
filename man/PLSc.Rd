@@ -13,6 +13,8 @@ PLSc(X, Y, A, scaling, post.transformation = TRUE)
 
 \item{A}{number of components}
 
+\item{scaling}{type of scaling.}
+
 \item{Y.prob}{TRUE if Y describes the probability to being in the class.}
 }
 \value{

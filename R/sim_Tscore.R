@@ -9,6 +9,8 @@
 #' @importFrom ks kde
 #' @importFrom mvtnorm dmvnorm
 #' @importFrom mvtnorm rmvnorm
+#' @importFrom stats cov
+#' @importFrom stats runif
 
 
 sim_Tscore <- function(Tscore, n, seed){

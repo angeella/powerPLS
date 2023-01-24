@@ -28,7 +28,7 @@ computeSampleSize <- function(n, X, Y, A, post.transformation, alpha, beta,
 
   samplesize[i] <-  computePower(X = X, Y = Y, A = A,
                                  post.transformation = post.transformation,
-                                 n = i, nperm = nperm, Nsim = Nsim, scaling = scaling, ...)
+                                 n = i, nperm = nperm, Nsim = Nsim, ...)
   }
 
 

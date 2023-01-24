@@ -5,29 +5,30 @@
 #' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
 #' @param nperm number of permutations
 #' @param A number of components
-#' @param X.scaling
-#' @param Y.prob
+#' @param scaling type of scaling
+#' @param Y.prob TRUE if Y describes the probability to being in the class.
 #' @param post.transformation TRUE if you want to apply post transformation.
 #' @author Angela Andreella
 #' @return Returns the corresponding pvalues
 #' @importFrom compositions clrInv
 #' @importFrom compositions clr
+#' @importFrom stats sd
 #' @export
 
 
-eigenTest <- function(X, Y, nperm, A, X.scaling = "mean-centering", Y.prob = TRUE, eps = 0.01){
+eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE, eps = 0.01){
 
-  if(X.scaling == "auto-scaling"){
+  if(scaling == "auto-scaling"){
     Mm <- apply(X, 2, mean)
     s <- apply(X, 2, sd)
     X <- (X - Mm)/s
   }
-  if(X.scaling == "pareto-scaling"){
+  if(scaling == "pareto-scaling"){
     Mm <- 0
     s <- apply(X, 2, sd)
     X <- (X - Mm)/s
   }
-  if(X.scaling == "mean-centering"){
+  if(scaling == "mean-centering"){
     Mm <- apply(X, 2, mean)
     s <- 1
     X <- (X - Mm)/s

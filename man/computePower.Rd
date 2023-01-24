@@ -15,7 +15,17 @@ computePower(X, Y, A, nperm, A, scaling, post.transformation)
 
 \item{post.transformation}{TRUE if you want to apply post transformation.}
 
+\item{scaling}{type of scaling.}
+
+\item{n}{sample size}
+
+\item{seed}{seed value}
+
+\item{Nsim}{number of simulations}
+
 \item{nperm}{number of permutations}
+
+\item{alpha}{type I error}
 
 \item{...}{Futher parameters.}
 }
