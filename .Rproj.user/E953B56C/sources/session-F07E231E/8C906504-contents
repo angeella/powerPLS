@@ -1,0 +1,62 @@
+#' @title compute weight and score matrix PLSc
+#' @description compute weight matrix PLSc
+#' @usage computeWT(X, Y, A, scaling)
+#' @param X data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.
+#' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
+#' @param A number of components
+#' @param scaling type of scaling
+#' @author Angela Andreella
+#' @return weight matrix \code{W}
+#' @export
+
+
+
+computeWT <- function(X, Y, A, scaling = FALSE){
+
+
+
+  E <- R <- w <- r <- Q <- list()
+
+  E[[1]] <- X
+  R[[1]] <- Y
+  #number of observations
+  N <- nrow(Y)
+
+  #dim(W) = nX times A
+
+  for(i in seq(A)){
+
+    AA <- t(E[[i]]) %*% R[[i]] %*% t(R[[i]]) %*% E[[i]]
+
+    #Compute weight matrix
+    out <- eigen(AA) #well defined eigenvalue problem
+    w[[i+1]] <- Re(out$vectors[,1])
+
+    #score vector t_i
+    r[[i+1]] <- E[[i]] %*% w[[i+1]]
+
+    #Orthogonal projection matrix of scores
+    #Q[[i+1]] <- diag(N) - r[[i+1]] %*% t(r[[i+1]])/ (t(r[[i+1]]) %*% r[[i+1]])[1]
+    Q[[i+1]] <- diag(N) - r[[i+1]] %*% solve(t(r[[i+1]]) %*% r[[i+1]]) %*% t(r[[i+1]])
+
+    #Deflation step
+    #X-deflation step
+    E[[i+1]] <- Q[[i+1]] %*% E[[i]] #residual matrix X
+    #Y-deflation step
+    R[[i+1]] <- Q[[i+1]] %*% R[[i]] #residual matrix Y
+  }
+
+  #Rearrange weight matrix
+  W <- NULL
+  for (i in seq(length(w))) W <- cbind(W, w[[i]]) #number of obs times A
+
+
+  #Rearrange scores matrix
+  T.score <- NULL
+  for (i in seq(length(r))) T.score <- cbind(T.score, r[[i]]) #number of obs times ncomponent
+
+
+  return(list(W = W,
+              T.score = T.score,
+              R = R))
+}

@@ -1,0 +1,56 @@
+#
+# X <- matrix(rnorm(50*200), ncol = 200)
+# X[,1:100] <- X[,1:100] + matrix(rgamma(50*100, shape = 1), ncol = 100)
+# Y <- matrix(sample(c(1:2), size = 50,replace = T), ncol = 1)
+# Y <- matrix(dummies::dummy(Y), ncol =2)
+rm(list = ls())
+library(xlsx)
+library(powerPLS)
+db_quant <- read.xlsx("C:/Users/Angela Andreella/Documents/Post_Doc/Padova/PLS_hierarchical/PLS/data/dataset_umor_acqueo.xlsx",sheetIndex = 1,startRow = 2)
+#
+X = as.matrix(db_quant[, which(!(colnames(db_quant) %in% c("ID", "set", "PMI", "group", "K.Mm.")))])
+Y = dummies::dummy(as.character(db_quant$group))
+#
+# out <- PLSc(X = X, Y = Y, A = 3, scaling = FALSE)
+#
+#
+# all.equal(out$Y.fitted , Y)
+
+A = 3
+scaling = "auto-scaling"
+post.transformation = TRUE
+seed = 123
+n = nrow(X)
+eps = 0.01
+Nsim = 100
+nperm = 1000
+alpha = 0.05
+
+out <- computePower(X, Y, A = 3, scaling = "auto-scaling",
+        post.transformation = TRUE,
+        seed = 123, n = nrow(X), eps = 0.01,
+        Nsim = 100, nperm = 1000, alpha = 0.05)
+
+Y[which(Y==0)]<-eps
+Y[which(Y==1)]<-1-(ncol(Y)-1)*eps
+P <- matrix(clr(Y), ncol = ncol(Y))
+Mm <- apply(P, 2, mean)
+s <- apply(P, 2, sd)
+P <- (P - Mm)/s
+P <- as.matrix(P)
+
+pv <- eigenTest(X = X, Y = Y, A = 9, nperm = 1000, X.scaling = TRUE, Y.prob = FALSE)
+pv
+
+out <- mdatools::plsda(x= X, c = db_quant$group, ncomp = 9, cv = 1) #out$ncomp.selected = 4
+summary(out)
+
+#Yes!!!
+
+out <- PLSc(X = X, Y= Y, A = 5, scaling = TRUE,
+            post.transformation = TRUE, eps = 0.01)
+
+out <- computeWT(X = X, Y = P, A = 4)
+out <- ptPLSc(X = X, Y = P, W = out$W)
+
+#Abbiamo una var ortogonale, con A = 4.

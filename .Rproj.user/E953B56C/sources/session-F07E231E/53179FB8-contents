@@ -1,0 +1,26 @@
+
+#Utils
+
+#Fit Y
+fitY <- function(X, B, Mm, s){
+
+  Y.fitted = matrix(apply(compositions::clrInv(s*(X %*% B) + Mm), 1, function(x) which.max(x)),ncol = 1)
+  Y.fitted = matrix(dummies::dummy(Y.fitted), ncol = ncol(Y))
+
+  return(Y.fitted)
+}
+
+permuteIndex <- function(Y, by.row = TRUE, times){
+
+  if(by.row){
+    if(times == nrow(Y)){replace = FALSE}else{replace = TRUE}
+    idx <- sample(seq(nrow(Y)), size = times, replace = replace)
+    Y <- Y[idx,]
+  }else{
+    if(times == ncol(Y)){replace = FALSE}else{replace = TRUE}
+    idx <- sample(seq(ncol(Y)), size =times, replace = replace)
+    Y <- Y[,idx]
+  }
+return(Y)
+}
+
