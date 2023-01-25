@@ -28,12 +28,14 @@ ptPLSc <- function(X, Y, W){
   Go<-Re(d2$vectors[,1:M])
   lp <- c()
   G<-Go
+  if(A !=M){
   for (i in 1:(A-M)) {
     Xp<-X-X%*%W%*%G%*%solve(t(G)%*%t(W)%*%t(X)%*%X%*%W%*%G)%*%t(G)%*%t(W)%*%t(X)%*%X
     d3<-eigen(t(diag(A)-Go%*%t(Go))%*%(t(W)%*%t(Xp)%*%Y%*%t(Y)%*%Xp%*%W))
     Gp<-Re(d3$vectors[,1])
     lp[i]<-d3$values[1]
     G<-cbind(G,Gp)
+  }
   }
 
   if((A-M) <= min(qr(Y)$rank, A)){

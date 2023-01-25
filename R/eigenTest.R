@@ -45,9 +45,9 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE,
   }
 
   n <- nrow(Y)
-  E <- R <- R.p <- eigen.o <- w.p <- w <- r.p <- r <- Q <- list()
+  E <- R <- R_p <- eigen_o <- w_p <- w <- r_p <- r <- Q <- list()
   pv <- c()
-  eigen.p <- matrix(NA, ncol = nperm, nrow = A)
+  eigen_p <- matrix(NA, ncol = nperm, nrow = A)
 
   E[[1]] <- as.matrix(X)
   R[[1]] <- as.matrix(Y)
@@ -61,23 +61,23 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE,
    # w[[a+1]] <- (t(E[[a]]) %*% R[[a]])/(t(R[[a]] )%*% E[[a]] %*% t(E[[a]]) %*% R[[a]])[1]^(-1/2)
     r[[a+1]] <- E[[a]] %*% w[[a+1]]
 
-    eigen.o[[a]] <- ((t(r[[a+1]]) %*% R[[a]])^2)[1]
+    eigen_o[[a]] <- ((t(r[[a+1]]) %*% R[[a]])^2)[1]
 
 
     for(p in seq(nperm)){
 
-      R.p[[p]] <- permuteIndex(R[[a]], by.row = TRUE, times = nrow(R[[a]]))
-      out <- eigen(t(E[[a]]) %*% R.p[[p]] %*% t(R.p[[p]]) %*% E[[a]])
-      w.p[[p]] <- Re(out$vectors[,1])
-     # w.p[[p]] <- (t(E[[a]]) %*% R.p[[p]])/(t(R.p[[p]] )%*% E[[a]] %*% t(E[[a]]) %*%R.p[[p]])[1]^(-1/2)
+      R_p[[p]] <- permuteIndex(R[[a]], by.row = TRUE, times = nrow(R[[a]]))
+      out <- eigen(t(E[[a]]) %*% R_p[[p]] %*% t(R_p[[p]]) %*% E[[a]])
+      w_p[[p]] <- Re(out$vectors[,1])
+     # w_p[[p]] <- (t(E[[a]]) %*% R_p[[p]])/(t(R_p[[p]] )%*% E[[a]] %*% t(E[[a]]) %*%R_p[[p]])[1]^(-1/2)
 
-      r.p[[p]] <- E[[a]] %*% w.p[[p]]
+      r_p[[p]] <- E[[a]] %*% w_p[[p]]
 
-      eigen.p[a,p] <- ((t(r.p[[p]]) %*% R.p[[p]])^2)[1]
+      eigen_p[a,p] <- ((t(r_p[[p]]) %*% R_p[[p]])^2)[1]
 
     }
 
-    pv[a] <- (sum(eigen.p[a,] >= eigen.o[a]) + 1)/(nperm + 1)
+    pv[a] <- (sum(eigen_p[a,] >= eigen_o[a]) + 1)/(nperm + 1)
 
     Q[[a+1]] <- diag(n) - r[[a+1]] %*% solve(t(r[[a+1]]) %*% r[[a+1]]) %*% t(r[[a+1]])
    # Q[[a+1]] <- diag(n) - r[[a+1]] %*% t(r[[a+1]])/ (t(r[[a+1]]) %*% r[[a+1]])[1]
@@ -88,7 +88,7 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE,
     R[[a+1]] <- Q[[a+1]] %*% R[[a]] #residual matrix Y
   }
 
-  if(is.unsorted(rev(unlist(eigen.o)))){#We will use only the predictive part to compute the eigenvalues
+  if(is.unsorted(rev(unlist(eigen_o)))){#We will use only the predictive part to compute the eigenvalues
 
     warning("post-transformation is applied! Only the predictive part will be analyzed")
     #Rearrange weight matrix
@@ -97,11 +97,16 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE,
     out <- ptPLSc(X = X, Y = Y, W = W)
     Wtilde <- out$Wtilde
     M <- out$M
-    T.score <- IDA(X = X, Y = Y, W = Wtilde)
+    T_score <- IDA(X = X, Y = Y, W = Wtilde)
 
-    X.loading <- t(X) %*% T.score[,(M+1):A] %*% solve(t(T.score[,(M+1):A]) %*% T.score[,(M+1):A])
+    if(A==M){
+      X_loading <- t(X) %*% T_score %*% solve(t(T_score) %*% T_score)
+      X <- T_score %*% t(X_loading)
+    }else{
+      X_loading <- t(X) %*% T_score[,(M+1):A] %*% solve(t(T_score[,(M+1):A]) %*% T_score[,(M+1):A])
+      X <- T_score[,(M+1):A] %*% t(X_loading)
+    }
 
-    X <- T.score[,(M+1):A] %*% t(X.loading)
 
     E[[1]] <- X
     R[[1]] <- Y
@@ -115,23 +120,23 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE,
       # w[[a+1]] <- (t(E[[a]]) %*% R[[a]])/(t(R[[a]] )%*% E[[a]] %*% t(E[[a]]) %*% R[[a]])[1]^(-1/2)
       r[[a+1]] <- E[[a]] %*% w[[a+1]]
 
-      eigen.o[[a]] <- ((t(r[[a+1]]) %*% R[[a]])^2)[1]
+      eigen_o[[a]] <- ((t(r[[a+1]]) %*% R[[a]])^2)[1]
 
 
       for(p in seq(nperm)){
 
-        R.p[[p]] <- permuteIndex(R[[a]], by.row = TRUE, times = nrow(R[[a]]))
-        out <- eigen(t(E[[a]]) %*% R.p[[p]] %*% t(R.p[[p]]) %*% E[[a]])
-        w.p[[p]] <- Re(out$vectors[,1])
-        # w.p[[p]] <- (t(E[[a]]) %*% R.p[[p]])/(t(R.p[[p]] )%*% E[[a]] %*% t(E[[a]]) %*%R.p[[p]])[1]^(-1/2)
+        R_p[[p]] <- permuteIndex(R[[a]], by.row = TRUE, times = nrow(R[[a]]))
+        out <- eigen(t(E[[a]]) %*% R_p[[p]] %*% t(R_p[[p]]) %*% E[[a]])
+        w_p[[p]] <- Re(out$vectors[,1])
+        # w_p[[p]] <- (t(E[[a]]) %*% R_p[[p]])/(t(R_p[[p]] )%*% E[[a]] %*% t(E[[a]]) %*%R_p[[p]])[1]^(-1/2)
 
-        r.p[[p]] <- E[[a]] %*% w.p[[p]]
+        r_p[[p]] <- E[[a]] %*% w_p[[p]]
 
-        eigen.p[a,p] <- ((t(r.p[[p]]) %*% R.p[[p]])^2)[1]
+        eigen_p[a,p] <- ((t(r_p[[p]]) %*% R_p[[p]])^2)[1]
 
       }
 
-      pv[a] <- (sum(eigen.p[a,] >= eigen.o[a]) + 1)/(nperm + 1)
+      pv[a] <- (sum(eigen_p[a,] >= eigen_o[a]) + 1)/(nperm + 1)
 
       Q[[a+1]] <- diag(n) - r[[a+1]] %*% solve(t(r[[a+1]]) %*% r[[a+1]]) %*% t(r[[a+1]])
       # Q[[a+1]] <- diag(n) - r[[a+1]] %*% t(r[[a+1]])/ (t(r[[a+1]]) %*% r[[a+1]])[1]
@@ -147,5 +152,5 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE,
   pv_adj <- sapply(c(1:A), function(x) max(pv[1:x]))
 
 return(list(pv = pv,
-            pv_adj = pv_adj, test = unlist(eigen.o)))
+            pv_adj = pv_adj, test = unlist(eigen_o)))
 }

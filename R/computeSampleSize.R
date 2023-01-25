@@ -17,23 +17,24 @@
 #' @param ... Futher parameters.
 #' @author Angela Andreella
 #' @return Returns the corresponding pvalues
+#' @export
 
-
-#add power?
 
 computeSampleSize <- function(n, X, Y, A, post.transformation, alpha, beta,
                               nperm, Nsim, seed, scaling, ...){
 
+  size = seq(min(n), max(n))
   samplesize <- c()
-  for(i in seq(min(n), max(n))){
+  for(i in seq(length(size))){
 
   samplesize[i] <-  computePower(X = X, Y = Y, A = A,
                                  post.transformation = post.transformation,
-                                 n = i, nperm = nperm, Nsim = Nsim, ...)
+                                 n = size[i], nperm = nperm, Nsim = Nsim,
+                                 scaling = scaling, alpha = alpha, ...)
   }
 
 
-  n <- which(seq(min(n), max(n))[samplesize == 1-beta])
 
-  return(n)
+  return(data.frame(size = size,
+                    power = samplesize))
 }

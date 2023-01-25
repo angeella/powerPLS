@@ -30,7 +30,7 @@ sim_XY <- function(out, n, seed = 123, post.transformation, A){
   X <- out$X
 
   if(A == M){
-    T_scoreO <- T_score[,1:A]
+    T_scoreO <- T_score
     sim_TO <- sapply(seq(A), function(x) simulate_kde(x = T_scoreO[,x], n = n)$random.values)
     T_sim <- sim_TO #T target
 
@@ -49,16 +49,22 @@ sim_XY <- function(out, n, seed = 123, post.transformation, A){
     }
     T_scoreO <- matrix(T_score[,(1:M)], ncol = nco)
     T_scoreP <- matrix(T_score[,((M+1):A)], ncol = ncp)
-    sim_TO <- unlist(sapply(seq(ncol(T_scoreO)), function(x) simulate_kde(x = T_scoreO[,x], n = n)$random.values))
     sim_TP <- unlist(sapply(seq(ncol(T_scoreP)), function(x) simulate_kde(x = T_scoreP[,x], n = n)$random.values))
+    sim_TO <- unlist(sapply(seq(ncol(T_scoreO)), function(x) simulate_kde(x = T_scoreO[,x], n = n)$random.values))
     T_sim <- cbind(sim_TO, sim_TP) #T target
+
   }
 
 
   out1 <- svd(T_sim %*% t(T_score) %*% T_score)
 
   S <- (t(T_score) %*% T_score)
-  T_new <- out1$u %*% t(out1$v) %*% diag(diag(S))^(1/2)
+  if(length(S)==1){
+    T_new <- out1$u %*% t(out1$v) %*% diag(S)^(1/2)
+  }else{
+    T_new <- out1$u %*% t(out1$v) %*% diag(diag(S))^(1/2)
+  }
+
 
   E_pilot <- X - T_score %*% t(X_loading)
 

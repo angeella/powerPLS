@@ -51,11 +51,11 @@ computeWT <- function(X, Y, A){
 
 
   #Rearrange scores matrix
-  T.score <- NULL
-  for (i in seq(length(r))) T.score <- cbind(T.score, r[[i]]) #number of obs times ncomponent
+  T_score <- NULL
+  for (i in seq(length(r))) T_score <- cbind(T_score, r[[i]]) #number of obs times ncomponent
 
 
   return(list(W = W,
-              T.score = T.score,
+              T_score = T_score,
               R = R))
 }

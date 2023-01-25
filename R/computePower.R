@@ -37,7 +37,7 @@ computePower <- function(X, Y, A,
   pb <- progress_bar$new(total = Nsim)
   for(i in seq(Nsim)){
     #Model the distribution of the X-data
-    outsim <- sim_XY(out = outPLS, n = n, seed = seed,
+    outsim <- sim_XY(out = outPLS, n = n, seed = i,
                      post.transformation = post.transformation, A = A)
     #Model the distribution of the Y-data
     Xsim <- outsim$X_H1

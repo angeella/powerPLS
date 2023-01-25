@@ -93,7 +93,7 @@ PLSc <- function(X, Y, A, scaling, post.transformation,
   out <- computeWT(X = X, Y = P, A = A)
 
   W <- out$W
-  T.score <- out$T.score
+  T_score <- out$T_score
 
   R <- out$R
   if(post.transformation){

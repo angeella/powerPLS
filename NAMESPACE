@@ -3,6 +3,7 @@
 export(IDA)
 export(PLSc)
 export(computePower)
+export(computeSampleSize)
 export(computeWT)
 export(eigenTest)
 export(ptPLSc)
