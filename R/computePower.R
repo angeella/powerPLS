@@ -36,8 +36,9 @@ computePower <- function(X, Y, A,
   pw <- 0
   pb <- progress_bar$new(total = Nsim)
   for(i in seq(Nsim)){
+    #sapply(seq(Nsim), function(x) {
     #Model the distribution of the X-data
-    outsim <- sim_XY(out = outPLS, n = n, seed = i,
+    outsim <- sim_XY(out = outPLS, n = n, seed = 1234+i,
                      post.transformation = post.transformation, A = A)
     #Model the distribution of the Y-data
     Xsim <- outsim$X_H1
@@ -51,8 +52,8 @@ computePower <- function(X, Y, A,
     if(pv$pv[A] <= alpha){pw <- pw + 1}
     pb$tick()
     Sys.sleep(1 / Nsim)
-  }
-
+ #   })
+}
   pw <- sum(pw)/Nsim
 
   return(pw)

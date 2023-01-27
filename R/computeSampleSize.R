@@ -23,14 +23,11 @@
 computeSampleSize <- function(n, X, Y, A, post.transformation, alpha, beta,
                               nperm, Nsim, seed, scaling, ...){
 
-  samplesize <- c()
-  for(i in seq(length(n))){
 
-  samplesize[i] <-  computePower(X = X, Y = Y, A = A,
+  samplesize <-  sapply(seq(length(n)), function(x) computePower(X = X, Y = Y, A = A,
                                  post.transformation = post.transformation,
-                                 n = n[i], nperm = nperm, Nsim = Nsim,
-                                 scaling = scaling, alpha = alpha, ...)
-  }
+                                 n = n[x], nperm = nperm, Nsim = Nsim,
+                                 scaling = scaling, alpha = alpha, ...))
 
 
 
