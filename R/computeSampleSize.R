@@ -30,7 +30,13 @@ computeSampleSize <- function(n, X, Y, A, post.transformation, alpha, beta,
                                  scaling = scaling, alpha = alpha, ...))
 
 
+  samplesize <- list(size = n,
+                     power = samplesize,
+                     A = A)
 
-  return(data.frame(size = n,
-                    power = samplesize))
+  out <- data.frame(Power = as.vector(t(samplesize$power)),
+                    Size = rep(n ),
+                    A =rep(seq(A), each =length(n)))
+
+  return(out)
 }

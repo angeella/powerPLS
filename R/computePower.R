@@ -33,7 +33,7 @@ computePower <- function(X, Y, A,
               scaling = scaling, eps = eps,
               post.transformation = post.transformation, ...)
 
-  pw <- 0
+  pw <- rep(0, A)
   pb <- progress_bar$new(total = Nsim)
   for(i in seq(Nsim)){
     #sapply(seq(Nsim), function(x) {
@@ -48,13 +48,15 @@ computePower <- function(X, Y, A,
                     scaling = scaling, ...)
 
 
+    for(x in seq(A)){
+      if(pv$pv_adj[x] <= alpha){pw[x] <- pw[x] + 1}
+    }
 
-    if(pv$pv[A] <= alpha){pw <- pw + 1}
     pb$tick()
     Sys.sleep(1 / Nsim)
  #   })
 }
-  pw <- sum(pw)/Nsim
+  pw <- pw/Nsim
 
   return(pw)
 }
