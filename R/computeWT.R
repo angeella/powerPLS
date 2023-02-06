@@ -4,6 +4,7 @@
 #' @param X data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
 #' @param A number of components
+#' @importFrom nipals nipals
 #' @author Angela Andreella
 #' @return weight matrix \code{W}
 #' @export
@@ -28,8 +29,10 @@ computeWT <- function(X, Y, A){
     AA <- t(E[[i]]) %*% R[[i]] %*% t(R[[i]]) %*% E[[i]]
 
     #Compute weight matrix
-    out <- eigen(AA) #well defined eigenvalue problem
-    w[[i+1]] <- Re(out$vectors[,1])
+    #out <- eigen(AA) #well defined eigenvalue problem
+    out <- nipals(AA, center =FALSE, scale = FALSE)
+   # w[[i+1]] <- Re(out$vectors[,1])
+    w[[i+1]] <- Re(out$loadings[,1])
 
     #score vector t_i
     r[[i+1]] <- E[[i]] %*% w[[i+1]]
@@ -47,12 +50,12 @@ computeWT <- function(X, Y, A){
 
   #Rearrange weight matrix
   W <- NULL
-  for (i in seq(length(w))) W <- cbind(W, w[[i]]) #number of obs times A
+  for (i in c(2:(length(w)))) W <- cbind(W, w[[i]]) #number of obs times A
 
 
   #Rearrange scores matrix
   T_score <- NULL
-  for (i in seq(length(r))) T_score <- cbind(T_score, r[[i]]) #number of obs times ncomponent
+  for (i in c(2:(length(r)))) T_score <- cbind(T_score, r[[i]]) #number of obs times ncomponent
 
 
   return(list(W = W,

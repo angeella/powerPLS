@@ -14,6 +14,7 @@
 #' @param nperm number of permutations
 #' @param alpha type I error
 #' @param eps see details
+#' @param test type of test
 #' @param ... Futher parameters.
 #' @author Angela Andreella
 #' @return Returns the corresponding pvalues
@@ -24,8 +25,8 @@
 
 
 computePower <- function(X, Y, A,
-                          post.transformation, scaling, n, seed = 123,
-                          Nsim, nperm, alpha, eps = 0.01, ...){
+                          post.transformation = TRUE, scaling, n, seed = 123,
+                          Nsim, nperm, alpha, eps = 0.01, test = "eigen", ...){
 
   #Build the reference model PLS2c
 
@@ -44,8 +45,23 @@ computePower <- function(X, Y, A,
     Xsim <- outsim$X_H1
     Ysim <- outsim$Y_H1
 
-    pv <- eigenTest(X = Xsim, Y = Ysim, A = A, nperm = nperm,
-                    scaling = scaling, ...)
+    if(test == "eigen"){
+      pv <- eigenTest(X = Xsim, Y = Ysim, A = A, nperm = nperm,
+                      scaling = scaling, ...)
+    }
+
+    if(test == "mcc"){
+      pv <- sapply(seq(A), function(x) mccTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
+                    scaling = scaling, randomization = TRUE, eps = eps,
+                    post.transformation = post.transformation,...))
+      pv <- data.frame(pv = unlist(as.matrix(pv)[1,]), pv_adjust = unlist(as.matrix(pv)[2,]))
+    }
+    if(test == "score"){
+      pv <- sapply(seq(A), function(x) scoreTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
+                    scaling = scaling, randomization = TRUE, eps = eps,
+                    post.transformation = post.transformation,...))
+      pv <- data.frame(pv = unlist(as.matrix(pv)[1,]), pv_adjust = unlist(as.matrix(pv)[2,]))
+    }
 
 
     for(x in seq(A)){

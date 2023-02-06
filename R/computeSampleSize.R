@@ -14,6 +14,7 @@
 #' @param Nsim number of simulations
 #' @param seed seed value
 #' @param scaling type of scaling.
+#' @param test type of test
 #' @param ... Futher parameters.
 #' @author Angela Andreella
 #' @return Returns the corresponding pvalues
@@ -21,13 +22,13 @@
 
 
 computeSampleSize <- function(n, X, Y, A, post.transformation, alpha, beta,
-                              nperm, Nsim, seed, scaling, ...){
+                              nperm, Nsim, seed, scaling, test = "eigen",...){
 
 
   samplesize <-  sapply(seq(length(n)), function(x) computePower(X = X, Y = Y, A = A,
                                  post.transformation = post.transformation,
                                  n = n[x], nperm = nperm, Nsim = Nsim,
-                                 scaling = scaling, alpha = alpha, ...))
+                                 scaling = scaling, alpha = alpha, test = test, ...))
 
 
   samplesize <- list(size = n,

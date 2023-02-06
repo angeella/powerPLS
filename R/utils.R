@@ -4,9 +4,14 @@
 #Fit Y
 fitY <- function(X, B, Mm, s){
 
-  Y.fitted = matrix(apply(compositions::clrInv(s*(X %*% B) + Mm), 1, function(x) which.max(x)),ncol = 1)
+  Y.fitted = matrix(apply(compositions::clrInv(s*(X %*% B) + Mm), 1, function(x)
+    which.max(x)),ncol = 1)
   Y.fitted = as.factor(Y.fitted)
-  Y.fitted = model.matrix(~0+Y.fitted)
+  lev <- levels(Y.fitted)
+  if(length(lev)>1){
+    Y.fitted = model.matrix(~0+Y.fitted)
+  }
+
 
   return(Y.fitted)
 }
@@ -47,4 +52,17 @@ similarityMatrix <- function(X, Y){
   out <- data.frame(RV = RV, RLS = RLS)
 
   return(out)
+}
+
+mcc <- function(confMatrix){
+
+  confMatrix <-stats::addmargins(confMatrix)
+  n11 <- confMatrix[1,1]
+  n22 <- confMatrix[2,2]
+  n12 <- confMatrix[1,2]
+  n21 <- confMatrix[2,1]
+
+  out <- (n11*n22 - n12*n21)/sqrt(confMatrix[1,3]*confMatrix[2,3]*confMatrix[3,1]*confMatrix[3,2])
+  return(out)
+
 }

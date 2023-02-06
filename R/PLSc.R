@@ -64,7 +64,9 @@ PLSc <- function(X, Y, A, scaling, post.transformation,
 
       if(!is.factor(Y)){
         Y <- as.factor(Y)
+
       }
+      levels(Y) <- c(0,1)
       Y <- model.matrix(~0+Y)
     }
 

@@ -1,8 +1,10 @@
 #' @title randomization test
 #' @description Performs randomization test based on eigenvalues
 #' @usage eigenTest(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE, eps = 0.01)
-#' @param X data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.
-#' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
+#' @param X data matrix where columns represent the \eqn{p} classes and
+#' rows the \eqn{n} observations.
+#' @param Y data matrix where columns represent the \eqn{k} variables and
+#' rows the \eqn{n} observations.
 #' @param nperm number of permutations
 #' @param A number of components
 #' @param scaling type of scaling
@@ -13,10 +15,12 @@
 #' @importFrom compositions clrInv
 #' @importFrom compositions clr
 #' @importFrom stats sd
+#' @importFrom nipals nipals
 #' @export
 
 
-eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE, eps = 0.01){
+eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering",
+                      Y.prob = TRUE, eps = 0.01){
 
   if(scaling == "auto-scaling"){
     Mm <- apply(X, 2, mean)
@@ -55,9 +59,11 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE,
   for(a in seq(A)){
 
     #Compute weight matrix
-    out <- eigen(t(E[[a]]) %*% R[[a]] %*% t(R[[a]]) %*% E[[a]]) #well defined eigenvalue problem
-    w[[a+1]] <- Re(out$vectors[,1])
-
+    AA <- t(E[[a]]) %*% R[[a]] %*% t(R[[a]]) %*% E[[a]]
+   # out <- eigen(AA) #well defined eigenvalue problem
+    out <- nipals(AA, center =FALSE, scale = FALSE)
+   # w[[a+1]] <- Re(out$vectors[,1])
+    w[[a+1]] <- Re(out$loadings[,1])
    # w[[a+1]] <- (t(E[[a]]) %*% R[[a]])/(t(R[[a]] )%*% E[[a]] %*% t(E[[a]]) %*% R[[a]])[1]^(-1/2)
     r[[a+1]] <- E[[a]] %*% w[[a+1]]
 
@@ -67,8 +73,10 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE,
     for(p in seq(nperm)){
 
       R_p[[p]] <- permuteIndex(R[[a]], by.row = TRUE, times = nrow(R[[a]]))
-      out <- eigen(t(E[[a]]) %*% R_p[[p]] %*% t(R_p[[p]]) %*% E[[a]])
-      w_p[[p]] <- Re(out$vectors[,1])
+     # out <- eigen(t(E[[a]]) %*% R_p[[p]] %*% t(R_p[[p]]) %*% E[[a]])
+      out <- nipals(t(E[[a]]) %*% R_p[[p]] %*% t(R_p[[p]]) %*% E[[a]], center =FALSE, scale = FALSE)
+     # w_p[[p]] <- Re(out$vectors[,1])
+      w_p[[p]] <- Re(out$loadings[,1])
      # w_p[[p]] <- (t(E[[a]]) %*% R_p[[p]])/(t(R_p[[p]] )%*% E[[a]] %*% t(E[[a]]) %*%R_p[[p]])[1]^(-1/2)
 
       r_p[[p]] <- E[[a]] %*% w_p[[p]]
@@ -114,9 +122,10 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE,
     for(a in seq(A)){
 
       #Compute weight matrix
-      out <- eigen(t(E[[a]]) %*% R[[a]] %*% t(R[[a]]) %*% E[[a]]) #well defined eigenvalue problem
-      w[[a+1]] <- Re(out$vectors[,1])
-
+    #  out <- eigen(t(E[[a]]) %*% R[[a]] %*% t(R[[a]]) %*% E[[a]]) #well defined eigenvalue problem
+      out <-nipals(t(E[[a]]) %*% R[[a]] %*% t(R[[a]]) %*% E[[a]], center =FALSE, scale = FALSE)
+      #  w[[a+1]] <- Re(out$vectors[,1])
+      w[[a+1]] <- Re(out$loadings[,1])
       # w[[a+1]] <- (t(E[[a]]) %*% R[[a]])/(t(R[[a]] )%*% E[[a]] %*% t(E[[a]]) %*% R[[a]])[1]^(-1/2)
       r[[a+1]] <- E[[a]] %*% w[[a+1]]
 
@@ -126,8 +135,10 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering", Y.prob = TRUE,
       for(p in seq(nperm)){
 
         R_p[[p]] <- permuteIndex(R[[a]], by.row = TRUE, times = nrow(R[[a]]))
-        out <- eigen(t(E[[a]]) %*% R_p[[p]] %*% t(R_p[[p]]) %*% E[[a]])
-        w_p[[p]] <- Re(out$vectors[,1])
+        #out <- eigen(t(E[[a]]) %*% R_p[[p]] %*% t(R_p[[p]]) %*% E[[a]])
+        out <- nipals(t(E[[a]]) %*% R_p[[p]] %*% t(R_p[[p]]) %*% E[[a]], center =FALSE, scale = FALSE)
+       # w_p[[p]] <- Re(out$vectors[,1])
+        w_p[[p]] <- Re(out$loadings[,1])
         # w_p[[p]] <- (t(E[[a]]) %*% R_p[[p]])/(t(R_p[[p]] )%*% E[[a]] %*% t(E[[a]]) %*%R_p[[p]])[1]^(-1/2)
 
         r_p[[p]] <- E[[a]] %*% w_p[[p]]

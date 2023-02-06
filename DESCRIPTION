@@ -1,6 +1,6 @@
 Package: powerPLS
 Type: Package
-Title: Power analysis for partial least squares (PLS) based approaches
+Title: power analysis for PLS classification
 Version: 0.1.0
 Authors@R: c(person(given="Angela", family="Andreella", comment=c("Main author", ORCID  = "0000-0002-1141-3041"), email="angela.andreella@unive.it", role=c("aut", "cre")))
 Description: It performs power analysis and sample size estimation for PLS-based methods
@@ -8,7 +8,7 @@ License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
-Imports: compositions, ks, mvtnorm, progress, simukde
+Imports: compositions, ks, mvtnorm, progress, simukde, caret, nipals, psych
 Language: en-US
 BugReports: https://github.com/angeella/powerPLS/issues
 URL: https://github.com/angeella/powerPLS
