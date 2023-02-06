@@ -31,6 +31,8 @@ Nsim, nperm, alpha, eps = 0.01, ...)
 
 \item{eps}{see details}
 
+\item{test}{type of test}
+
 \item{...}{Futher parameters.}
 }
 \value{

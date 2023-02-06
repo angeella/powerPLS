@@ -31,6 +31,8 @@ to be considered}
 
 \item{scaling}{type of scaling.}
 
+\item{test}{type of test}
+
 \item{...}{Futher parameters.}
 }
 \value{

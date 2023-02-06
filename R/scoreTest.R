@@ -43,11 +43,8 @@ scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE, ...){
       sqrt((var(Tp[Y == lev[1]]) +  var(Tp[Y == lev[2]]))/2)
   }else{
     effect_obs <- abs(mean(Tp[Y == lev[1],]) -  mean(Tp[Y == lev[2],]))/
-      sqrt((var(Tp[Y == lev[1],]) +  var(Tp[Y == lev[2],]))/2)
+      sqrt((var(as.vector(Tp[Y == lev[1],])) +  var(as.vector(Tp[Y == lev[2],])))/2)
   }
-
-  print(Y)
-  print(effect_obs)
 
   if(randomization){
     pv <- 0
@@ -75,7 +72,7 @@ scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE, ...){
           sqrt((var(Tp[Y == lev[1]]) +  var(Tp[Y == lev[2]]))/2)
       }else{
         effect_p <- abs(mean(Tp[Y == lev[1],]) -  mean(Tp[Y == lev[2],]))/
-          sqrt((var(Tp[Y == lev[1],]) +  var(Tp[Y == lev[2],]))/2)
+          sqrt((var(as.vector(Tp[Y == lev[1],])) +  var(as.vector(Tp[Y == lev[2],])))/2)
       }
 
       if(is.na(effect_p)){effect_p <- effect_obs}
