@@ -14,6 +14,7 @@
 #' @param A number of maximum components
 #' @param randomization if \code{TRUE} computes p-values. The harmonic mean
 #' is considered across folds and times.
+#' @param test type of test
 #' @param ... Futher parameters.
 #' @author Angela Andreella
 #' @return returns the mean performance across all folds and all repeats for
@@ -24,7 +25,7 @@
 
 
 crossValidation <- function(X, Y, K = 10, method = "cv", times = 1,seed = 123,
-                   A = 5, randomization = FALSE, ...){
+                   A = 5, randomization = FALSE, test = "mcc", ...){
 
 
   if(method == "cv"){times = 1}
@@ -43,19 +44,32 @@ crossValidation <- function(X, Y, K = 10, method = "cv", times = 1,seed = 123,
       Yk <- Y[-flds[[k]]]
 
       a<-1
+      if(test == "mcc"){
       while(a <= A){
-          out_mcc <- mccTest(X = Xk, Y = Yk, A = a, randomization = randomization,...)
 
-          res_out[tt, k, a] <- out_mcc$test
+          out <- mccTest(X = Xk, Y = Yk, A = a, randomization = randomization,...)
+
+
+
+          res_out[tt, k, a] <- out$test
 
           if(randomization){
-            pv[tt, k, a] <- out_mcc$pv
-            pv_adj[tt, k, a] <- out_mcc$pv_adj
+            pv[tt, k, a] <- out$pv
+            pv_adj[tt, k, a] <- out$pv_adj
           }
 
           a <- a + 1
         }
+      }
+      if(test == "eigen"){
+        out <- eigenTest(X = Xk, Y = Yk, A = A, ...)
+        res_out[tt, k, ] <- out$test
 
+        if(randomization){
+          pv[tt, k, ] <- out$pv
+          pv_adj[tt, k, ] <- out$pv_adj
+        }
+      }
       #end k folds
       }
 

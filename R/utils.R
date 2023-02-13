@@ -63,6 +63,7 @@ mcc <- function(confMatrix){
   n21 <- confMatrix[2,1]
 
   out <- (n11*n22 - n12*n21)/sqrt(confMatrix[1,3]*confMatrix[2,3]*confMatrix[3,1]*confMatrix[3,2])
+  if(is.nan(out)){out <- 0}
   return(out)
 
 }

@@ -27,7 +27,10 @@ mccTest <- function(X, Y, nperm = 100, A, randomization = FALSE, ...){
   }else{
     Y_fitted <- as.factor(out$Y_fitted)
   }
-  confMatrix <- table(Y, Y_fitted)
+  Yf <- as.factor(Y)
+  levels(Yf) <-  c(0,1)
+  levels(Y_fitted) <-  c(0,1)
+  confMatrix <- table(Yf, Y_fitted)
   mcc_obs <- mcc(confMatrix = confMatrix)
 
   if(randomization){
@@ -43,7 +46,10 @@ mccTest <- function(X, Y, nperm = 100, A, randomization = FALSE, ...){
       }else{
         Y_fitted <- as.factor(out$Y_fitted)
       }
-      confMatrix <- table(Y, Y_fitted)
+      Yf <- as.factor(Y)
+      levels(Yf) <- c(0,1)
+      levels(Y_fitted) <- c(0,1)
+      confMatrix <- table(Yf, Y_fitted)
       mcc_p <- mcc(confMatrix = confMatrix)
 
       if(mcc_p >= mcc_obs){pv <- pv+1}

@@ -27,6 +27,8 @@ the \eqn{n} observations.}
 \item{randomization}{if \code{TRUE} computes p-values. The harmonic mean
 is considered across folds and times.}
 
+\item{test}{type of test}
+
 \item{...}{Futher parameters.}
 }
 \value{

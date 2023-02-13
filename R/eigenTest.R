@@ -38,14 +38,28 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering",
     X <- (X - Mm)/s
   }
 
+  #If Y is not probability but a vector of classes
   if(!Y.prob){
+
+    if(is.null(dim(Y)) | ncol(as.matrix(Y))==1){
+      Y <- as.matrix(Y)
+
+      if(!is.factor(Y)){
+        Y <- as.factor(Y)
+
+      }
+      levels(Y) <- c(0,1)
+      Y <- model.matrix(~0+Y)
+    }
+
+    #Transform to probability matrix
     Y[which(Y==0)]<-eps
     Y[which(Y==1)]<-1-(ncol(Y)-1)*eps
+
+    #Centered log ratio transform transformation
     P <- matrix(clr(Y), ncol = ncol(Y))
-    Mm <- apply(P, 2, mean)
-    s <- apply(P, 2, sd)
-    P <- (P - Mm)/s
-    Y <- as.matrix(P)
+  }else{
+    P <- Y
   }
 
   n <- nrow(Y)
@@ -60,10 +74,23 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering",
 
     #Compute weight matrix
     AA <- t(E[[a]]) %*% R[[a]] %*% t(R[[a]]) %*% E[[a]]
-   # out <- eigen(AA) #well defined eigenvalue problem
-    out <- nipals(AA, center =FALSE, scale = FALSE)
-   # w[[a+1]] <- Re(out$vectors[,1])
-    w[[a+1]] <- Re(out$loadings[,1])
+    nipals_function <- function(AA){
+      out <- nipals(AA, center =FALSE, scale = FALSE)
+      return(Re(out$loadings[,1]))
+    }
+
+    eigen_function <- function(AA){
+      out <- eigen(AA) #well defined eigenvalue problem
+
+      return(Re(out$vectors[,1]))
+    }
+    w[[a+1]] <-
+      tryCatch(
+        nipals_function(AA),
+        error = function(ex){
+          warning("Had an error - ", ex)
+          eigen_function(AA)
+        })
    # w[[a+1]] <- (t(E[[a]]) %*% R[[a]])/(t(R[[a]] )%*% E[[a]] %*% t(E[[a]]) %*% R[[a]])[1]^(-1/2)
     r[[a+1]] <- E[[a]] %*% w[[a+1]]
 
