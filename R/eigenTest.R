@@ -52,12 +52,13 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering",
       Y <- model.matrix(~0+Y)
     }
 
+    P <- Y
     #Transform to probability matrix
-    Y[which(Y==0)]<-eps
-    Y[which(Y==1)]<-1-(ncol(Y)-1)*eps
+    P[which(P==0)]<-eps
+    P[which(P==1)]<-1-(ncol(P)-1)*eps
 
     #Centered log ratio transform transformation
-    P <- matrix(clr(Y), ncol = ncol(Y))
+    P <- matrix(clr(P), ncol = ncol(P))
   }else{
     P <- Y
   }
@@ -68,29 +69,20 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering",
   eigen_p <- matrix(NA, ncol = nperm, nrow = A)
 
   E[[1]] <- as.matrix(X)
-  R[[1]] <- as.matrix(Y)
+  R[[1]] <- as.matrix(P)
 
   for(a in seq(A)){
 
     #Compute weight matrix
     AA <- t(E[[a]]) %*% R[[a]] %*% t(R[[a]]) %*% E[[a]]
-    nipals_function <- function(AA){
-      out <- nipals(AA, center =FALSE, scale = FALSE)
-      return(Re(out$loadings[,1]))
-    }
+    out <- nipals(AA, center =FALSE, scale = FALSE)
+    w[[a+1]] <- Re(out$loadings[,1])
 
-    eigen_function <- function(AA){
-      out <- eigen(AA) #well defined eigenvalue problem
 
-      return(Re(out$vectors[,1]))
-    }
-    w[[a+1]] <-
-      tryCatch(
-        nipals_function(AA),
-        error = function(ex){
-          warning("Had an error - ", ex)
-          eigen_function(AA)
-        })
+    #  out <- eigen(AA) #well defined eigenvalue problem
+
+      #w[[a+1]] <-Re(out$vectors[,1])
+
    # w[[a+1]] <- (t(E[[a]]) %*% R[[a]])/(t(R[[a]] )%*% E[[a]] %*% t(E[[a]]) %*% R[[a]])[1]^(-1/2)
     r[[a+1]] <- E[[a]] %*% w[[a+1]]
 
@@ -129,7 +121,7 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering",
     #Rearrange weight matrix
     W <- NULL
     for (i in seq(length(w))) W <- cbind(W, w[[i]]) #number of obs times A
-    out <- ptPLSc(X = X, Y = Y, W = W)
+    out <- ptPLSc(X = X, Y = P, W = W)
     Wtilde <- out$Wtilde
     M <- out$M
     T_score <- IDA(X = X, Y = Y, W = Wtilde)
@@ -144,7 +136,7 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering",
 
 
     E[[1]] <- X
-    R[[1]] <- Y
+    R[[1]] <- P
 
     for(a in seq(A)){
 
@@ -153,6 +145,16 @@ eigenTest <- function(X, Y, nperm, A, scaling = "mean-centering",
       out <-nipals(t(E[[a]]) %*% R[[a]] %*% t(R[[a]]) %*% E[[a]], center =FALSE, scale = FALSE)
       #  w[[a+1]] <- Re(out$vectors[,1])
       w[[a+1]] <- Re(out$loadings[,1])
+
+      AA <- t(E[[a]]) %*% R[[a]] %*% t(R[[a]]) %*% E[[a]]
+      out <- nipals(AA, center =FALSE, scale = FALSE)
+      w[[a+1]] <- Re(out$loadings[,1])
+
+
+      #  out <- eigen(AA) #well defined eigenvalue problem
+
+      #w[[a+1]] <-Re(out$vectors[,1])
+
       # w[[a+1]] <- (t(E[[a]]) %*% R[[a]])/(t(R[[a]] )%*% E[[a]] %*% t(E[[a]]) %*% R[[a]])[1]^(-1/2)
       r[[a+1]] <- E[[a]] %*% w[[a+1]]
 
