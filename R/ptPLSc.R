@@ -26,7 +26,7 @@ ptPLSc <- function(X, Y, W){
   V <- out$loadings
  # M <- sum(Re(out$d) > 10^-8)
   M <- sum(Re(out$eig) > 10^-8)
-  V <- as.matrix(V[,1:M])
+  V <- as.matrix(Re(V[,1:M]))
 #  d2<-eigen((diag(nrow(V))-V%*%t(V))%*%(t(W)%*%t(X)%*%X%*%W))
   d2 <- nipals::nipals((diag(nrow(V))-V%*%t(V))%*%(t(W)%*%t(X)%*%X%*%W), center =FALSE, scale = FALSE)
   #Compute orthogonal part
