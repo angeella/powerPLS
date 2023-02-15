@@ -21,6 +21,11 @@ ptPLSc <- function(X, Y, W){
 
   A <- ncol(W)
  # out <- svd(t(Y) %*% X %*% W)
+  rownames(W) <-NULL
+  colnames(X) <- NULL
+  Y <- as.matrix(Y)
+  X <- as.matrix(X)
+  W <- as.matrix(W)
   out <- nipals::nipals(t(Y) %*% X %*% W, center =FALSE, scale = FALSE)
 #  V <- out$v
   V <- out$loadings
