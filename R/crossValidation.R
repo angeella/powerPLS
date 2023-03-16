@@ -2,7 +2,7 @@
 #' @description Performs cross validation to find the optimal number of
 #' components by MCC
 #' @usage crossValidation(X, Y, K = 10, method = "cv", times = 1,seed = 123,
-#' A = 5, randomization = FALSE, ...)
+#' A = 5, randomization = FALSE, test = "mcc", ...)
 #' @param X data matrix where columns represent the \eqn{p} variables and rows
 #' the \eqn{n} observations.
 #' @param Y data matrix where columns represent the \eqn{k} classes and rows

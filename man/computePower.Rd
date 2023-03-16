@@ -5,8 +5,8 @@
 \title{power computations}
 \usage{
 computePower(X, Y, A,
-post.transformation, scaling, n, seed = 123,
-Nsim, nperm, alpha, eps = 0.01, ...)
+post.transformation = TRUE, scaling, n, seed = 123,
+Nsim, nperm, alpha, eps = 0.01, test = "eigen", ...)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.}

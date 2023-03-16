@@ -4,7 +4,7 @@
 \alias{simulatePilotData}
 \title{simulate cluster data from normal distribution}
 \usage{
-simulatePilotData(seed=123, nvar, clus.size,m, s)
+simulatePilotData(seed=123, nvar, clus.size, m, rho)
 }
 \arguments{
 \item{seed}{seed value}
@@ -15,7 +15,8 @@ simulatePilotData(seed=123, nvar, clus.size,m, s)
 
 \item{m}{mean multivariate normal distribution}
 
-\item{s}{sd multivariate normal distribution}
+\item{rho}{numeric value in `[0,1]`. Level of equi-correlation between pairs
+of variables}
 }
 \value{
 Returns list of X and Y simulated data

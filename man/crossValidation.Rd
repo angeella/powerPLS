@@ -5,7 +5,7 @@
 \title{Optimal number of components by cross-validation}
 \usage{
 crossValidation(X, Y, K = 10, method = "cv", times = 1,seed = 123,
-A = 5, randomization = FALSE, ...)
+A = 5, randomization = FALSE, test = "mcc", ...)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and rows

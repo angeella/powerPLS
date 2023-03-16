@@ -1,8 +1,8 @@
 #' @title power computations
 #' @description Performs randomization test based on eigenvalues
 #' @usage computePower(X, Y, A,
-#' post.transformation, scaling, n, seed = 123,
-#' Nsim, nperm, alpha, eps = 0.01, ...)
+#' post.transformation = TRUE, scaling, n, seed = 123,
+#' Nsim, nperm, alpha, eps = 0.01, test = "eigen", ...)
 #' @param X data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the \eqn{k} classes and rows the \eqn{n} observations.
 #' @param A number of components

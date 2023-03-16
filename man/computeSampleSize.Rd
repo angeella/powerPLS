@@ -5,7 +5,7 @@
 \title{sample size calculation}
 \usage{
 computeSampleSize(n, X, Y, A, post.transformation, alpha, beta,
-nperm, Nsim, seed, scaling, ...)
+nperm, Nsim, seed, scaling, test = "eigen",...)
 }
 \arguments{
 \item{n}{two dimensional vector giving the minimum and maximum sample size
