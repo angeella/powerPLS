@@ -35,19 +35,16 @@ similarityMatrix <- function(X, Y){
     return(sum(diag(X)))
   }
   n <- nrow(X)
-  XX <- crossprod(X)
-  YY <- crossprod(Y)
-
-  SXY <- (1/(n-1)) * t(XX) %*% YY
-  SYX <- (1/(n-1)) * t(YY) %*% XX
-  SXX <- (1/(n-1)) * t(XX) %*% XX
-  SYY <- (1/(n-1)) * t(YY) %*% YY
+  XX <- tcrossprod(X)
+  YY <- tcrossprod(Y)
+  XY <- X %*% t(Y)
+  YX <- Y %*% t(X)
 
 
   #RV index (Escoufier, 1973; Robert and Escoufier, 1976)
-  RV <- tr(SXY %*% SYX)/sqrt(tr(SXX^2) * tr(SYY^2))
+  RV <- tr(XY %*% YX)/sqrt(tr(XX)^2 * tr(YY)^2)
   #RLS index (Gower 1971; Lingoes and Schonemann (1974))
-  RLS <- sqrt(tr(XX %*% t(XX) %*% YY %*% t(YY)))/ sqrt(tr(t(XX) %*% XX) %*% tr(t(YY) %*% YY))
+  RLS <- sqrt(tr(crossprod(X) %*% crossprod(Y)))/ sqrt(tr(XX) %*% tr(YY))
 
   out <- data.frame(RV = RV, RLS = RLS)
 
