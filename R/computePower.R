@@ -20,6 +20,7 @@
 #' @author Angela Andreella
 #' @return Returns the corresponding pvalues
 #' @export
+#' @importFrom progress progress_bar
 
 
 
@@ -35,6 +36,7 @@ computePower <- function(X, Y, A,
               post.transformation = post.transformation, ...)
 
   pw <- rep(0, A)
+  pb <- progress_bar$new(total = Nsim)
   for(i in seq(Nsim)){
     #sapply(seq(Nsim), function(x) {
     #Model the distribution of the X-data
@@ -67,6 +69,8 @@ computePower <- function(X, Y, A,
       if(pv$pv_adj[x] <= alpha){pw[x] <- pw[x] + 1}
     }
 
+    pb$tick()
+    Sys.sleep(1 / Nsim)
  #   })
 }
   pw <- pw/Nsim
