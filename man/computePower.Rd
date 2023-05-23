@@ -19,7 +19,8 @@ Nsim, nperm, alpha, eps = 0.01, test = "eigen", ...)
 
 \item{scaling}{type of scaling.}
 
-\item{n}{sample size}
+\item{n}{number of observations, vector of length two (first values is the
+number of observations for the first classe, the second for the second class)}
 
 \item{seed}{seed value}
 

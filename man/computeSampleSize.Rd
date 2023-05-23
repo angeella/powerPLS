@@ -8,8 +8,8 @@ computeSampleSize(n, X, Y, A, post.transformation, alpha, beta,
 nperm, Nsim, seed, scaling, test = "eigen",...)
 }
 \arguments{
-\item{n}{two dimensional vector giving the minimum and maximum sample size
-to be considered}
+\item{n}{list, where each objects is a vector of two dimensions representing the
+number of observations for each class.}
 
 \item{X}{data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.}
 

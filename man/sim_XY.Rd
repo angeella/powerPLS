@@ -9,7 +9,8 @@ sim_XY(out, n, seed = 123, post.transformation, A)
 \arguments{
 \item{out}{output from PLS2c}
 
-\item{n}{number of observations}
+\item{n}{number of observations, vector of length two (first values is the
+number of observations for the first classe, the second for the second class)}
 
 \item{seed}{fix seed}
 
