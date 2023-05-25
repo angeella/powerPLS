@@ -8,8 +8,7 @@
 #' @param A number of components
 #' @param post.transformation TRUE if you want to apply post transformation.
 #' @param scaling type of scaling.
-#' @param n number of observations, vector of length two (first values is the
-#' number of observations for the first classe, the second for the second class)
+#' @param n sample size
 #' @param seed seed value
 #' @param Nsim number of simulations
 #' @param nperm number of permutations

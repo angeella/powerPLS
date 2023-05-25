@@ -2,8 +2,8 @@
 #' @description Compute optimal sample size calculation
 #' @usage computeSampleSize(n, X, Y, A, post.transformation, alpha, beta,
 #' nperm, Nsim, seed, scaling, test = "eigen",...)
-#' @param n list, where each objects is a vector of two dimensions representing the
-#' number of observations for each class.
+#' @param n two dimensional vector giving the minimum and maximum sample size
+#' to be considered
 #' @param X data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the \eqn{k} classes and rows the \eqn{n} observations.
 #' @param A number of components
@@ -27,20 +27,17 @@ computeSampleSize <- function(n, X, Y, A, post.transformation, alpha, beta,
 
   samplesize <-  sapply(seq(length(n)), function(x) computePower(X = X, Y = Y, A = A,
                                  post.transformation = post.transformation,
-                                 n = n[x][[1]], nperm = nperm, Nsim = Nsim,
+                                 n = n[x], nperm = nperm, Nsim = Nsim,
                                  scaling = scaling, alpha = alpha, test = test, ...))
 
 
   samplesize <- list(size = n,
                      power = samplesize,
                      A = A)
-  classprop <- sapply(seq(length(n)), function(x) n[[x]][1]/n[[x]][2])
-  n <- sapply(seq(length(n)), function(x) sum(n[[x]]))
-  classprop <-
+
   out <- data.frame(Power = as.vector(t(samplesize$power)),
-                    Size = rep(n),
-                    A =rep(seq(A), each =length(n)),
-                    classprop = rep(classprop))
+                    Size = rep(n ),
+                    A =rep(seq(A), each =length(n)))
 
   return(out)
 }
