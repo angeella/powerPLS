@@ -68,6 +68,8 @@ computePower <- function(X, Y, A,
       if(pv$pv_adj[x] <= alpha){pw[x] <- pw[x] + 1}
     }
 
+
+
     pb$tick()
     Sys.sleep(1 / Nsim)
  #   })

@@ -79,5 +79,6 @@ sim_XY <- function(out, n, seed = 123, post.transformation, A){
   Y_H1 <- fitY(X = X_H1, B = B, Mm = 0, s = 1)
 
 
+
   return(list(Y_H1 = Y_H1, X_H1 = X_H1))
 }
