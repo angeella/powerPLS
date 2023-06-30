@@ -39,5 +39,6 @@ computeSampleSize <- function(n, X, Y, A, post.transformation, alpha, beta,
                     Size = rep(n ),
                     A =rep(seq(A), each =length(n)))
 
+
   return(out)
 }
