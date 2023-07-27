@@ -15,14 +15,15 @@ rows the \eqn{n} observations.}
 
 \item{A}{number of components}
 
-\item{measure}{now \code{"MCC"} and \code{"score"} are implemented.}
+\item{measure}{now \code{"mcc"} and \code{"score"} are implemented.}
 
 \item{randomization}{compute p-values?}
 
 \item{...}{Futher parameters.}
 }
 \value{
-Returns the corresponding pvalues
+Returns the corresponding estimated effect sizes for each latent
+component
 }
 \description{
 compute effect size based on MCC or predictive scores

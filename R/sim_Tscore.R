@@ -1,5 +1,6 @@
 #' @title simulate the T scores matrix
-#' @description simulate the T scores matrix from multivariate continuous distribution by using kernel density estimation and the accept-reject method.
+#' @description simulate the T scores matrix from multivariate continuous
+#' distribution by using kernel density estimation and the accept-reject method.
 #' @usage sim_Tscore(Tscore, n, seed)
 #' @param Tscore score matrix
 #' @param n number of observations

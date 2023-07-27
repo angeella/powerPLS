@@ -1,12 +1,15 @@
-#' @title compute weight and score matrix PLSc
-#' @description compute weight matrix PLSc
+#' @title compute weight and score matrices from PLSc
+#' @description compute weight and score matrices from PLSc
 #' @usage computeWT(X, Y, A)
 #' @param X data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
-#' @param A number of components
+#' @param A number of latent components
 #' @importFrom nipals nipals
 #' @author Angela Andreella
-#' @return weight matrix \code{W}
+#' @return Returns a list with the following objects:
+#' - \code{W}: matrix of weigths
+#' - \code{T_score}: matrix of Y scores
+#' - \code{R}: matrix of Y residuals
 #' @export
 
 

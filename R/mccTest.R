@@ -6,11 +6,12 @@
 #' @param Y data matrix where columns represent the \eqn{k} variables and
 #' rows the \eqn{n} observations.
 #' @param nperm number of permutations
-#' @param A number of components
+#' @param A number of latent components
 #' @param randomization compute p-values?
 #' @param ... Futher parameters.
 #' @author Angela Andreella
-#' @return Returns the corresponding pvalues
+#' @return Returns a list with the corresponding statistical tests,
+#' raw and adjusted p-values
 #' @importFrom compositions clrInv
 #' @importFrom compositions clr
 #' @importFrom stats sd

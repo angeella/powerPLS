@@ -15,16 +15,19 @@ rows the \eqn{n} observations.}
 
 \item{nperm}{number of permutations}
 
-\item{A}{number of components}
+\item{A}{number of latent components}
 
-\item{scaling}{type of scaling}
+\item{scaling}{type of scaling, one of
+\code{c("auto-scaling", "pareto-scaling", "mean-centering")}}
 
 \item{Y.prob}{TRUE if Y describes the probability to being in the class.}
 
-\item{eps}{see details}
+\item{eps}{parameter needed to transform dummy variable into a
+vector of probabilities}
 }
 \value{
-Returns the corresponding pvalues
+Returns a list with the corresponding statistical tests,
+raw and adjusted p-values
 }
 \description{
 Performs randomization test based on eigenvalues

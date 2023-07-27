@@ -2,7 +2,7 @@
 % Please edit documentation in R/computeWT.R
 \name{computeWT}
 \alias{computeWT}
-\title{compute weight and score matrix PLSc}
+\title{compute weight and score matrices from PLSc}
 \usage{
 computeWT(X, Y, A)
 }
@@ -11,13 +11,16 @@ computeWT(X, Y, A)
 
 \item{Y}{data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.}
 
-\item{A}{number of components}
+\item{A}{number of latent components}
 }
 \value{
-weight matrix \code{W}
+Returns a list with the following objects:
+- \code{W}: matrix of weigths
+- \code{T_score}: matrix of Y scores
+- \code{R}: matrix of Y residuals
 }
 \description{
-compute weight matrix PLSc
+compute weight and score matrices from PLSc
 }
 \author{
 Angela Andreella

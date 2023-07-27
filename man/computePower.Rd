@@ -6,21 +6,23 @@
 \usage{
 computePower(X, Y, A,
 post.transformation = TRUE, scaling, n, seed = 123,
-Nsim, nperm, alpha, eps = 0.01, test = "eigen", ...)
+Nsim, nperm, alpha, eps = 0.01, test = "mcc", ...)
 }
 \arguments{
-\item{X}{data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.}
+\item{X}{data matrix where columns represent the \eqn{p} variables and
+rows the \eqn{n} observations.}
 
-\item{Y}{data matrix where columns represent the \eqn{k} classes and rows the \eqn{n} observations.}
+\item{Y}{data matrix where columns represent the \eqn{k} classes and
+rows the \eqn{n} observations.}
 
-\item{A}{number of components}
+\item{A}{number of latent components}
 
 \item{post.transformation}{TRUE if you want to apply post transformation.}
 
-\item{scaling}{type of scaling.}
+\item{scaling}{type of scaling, one of
+\code{c("auto-scaling", "pareto-scaling", "mean-centering")}}
 
-\item{n}{number of observations, vector of length two (first values is the
-number of observations for the first classe, the second for the second class)}
+\item{n}{sample size}
 
 \item{seed}{seed value}
 
@@ -30,17 +32,20 @@ number of observations for the first classe, the second for the second class)}
 
 \item{alpha}{type I error}
 
-\item{eps}{see details}
+\item{eps}{parameter needed to transform dummy variable into a
+vector of probabilities}
 
-\item{test}{type of test}
+\item{test}{type of test, one of \code{c("score", "mcc", "eigen")}.
+Default to "mcc".}
 
-\item{...}{Futher parameters.}
+\item{...}{Futher parameters see \code{PLSc}}
 }
 \value{
-Returns the corresponding pvalues
+Returns the corresponding estimated power
 }
 \description{
-Performs randomization test based on eigenvalues
+estimate power for a given sample size, alpha level and number
+of latent components.
 }
 \author{
 Angela Andreella

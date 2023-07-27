@@ -6,7 +6,8 @@
 #' @param A number of components
 #' @param scaling type of scaling.
 #' @param post.transformation TRUE if you want to apply post transformation.
-#' @param eps see details.
+#' @param eps parameter needed to transform dummy variable into a
+#' vector of probabilities
 #' @param Y.prob TRUE if Y describes the probability to being in the class.
 #' @author Angela Andreella
 #' @return Returns a list with the following objects:

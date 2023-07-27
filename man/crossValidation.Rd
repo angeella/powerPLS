@@ -22,7 +22,7 @@ the \eqn{n} observations.}
 
 \item{seed}{seed value}
 
-\item{A}{number of maximum components}
+\item{A}{number of maximum latent components}
 
 \item{randomization}{if \code{TRUE} computes p-values. The harmonic mean
 is considered across folds and times.}

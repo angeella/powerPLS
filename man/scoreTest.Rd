@@ -22,7 +22,8 @@ rows the \eqn{n} observations.}
 \item{...}{Futher parameters.}
 }
 \value{
-Returns the corresponding pvalues
+Returns a list with the corresponding statistical tests,
+raw and adjusted p-values
 }
 \description{
 Performs randomization test based on scores

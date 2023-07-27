@@ -17,7 +17,8 @@ sim_Tscore(Tscore, n, seed)
 Returns a simulated T score matrix.
 }
 \description{
-simulate the T scores matrix from multivariate continuous distribution by using kernel density estimation and the accept-reject method.
+simulate the T scores matrix from multivariate continuous
+distribution by using kernel density estimation and the accept-reject method.
 }
 \author{
 Angela Andreella

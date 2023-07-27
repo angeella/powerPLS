@@ -17,7 +17,8 @@ PLSc(X, Y, A, scaling, post.transformation, eps, Y.prob)
 
 \item{post.transformation}{TRUE if you want to apply post transformation.}
 
-\item{eps}{see details.}
+\item{eps}{parameter needed to transform dummy variable into a
+vector of probabilities}
 
 \item{Y.prob}{TRUE if Y describes the probability to being in the class.}
 }

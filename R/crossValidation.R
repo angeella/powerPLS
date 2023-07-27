@@ -11,7 +11,7 @@
 #' @param method \code{"cv"} or \code{"repeated-cv"}
 #' @param times if \code{"method = repeated-cv"} here you specify the times
 #' @param seed seed value
-#' @param A number of maximum components
+#' @param A number of maximum latent components
 #' @param randomization if \code{TRUE} computes p-values. The harmonic mean
 #' is considered across folds and times.
 #' @param test type of test

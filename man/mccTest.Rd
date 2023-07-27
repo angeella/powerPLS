@@ -15,14 +15,15 @@ rows the \eqn{n} observations.}
 
 \item{nperm}{number of permutations}
 
-\item{A}{number of components}
+\item{A}{number of latent components}
 
 \item{randomization}{compute p-values?}
 
 \item{...}{Futher parameters.}
 }
 \value{
-Returns the corresponding pvalues
+Returns a list with the corresponding statistical tests,
+raw and adjusted p-values
 }
 \description{
 Performs randomization test based on MCC

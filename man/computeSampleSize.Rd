@@ -5,17 +5,18 @@
 \title{sample size calculation}
 \usage{
 computeSampleSize(n, X, Y, A, post.transformation, alpha, beta,
-nperm, Nsim, seed, scaling, test = "eigen",...)
+nperm, Nsim, seed, scaling, test = "mcc",...)
 }
 \arguments{
-\item{n}{list, where each objects is a vector of two dimensions representing the
-number of observations for each class.}
+\item{n}{vector of sample sizes to consider}
 
-\item{X}{data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.}
+\item{X}{data matrix where columns represent the \eqn{p} variables and
+rows the \eqn{n} observations.}
 
-\item{Y}{data matrix where columns represent the \eqn{k} classes and rows the \eqn{n} observations.}
+\item{Y}{data matrix where columns represent the \eqn{k} classes and
+rows the \eqn{n} observations.}
 
-\item{A}{number of components}
+\item{A}{number of latent components}
 
 \item{post.transformation}{TRUE if you want to apply post transformation.}
 
@@ -29,14 +30,17 @@ number of observations for each class.}
 
 \item{seed}{seed value}
 
-\item{scaling}{type of scaling.}
+\item{scaling}{type of scaling, one of
+\code{c("auto-scaling", "pareto-scaling", "mean-centering")}}
 
-\item{test}{type of test}
+\item{test}{type of test, one of \code{c("score", "mcc", "eigen")}.
+Default to "mcc".}
 
 \item{...}{Futher parameters.}
 }
 \value{
-Returns the corresponding pvalues
+Returns a dataframe that contains the estimated power for each
+sample size and number of components considered
 }
 \description{
 Compute optimal sample size calculation

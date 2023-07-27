@@ -6,12 +6,15 @@
 #' @param Y data matrix where columns represent the \eqn{k} variables and
 #' rows the \eqn{n} observations.
 #' @param nperm number of permutations
-#' @param A number of components
-#' @param scaling type of scaling
+#' @param A number of latent components
+#' @param scaling type of scaling, one of
+#' \code{c("auto-scaling", "pareto-scaling", "mean-centering")}
 #' @param Y.prob TRUE if Y describes the probability to being in the class.
-#' @param eps see details
+#' @param eps parameter needed to transform dummy variable into a
+#' vector of probabilities
 #' @author Angela Andreella
-#' @return Returns the corresponding pvalues
+#' @return Returns a list with the corresponding statistical tests,
+#' raw and adjusted p-values
 #' @importFrom compositions clrInv
 #' @importFrom compositions clr
 #' @importFrom stats sd

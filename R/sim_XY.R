@@ -5,7 +5,7 @@
 #' @param n number of observations
 #' @param seed fix seed
 #' @param post.transformation TRUE if you want to apply post transformation.
-#' @param A number of components
+#' @param A number of latent components
 #' @author Angela Andreella
 #' @return Returns a simulated matrix under the alternative hypothesis.
 #' @export

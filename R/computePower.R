@@ -1,23 +1,29 @@
 #' @title power computations
-#' @description Performs randomization test based on eigenvalues
+#' @description estimate power for a given sample size, alpha level and number
+#' of latent components.
 #' @usage computePower(X, Y, A,
 #' post.transformation = TRUE, scaling, n, seed = 123,
-#' Nsim, nperm, alpha, eps = 0.01, test = "eigen", ...)
-#' @param X data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.
-#' @param Y data matrix where columns represent the \eqn{k} classes and rows the \eqn{n} observations.
-#' @param A number of components
+#' Nsim, nperm, alpha, eps = 0.01, test = "mcc", ...)
+#' @param X data matrix where columns represent the \eqn{p} variables and
+#' rows the \eqn{n} observations.
+#' @param Y data matrix where columns represent the \eqn{k} classes and
+#' rows the \eqn{n} observations.
+#' @param A number of latent components
 #' @param post.transformation TRUE if you want to apply post transformation.
-#' @param scaling type of scaling.
+#' @param scaling type of scaling, one of
+#' \code{c("auto-scaling", "pareto-scaling", "mean-centering")}
 #' @param n sample size
 #' @param seed seed value
 #' @param Nsim number of simulations
 #' @param nperm number of permutations
 #' @param alpha type I error
-#' @param eps see details
-#' @param test type of test
-#' @param ... Futher parameters.
+#' @param eps parameter needed to transform dummy variable into a
+#' vector of probabilities
+#' @param test type of test, one of \code{c("score", "mcc", "eigen")}.
+#' Default to "mcc".
+#' @param ... Futher parameters see \code{PLSc}
 #' @author Angela Andreella
-#' @return Returns the corresponding pvalues
+#' @return Returns the corresponding estimated power
 #' @export
 #' @importFrom progress progress_bar
 
@@ -26,7 +32,7 @@
 
 computePower <- function(X, Y, A,
                           post.transformation = TRUE, scaling, n, seed = 123,
-                          Nsim, nperm, alpha, eps = 0.01, test = "eigen", ...){
+                          Nsim, nperm, alpha, eps = 0.01, test = "mcc", ...){
 
   #Build the reference model PLS2c
 

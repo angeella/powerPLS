@@ -10,7 +10,8 @@
 #' @param randomization compute p-values?
 #' @param ... Futher parameters.
 #' @author Angela Andreella
-#' @return Returns the corresponding pvalues
+#' @return Returns a list with the corresponding statistical tests,
+#' raw and adjusted p-values
 #' @importFrom compositions clrInv
 #' @importFrom compositions clr
 #' @importFrom stats sd

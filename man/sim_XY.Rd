@@ -9,14 +9,13 @@ sim_XY(out, n, seed = 123, post.transformation, A)
 \arguments{
 \item{out}{output from PLS2c}
 
-\item{n}{number of observations, vector of length two (first values is the
-number of observations for the first classe, the second for the second class)}
+\item{n}{number of observations}
 
 \item{seed}{fix seed}
 
 \item{post.transformation}{TRUE if you want to apply post transformation.}
 
-\item{A}{number of components}
+\item{A}{number of latent components}
 }
 \value{
 Returns a simulated matrix under the alternative hypothesis.

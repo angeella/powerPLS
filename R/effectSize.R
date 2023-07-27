@@ -6,11 +6,12 @@
 #' @param Y data matrix where columns represent the \eqn{k} variables and
 #' rows the \eqn{n} observations.
 #' @param A number of components
-#' @param measure now \code{"MCC"} and \code{"score"} are implemented.
+#' @param measure now \code{"mcc"} and \code{"score"} are implemented.
 #' @param randomization compute p-values?
 #' @param ... Futher parameters.
 #' @author Angela Andreella
-#' @return Returns the corresponding pvalues
+#' @return Returns the corresponding estimated effect sizes for each latent
+#' component
 #' @importFrom compositions clrInv
 #' @importFrom compositions clr
 #' @importFrom stats sd
