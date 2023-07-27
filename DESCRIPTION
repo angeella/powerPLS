@@ -3,7 +3,7 @@ Type: Package
 Title: power analysis for PLS classification
 Version: 0.1.0
 Authors@R: c(person(given="Angela", family="Andreella", comment=c("Main author", ORCID  = "0000-0002-1141-3041"), email="angela.andreella@unive.it", role=c("aut", "cre")))
-Description: It performs power analysis and sample size estimation for PLS-based methods
+Description: It performs power analysis and sample size estimation for PLS-based methods.
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
