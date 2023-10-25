@@ -51,6 +51,7 @@ computePower <- function(X, Y, A,
     Xsim <- outsim$X_H1
     Ysim <- outsim$Y_H1
 
+    if(length(test) == 1){
     if(test == "eigen"){
       pv <- eigenTest(X = Xsim, Y = Ysim, A = A, nperm = nperm,
                       scaling = scaling, ...)
@@ -72,6 +73,47 @@ computePower <- function(X, Y, A,
 
     for(x in seq(A)){
       if(pv$pv_adj[x] <= alpha){pw[x] <- pw[x] + 1}
+    }
+    }else{
+
+      pv <- data.frame(NA)
+
+      if("eigen" %in% test){
+        pv <- cbind(pv, eigen = eigenTest(X = Xsim, Y = Ysim, A = A, nperm = nperm,
+                        scaling = scaling, ...)[["pv_adj"]])
+      }
+
+      if("mcc" %in% test){
+        pv_out <- sapply(seq(A), function(x) mccTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
+                                                 scaling = scaling, randomization = TRUE, eps = eps,
+                                                 post.transformation = post.transformation,...))
+
+        pv_out <- data.frame(pv = unlist(as.matrix(pv_out)[1,]), pv_adjust = unlist(as.matrix(pv_out)[2,]))
+
+        pv <- cbind(pv, mcc = pv_out$pv_adjust)
+      }
+      if("score" %in% test){
+        pv_out <- sapply(seq(A), function(x) scoreTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
+                                                   scaling = scaling, randomization = TRUE, eps = eps,
+                                                   post.transformation = post.transformation,...))
+
+        pv_out <- data.frame(pv = unlist(as.matrix(pv_out)[1,]), pv_adjust = unlist(as.matrix(pv_out)[2,]))
+        pv <- cbind(pv, score = pv_out$pv_adjust)
+
+      }
+      pw <- matrix(0, ncol = length(test), nrow = A)
+      colnames(pw)<- test
+      pv <- pv[,-1]
+
+      for(x in seq(A)){
+        for(y in seq(length(test))){
+          if(pv[x,y] <= alpha){
+            pw[x,y] <- pw[x,y] + 1
+          }
+        }
+
+      }
+
     }
 
 
