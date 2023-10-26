@@ -40,7 +40,9 @@ computePower <- function(X, Y, A,
               scaling = scaling, eps = eps,
               post.transformation = post.transformation, ...)
 
-  pw <- rep(0, A)
+  pw <- matrix(0, ncol = length(test), nrow = A)
+  colnames(pw)<- test
+
   pb <- progress_bar$new(total = Nsim)
   for(i in seq(Nsim)){
     #sapply(seq(Nsim), function(x) {
@@ -50,6 +52,9 @@ computePower <- function(X, Y, A,
     #Model the distribution of the Y-data
     Xsim <- outsim$X_H1
     Ysim <- outsim$Y_H1
+
+
+    #Apply one test
 
     if(length(test) == 1){
     if(test == "eigen"){
@@ -76,6 +81,7 @@ computePower <- function(X, Y, A,
     }
     }else{
 
+      #Apply more than one test.
       pv <- data.frame(NA)
 
       if("eigen" %in% test){
@@ -101,8 +107,7 @@ computePower <- function(X, Y, A,
         pv <- cbind(pv, score = pv_out$pv_adjust)
 
       }
-      pw <- matrix(0, ncol = length(test), nrow = A)
-      colnames(pw)<- test
+
       pv <- pv[,-1]
 
       for(x in seq(A)){
