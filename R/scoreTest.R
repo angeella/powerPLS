@@ -21,11 +21,11 @@
 
 
 
-scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE, scaling,...){
+scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE,...){
 
 #  out <- PLSc(X = X, Y = Y, A = A, ...)
-  out <- PLSc(X = X, Y = Y, A = A, scaling = scaling,
-              post.transformation = TRUE,eps = 0.01,Y.prob = FALSE)
+  out <- PLSc(X = X, Y = Y, A = A,
+              ...)
 
 
   T_score <- out$T_score
@@ -58,7 +58,7 @@ scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE, scaling,...){
       Xkp <- X[idx,]
 
       #out <- PLSc(X = Xkp, Y = Y, A = A, ...)
-     out <- PLSc(X = Xkp, Y = Y, A = A, scaling = scaling,post.transformation = TRUE,eps = 0.01,Y.prob = FALSE)
+     out <- PLSc(X = Xkp, Y = Y, A = A,...)
       T_score <- out$T_score
       T_score
       if(!is.na(out$M)){

@@ -2,10 +2,18 @@
 #Utils
 
 #Fit Y
-fitY <- function(X, B, Mm, s){
+fitY <- function(X, B, Mm, s, transformation = "clr"){
 
-  Y.fitted = matrix(apply(compositions::clrInv(s*(X %*% B) + Mm), 1, function(x)
-    which.max(x)),ncol = 1)
+  if(transformation == "clr"){
+    Y.fitted = matrix(apply(compositions::clrInv(s*(X %*% B) + Mm), 1, function(x)
+      which.max(x)),ncol = 1)
+    }
+  if(transformation == "ilr"){
+    Y.fitted = matrix(apply(compositions::ilrInv(s*(X %*% B) + Mm), 1, function(x)
+      which.max(x)),ncol = 1)
+    }
+
+
   Y.fitted = as.factor(Y.fitted)
   lev <- levels(Y.fitted)
   if(length(lev)>1){

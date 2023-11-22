@@ -4,7 +4,7 @@
 \alias{PLSc}
 \title{PLS}
 \usage{
-PLSc(X, Y, A, scaling, post.transformation, eps, Y.prob)
+PLSc(X, Y, A, scaling, post.transformation, eps, Y.prob, transformation = "clr")
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.}
@@ -21,6 +21,8 @@ PLSc(X, Y, A, scaling, post.transformation, eps, Y.prob)
 vector of probabilities}
 
 \item{Y.prob}{TRUE if Y describes the probability to being in the class.}
+
+\item{transformation}{transformation between ilr and clr}
 }
 \value{
 Returns a list with the following objects:

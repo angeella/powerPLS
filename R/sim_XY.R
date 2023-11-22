@@ -49,8 +49,16 @@ sim_XY <- function(out, n, seed = 123, post.transformation, A){
     }
     T_scoreO <- matrix(T_score[,(1:M)], ncol = nco)
     T_scoreP <- matrix(T_score[,((M+1):A)], ncol = ncp)
-    sim_TP <- unlist(sapply(seq(ncol(T_scoreP)), function(x) simulate_kde(x = T_scoreP[,x], n = n)$random.values))
-    sim_TO <- unlist(sapply(seq(ncol(T_scoreO)), function(x) simulate_kde(x = T_scoreO[,x], n = n)$random.values))
+
+
+    sim_TP <- unlist(sapply(seq(ncol(T_scoreP)), function(x) simulate_kde(x = T_scoreP[,x],
+                                                                          n = n)$random.values))
+    sim_TO <- unlist(sapply(seq(ncol(T_scoreO)), function(x) simulate_kde(x = T_scoreO[,x],
+                                                                          n = n)$random.values))
+  #  sim_TP <- scale(sim_TP, center = FALSE)
+  #  sim_TO <- scale(sim_TO, center = FALSE)
+
+
     T_sim <- cbind(sim_TO, sim_TP) #T target
 
   }

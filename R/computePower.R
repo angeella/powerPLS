@@ -74,7 +74,12 @@ computePower <- function(X, Y, A,
                     post.transformation = post.transformation,...))
       pv <- data.frame(pv = unlist(as.matrix(pv)[1,]), pv_adjust = unlist(as.matrix(pv)[2,]))
     }
-
+      if(test == "R2"){
+        pv <- sapply(seq(A), function(x) R2Test(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
+                                                   scaling = scaling, randomization = TRUE, eps = eps,
+                                                   post.transformation = post.transformation,...))
+        pv <- data.frame(pv = unlist(as.matrix(pv)[1,]), pv_adjust = unlist(as.matrix(pv)[2,]))
+      }
 
     for(x in seq(A)){
       if(pv$pv_adj[x] <= alpha){pw[x] <- pw[x] + 1}
@@ -100,8 +105,17 @@ computePower <- function(X, Y, A,
       }
       if("score" %in% test){
         pv_out <- sapply(seq(A), function(x) scoreTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                                                   scaling = scaling, randomization = TRUE, eps = eps,
-                                                   post.transformation = post.transformation,...))
+                                                   scaling = scaling, randomization = TRUE,
+                                                   ...))
+
+        pv_out <- data.frame(pv = unlist(as.matrix(pv_out)[1,]), pv_adjust = unlist(as.matrix(pv_out)[2,]))
+        pv <- cbind(pv, score = pv_out$pv_adjust)
+
+      }
+      if("R2" %in% test){
+        pv_out <- sapply(seq(A), function(x) R2Test(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
+                                                       scaling = scaling, randomization = TRUE, eps = eps,
+                                                       post.transformation = post.transformation,...))
 
         pv_out <- data.frame(pv = unlist(as.matrix(pv_out)[1,]), pv_adjust = unlist(as.matrix(pv_out)[2,]))
         pv <- cbind(pv, score = pv_out$pv_adjust)

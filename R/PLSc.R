@@ -1,6 +1,6 @@
 #' @title PLS
 #' @description Performs PLS two class
-#' @usage PLSc(X, Y, A, scaling, post.transformation, eps, Y.prob)
+#' @usage PLSc(X, Y, A, scaling, post.transformation, eps, Y.prob, transformation = "clr")
 #' @param X data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
 #' @param A number of components
@@ -9,6 +9,7 @@
 #' @param eps parameter needed to transform dummy variable into a
 #' vector of probabilities
 #' @param Y.prob TRUE if Y describes the probability to being in the class.
+#' @param transformation transformation between ilr and clr
 #' @author Angela Andreella
 #' @return Returns a list with the following objects:
 #' - \code{W}: matrix of weigths
@@ -30,7 +31,7 @@
 
 
 PLSc <- function(X, Y, A, scaling, post.transformation,
-                 eps, Y.prob){
+                 eps, Y.prob, transformation = "clr"){
 
   nY <- ifelse(is.null(dim(Y)), length(Y), dim(Y)[1])
   if(dim(X)[1] != nY){
@@ -76,17 +77,28 @@ PLSc <- function(X, Y, A, scaling, post.transformation,
     Y[which(Y==1)]<-1-(ncol(Y)-1)*eps
 
     #Centered log ratio transform transformation
-    P <- matrix(clr(Y), ncol = ncol(Y))
+    if(transformation == "clr"){
+      P <- matrix(clr(Y), ncol = ncol(Y))
+    }
+    if(transformation == "ilr"){
+    P <- matrix(ilr(Y), ncol = 1)
+    }
   }else{
     P <- Y
   }
 
 
   #scaling Y
-  Mm <- apply(P, 2, mean)
-  s <- apply(P, 2, sd)
-  P <- (P - Mm)/s
 
+  if(transformation == "clr"){
+    Mm <- apply(P, 2, mean)
+    s <- apply(P, 2, sd)
+    P <- (P - Mm)/s  }
+  if(transformation == "ilr"){
+    Mm <- mean(P)
+    s <- sd(P)
+    P <- (P - Mm)/s
+    }
 
 
   n <- nrow(X)
@@ -101,7 +113,13 @@ PLSc <- function(X, Y, A, scaling, post.transformation,
   R <- out$R
   if(post.transformation){
 
-    out <- ptPLSc(X = X, Y = matrix(clr(Y), ncol = ncol(Y)), W = W)
+    if(transformation == "clr"){
+      out <- ptPLSc(X = X, Y = matrix(clr(Y), ncol = ncol(Y)), W = W)
+    }
+    if(transformation == "ilr"){
+      out <- ptPLSc(X = X, Y = matrix(ilr(Y), ncol = 1), W = W)
+    }
+
     Wtilde <- out$Wtilde
     M <- out$M
 
@@ -125,7 +143,7 @@ PLSc <- function(X, Y, A, scaling, post.transformation,
   B = Wstar %*% t(Y_loading)
 
 
-  Y_fitted <- fitY(X = X, B = B, Mm = Mm, s = s)
+  Y_fitted <- fitY(X = X, B = B, Mm = Mm, s = s, transformation = transformation)
 
 
 
