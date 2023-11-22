@@ -96,8 +96,8 @@ computePower <- function(X, Y, A,
 
       if("mcc" %in% test){
         pv_out <- sapply(seq(A), function(x) mccTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                                                 scaling = scaling, randomization = TRUE, eps = eps,
-                                                 post.transformation = post.transformation,...))
+                                                     scaling = scaling, randomization = TRUE, eps = eps,
+                                                     post.transformation = post.transformation,...))
 
         pv_out <- data.frame(pv = unlist(as.matrix(pv_out)[1,]), pv_adjust = unlist(as.matrix(pv_out)[2,]))
 
@@ -105,8 +105,8 @@ computePower <- function(X, Y, A,
       }
       if("score" %in% test){
         pv_out <- sapply(seq(A), function(x) scoreTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                                                   scaling = scaling, randomization = TRUE,
-                                                   ...))
+                                                       scaling = scaling, randomization = TRUE, eps = eps,
+                                                       post.transformation = post.transformation,...))
 
         pv_out <- data.frame(pv = unlist(as.matrix(pv_out)[1,]), pv_adjust = unlist(as.matrix(pv_out)[2,]))
         pv <- cbind(pv, score = pv_out$pv_adjust)
@@ -114,8 +114,8 @@ computePower <- function(X, Y, A,
       }
       if("R2" %in% test){
         pv_out <- sapply(seq(A), function(x) R2Test(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                                                       scaling = scaling, randomization = TRUE, eps = eps,
-                                                       post.transformation = post.transformation,...))
+                                                    scaling = scaling, randomization = TRUE, eps = eps,
+                                                    post.transformation = post.transformation,...))
 
         pv_out <- data.frame(pv = unlist(as.matrix(pv_out)[1,]), pv_adjust = unlist(as.matrix(pv_out)[2,]))
         pv <- cbind(pv, score = pv_out$pv_adjust)
