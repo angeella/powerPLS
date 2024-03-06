@@ -7,15 +7,17 @@
 computeWT(X, Y, A)
 }
 \arguments{
-\item{X}{data matrix where columns represent the \eqn{p} variables and rows the \eqn{n} observations.}
+\item{X}{data matrix where columns represent the \eqn{p} variables and
+rows the \eqn{n} observations.}
 
-\item{Y}{data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.}
+\item{Y}{data matrix where columns represent the two classes and
+rows the \eqn{n} observations.}
 
-\item{A}{number of latent components}
+\item{A}{number of score components}
 }
 \value{
 Returns a list with the following objects:
-- \code{W}: matrix of weigths
+- \code{W}: matrix of weights
 - \code{T_score}: matrix of Y scores
 - \code{R}: matrix of Y residuals
 }

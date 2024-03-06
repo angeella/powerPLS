@@ -1,38 +1,39 @@
 #' @title sample size calculation
 #' @description Compute optimal sample size calculation
-#' @usage computeSampleSize(n, X, Y, A, post.transformation, alpha, beta,
-#' nperm, Nsim, seed, scaling, test = "mcc",...)
+#' @usage computeSampleSize(n, X, Y, A, alpha, beta,
+#' nperm, Nsim, seed, test = "R2",...)
 #' @param n vector of sample sizes to consider
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
-#' @param Y data matrix where columns represent the \eqn{k} classes and
+#' @param Y data matrix where columns represent the two classes and
 #' rows the \eqn{n} observations.
-#' @param A number of latent components
-#' @param post.transformation TRUE if you want to apply post transformation.
-#' @param alpha level of type I error
-#' @param beta level of type II error
-#' @param Nsim number of simulations
-#' @param nperm number of permutations
+#' @param A number of score components
+#' @param alpha level of type I error. Default 0.05
+#' @param beta level of type II error. Default 0.2.
+#' @param Nsim number of simulations. Default 100.
+#' @param nperm number of permutations. Default 100.
 #' @param seed seed value
-#' @param scaling type of scaling, one of
-#' \code{c("auto-scaling", "pareto-scaling", "mean-centering")}
-#' @param test type of test, one of \code{c("score", "mcc", "eigen")}.
-#' Default to "mcc".
+#' @param test type of test, one of \code{c("score", "mcc", "R2")}.
+#' Default to @R2.
 #' @param ... Futher parameters.
 #' @author Angela Andreella
 #' @return Returns a dataframe that contains the estimated power for each
 #' sample size and number of components considered
 #' @export
+#' @examples
+#' \dontrun{
+#' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,ncomp = 2)
+#' out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 3, n = 20)
+#' }
 
 
-computeSampleSize <- function(n, X, Y, A, post.transformation, alpha, beta,
-                              nperm, Nsim, seed, scaling, test = "mcc",...){
+computeSampleSize <- function(n, X, Y, A, alpha = 0.05, beta = 0.2,
+                              nperm = 100, Nsim = 100, seed = 123, test = "R2",...){
 
 
   samplesize <-  sapply(seq(length(n)), function(x) computePower(X = X, Y = Y, A = A,
-                                 post.transformation = post.transformation,
                                  n = n[x], nperm = nperm, Nsim = Nsim,
-                                 scaling = scaling, alpha = alpha, test = test, ...))
+                                 alpha = alpha, test = test, ...))
 
 
   samplesize <- list(size = n,

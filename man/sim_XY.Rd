@@ -4,24 +4,24 @@
 \alias{sim_XY}
 \title{simulate data matrix under the alternative hypothesis}
 \usage{
-sim_XY(out, n, seed = 123, post.transformation, A)
+sim_XY(out, n, seed = 123, post.transformation = TRUE, A)
 }
 \arguments{
-\item{out}{output from PLS2c}
+\item{out}{output from \code{PLSc}}
 
-\item{n}{number of observations}
+\item{n}{number of observations to simulate}
 
-\item{seed}{fix seed}
+\item{seed}{seed value}
 
-\item{post.transformation}{TRUE if you want to apply post transformation.}
+\item{post.transformation}{Boolean value. Default @TRUE i.e., post transformation is applied.}
 
-\item{A}{number of latent components}
+\item{A}{number of score components used in \code{PLSc}.}
 }
 \value{
 Returns a simulated matrix under the alternative hypothesis.
 }
 \description{
-simulate data matrix under the alternative hypothesis.
+simulate data matrix under the alternative hypothesis using the score components estimated by PLS from the pilot data.
 }
 \author{
 Angela Andreella

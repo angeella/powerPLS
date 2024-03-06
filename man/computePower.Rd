@@ -2,25 +2,20 @@
 % Please edit documentation in R/computePower.R
 \name{computePower}
 \alias{computePower}
-\title{power computations}
+\title{Power estimation}
 \usage{
-computePower(X, Y, A,
-post.transformation = TRUE, scaling, n, seed = 123,
-Nsim, nperm, alpha, eps = 0.01, test = "mcc", ...)
+computePower(X, Y, A, n, seed = 123,
+Nsim = 100, nperm = 200, alpha = 0.05,
+test = "R2", Y.prob = FALSE, eps = 0.01, ...)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and
 rows the \eqn{n} observations.}
 
-\item{Y}{data matrix where columns represent the \eqn{k} classes and
+\item{Y}{data matrix where columns represent the two classes and
 rows the \eqn{n} observations.}
 
-\item{A}{number of latent components}
-
-\item{post.transformation}{TRUE if you want to apply post transformation.}
-
-\item{scaling}{type of scaling, one of
-\code{c("auto-scaling", "pareto-scaling", "mean-centering")}}
+\item{A}{number of score components}
 
 \item{n}{sample size}
 
@@ -32,20 +27,27 @@ rows the \eqn{n} observations.}
 
 \item{alpha}{type I error}
 
-\item{eps}{parameter needed to transform dummy variable into a
-vector of probabilities}
+\item{test}{type of test, one of \code{c("score", "mcc", "R2")}.}
 
-\item{test}{type of test, one of \code{c("score", "mcc", "eigen")}.
-Default to "mcc".}
+\item{Y.prob}{Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector}
 
-\item{...}{Futher parameters see \code{PLSc}}
+\item{eps}{Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector.
+Default to "R2".}
+
+\item{...}{Futher parameters see \code{\link{PLSc}}}
 }
 \value{
 Returns the corresponding estimated power
 }
 \description{
 estimate power for a given sample size, alpha level and number
-of latent components.
+of score components.
+}
+\examples{
+\dontrun{
+datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
+out <- computePower(X = datas$X, Y = datas$Y, A = 3, n = 20)
+}
 }
 \author{
 Angela Andreella

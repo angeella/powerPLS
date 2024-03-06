@@ -2,27 +2,32 @@
 % Please edit documentation in R/simulatePilotData.R
 \name{simulatePilotData}
 \alias{simulatePilotData}
-\title{simulate cluster data from normal distribution}
+\title{simulate pilot data}
 \usage{
-simulatePilotData(seed=123, nvar, clus.size, m, rho)
+simulatePilotData(seed = 123, nvar, clus.size, nvar_rel,m, A = 2, S1 = NULL, S2 = NULL)
 }
 \arguments{
 \item{seed}{seed value}
 
 \item{nvar}{number of variables}
 
-\item{clus.size}{size of classes (only two classes are considered)}
+\item{clus.size}{Vector of two elements, specifying the size of classes (only two classes are considered)}
 
-\item{m}{mean multivariate normal distribution}
+\item{nvar_rel}{number of variables relavant to predict \code{Y}}
 
-\item{rho}{numeric value in `[0,1]`. Level of equi-correlation between pairs
-of variables}
+\item{m}{separation between classes}
+
+\item{A}{oracle number of score components}
+
+\item{S1}{covariance matrix for the first class. Default @NULL i.e., the identity is considered.}
+
+\item{S2}{covariance matrix for the second class. Default @NULL i.e., the identity is considered.}
 }
 \value{
 Returns list of X and Y simulated data
 }
 \description{
-simulate simple cluster data from normal distribution
+simulate simple cluster pilot data
 }
 \author{
 Angela Andreella

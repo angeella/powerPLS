@@ -1,31 +1,42 @@
-#' @title score test
-#' @description Performs randomization test based on scores
-#' @usage scoreTest(X, Y, nperm, A, randomization, ...)
-#' @param X data matrix where columns represent the \eqn{p} classes and
+#' @title Score test
+#' @description Performs randomization test based on predictive score vector
+#' @usage scoreTest(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...)
+#' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
-#' @param Y data matrix where columns represent the \eqn{k} variables and
+#' @param Y data matrix where columns represent the two classes and
 #' rows the \eqn{n} observations.
-#' @param nperm number of permutations
-#' @param A number of components
-#' @param randomization compute p-values?
+#' @param nperm number of permutations. Default 100.
+#' @param A number of score components
+#' @param randomization Boolean value. Default @FALSE. If @TRUE the permutation p-value is computed
+#' @param Y.prob Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector
+#' @param eps Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector
 #' @param ... Futher parameters.
 #' @author Angela Andreella
 #' @return Returns a list with the corresponding statistical tests,
 #' raw and adjusted p-values
-#' @importFrom compositions clrInv
-#' @importFrom compositions clr
-#' @importFrom stats sd
+#' @importFrom compositions ilr
+#' @importFrom stats cor
 #' @importFrom stats var
 #' @export
+#' @seealso The type of tests implemented: \code{\link{mccTest}} \code{\link{R2Test}}.
+#' @author Angela Andreella
+#' @return List with the following objects: \code{pv}: raw p-value, \code{pv_adj}: adjusted p-value, \code{test} estimated statistical test.
+#' @export
+#' @references For the general framework of power analysis for PLS-based methods see:
+#'
+#' @examples
+#' \dontrun{
+#' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
+#' out <- scoreTest(X = datas$X, Y = datas$Y, A = 1)
+#' out
+#' }
 
 
 
 
-scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE,...){
+scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...){
 
-#  out <- PLSc(X = X, Y = Y, A = A, ...)
-  out <- PLSc(X = X, Y = Y, A = A,
-              ...)
+  out <- PLSc(X = X, Y = Y, A = A,...)
 
 
   T_score <- out$T_score
@@ -57,7 +68,6 @@ scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE,...){
       idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
       Xkp <- X[idx,]
 
-      #out <- PLSc(X = Xkp, Y = Y, A = A, ...)
      out <- PLSc(X = Xkp, Y = Y, A = A,...)
       T_score <- out$T_score
       T_score

@@ -1,16 +1,16 @@
 #' @title post transformed PLS
 #' @description Performs post transformed PLS
 #' @usage ptPLSc(X, Y, W)
-#' @param X data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.
-#' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
+#' @param X data matrix where columns represent the \eqn{p} variables and
+#' rows the \eqn{n} observations.
+#' @param Y vector of class probabilities
 #' @param W weight matrix where columns represent the \eqn{A} components and rows the \eqn{k} X variables.
 #' @author Angela Andreella
 #' @return Returns a matrix of scores vectors \code{Tscore}.
 #' @export
-#' @importFrom compositions clrInv
 #' @importFrom nipals nipals
 #' @return Returns a list with the following objects:
-#' - \code{W}: matrix of weigths
+#' - \code{W}: matrix of weights
 #' - \code{6}: post transformation matrix
 #' - \code{M}: number of orthogonal components.
 

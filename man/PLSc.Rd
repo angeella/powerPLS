@@ -4,40 +4,50 @@
 \alias{PLSc}
 \title{PLS}
 \usage{
-PLSc(X, Y, A, scaling, post.transformation, eps, Y.prob, transformation = "clr")
+PLSc(X, Y, A, scaling = "auto-scaling", post.transformation = TRUE,
+eps = 0.01, Y.prob = FALSE, transformation = "ilr")
 }
 \arguments{
-\item{X}{data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.}
+\item{X}{data matrix where columns represent the \eqn{p} variables and
+rows the \eqn{n} observations.}
 
-\item{Y}{data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.}
+\item{Y}{data matrix where columns represent the two classes and
+rows the \eqn{n} observations.}
 
-\item{A}{number of components}
+\item{A}{number of score components}
 
-\item{scaling}{type of scaling.}
+\item{scaling}{type of scaling, one of
+\code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default @auto-scaling}
 
-\item{post.transformation}{TRUE if you want to apply post transformation.}
+\item{post.transformation}{Boolean value. @TRUE if you want to apply post transformation. Default @TRUE}
 
-\item{eps}{parameter needed to transform dummy variable into a
-vector of probabilities}
+\item{eps}{Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector}
 
-\item{Y.prob}{TRUE if Y describes the probability to being in the class.}
+\item{Y.prob}{Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector}
 
-\item{transformation}{transformation between ilr and clr}
+\item{transformation}{transformation used to map \code{Y} in probability data vector. The options are @ilr and @clr.
+Default @ilr.}
 }
 \value{
 Returns a list with the following objects:
-- \code{W}: matrix of weigths
-- \code{X_loading}: matrix of X loading
-- \code{Y_loading}: matirx of Y loading
-- \code{X}: matrix of X data
-- \code{Y}: matirx of Y data
+- \code{W}: matrix of weights
+- \code{X_loading}: matrix of \code{X} loading
+- \code{Y_loading}: matrix of \code{Y} loading
+- \code{X}: matrix of \code{X} data
+- \code{Y}: matrix of \code{Y} data
 - \code{T_score}: matrix of scores
-- \code{Y_fitted}: fitted Y matrix
+- \code{Y_fitted}: fitted \code{Y} matrix
 - \code{B}: Matrix regression coefficients
 - \code{M}: number of orthogonal components if post transformation is applied.
 }
 \description{
 Performs PLS two class
+}
+\examples{
+\dontrun{
+datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
+out <- PLSc(X = datas$X, Y = datas$Y, A = 3)
+}
 }
 \author{
 Angela Andreella

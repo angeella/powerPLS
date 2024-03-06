@@ -1,36 +1,49 @@
-#' @title simulate cluster data from normal distribution
-#' @description simulate simple cluster data from normal distribution
-#' @usage simulatePilotData(seed=123, nvar, clus.size, m, rho)
+#' @title simulate pilot data
+#' @description simulate simple cluster pilot data
+#' @usage simulatePilotData(seed = 123, nvar, clus.size, nvar_rel,m, A = 2, S1 = NULL, S2 = NULL)
 #' @param seed seed value
 #' @param nvar number of variables
-#' @param clus.size size of classes (only two classes are considered)
-#' @param m mean multivariate normal distribution
-#' @param rho numeric value in `[0,1]`. Level of equi-correlation between pairs
-#' of variables
-#' @importFrom mvtnorm rmvnorm
+#' @param clus.size Vector of two elements, specifying the size of classes (only two classes are considered)
+#' @param nvar_rel number of variables relavant to predict \code{Y}
+#' @param m separation between classes
+#' @param A oracle number of score components
+#' @param S1 covariance matrix for the first class. Default @NULL i.e., the identity is considered.
+#' @param S2 covariance matrix for the second class. Default @NULL i.e., the identity is considered.
+#' @importFrom MASS mvrnorm
+#' @importFrom stats princomp
 #' @importFrom stats rnorm
 #' @author Angela Andreella
 #' @return Returns list of X and Y simulated data
 #' @export
 
 
-simulatePilotData <- function(seed=123, nvar, clus.size, m, rho){
+simulatePilotData <- function(seed = 123, nvar, clus.size, nvar_rel,m, A = 2, S1 = NULL, S2 = NULL){
 
-  #Simulate data as PT + E where P is composed by orthogonal components,
-  #T from matrix normal distribution and E noise
+  set.seed(seed)
   n <- clus.size[1] + clus.size[2]
-  eps <- sqrt(1-rho)*matrix(rnorm(nvar*n), ncol=nvar) + sqrt(rho)*matrix(rep(rnorm(n),nvar), ncol=nvar)
-  mu <- c(rep(m,clus.size[1]), rep(0, clus.size[2]))
-  Tm <- matrix(rep(mu, nvar), ncol=nvar) + eps
+  if(is.null(S1)){S1 = diag(A)}
+  if(is.null(S2)){S2 = diag(A)}
 
-  P <- svd(matrix(rnorm((clus.size[1]+clus.size[2])*(clus.size[1]+clus.size[2])),
-                  ncol = clus.size[1]+clus.size[2]))$u
+  X<- rbind(mvrnorm(n = clus.size[1], mu = rep(0, A), Sigma = S1),
+            mvrnorm(n = clus.size[2], mu = rep(m, A), Sigma = S2))
 
-  X<- P %*% Tm
+
+
+
+  X <- scale(X, scale = FALSE)
+  #Predictive latent variable n x A
+  out <- princomp(X)$scores #rank
+
+  #loading matrix nvar_rel x
+  out1 <- princomp(data.frame(matrix(runif(A*nvar_rel), ncol = A)),
+                   scores = TRUE)$scores
+
+
+  X <- cbind(out %*% t(out1),matrix(rnorm(n*(nvar-nvar_rel)), ncol = nvar-nvar_rel))
+
+  # X <- X + c(rep(m,clus.size[1]), rep(0, clus.size[2]))
 
   Y<- c(rep(0, clus.size[1]), rep(1, clus.size[2]))
 
   return(simData = list(X = X, Y = Y))
 }
-
-

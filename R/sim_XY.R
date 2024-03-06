@@ -1,18 +1,18 @@
 #' @title simulate data matrix under the alternative hypothesis
-#' @description simulate data matrix under the alternative hypothesis.
-#' @usage sim_XY(out, n, seed = 123, post.transformation, A)
-#' @param out output from PLS2c
-#' @param n number of observations
-#' @param seed fix seed
-#' @param post.transformation TRUE if you want to apply post transformation.
-#' @param A number of latent components
+#' @description simulate data matrix under the alternative hypothesis using the score components estimated by PLS from the pilot data.
+#' @usage sim_XY(out, n, seed = 123, post.transformation = TRUE, A)
+#' @param out output from \code{PLSc}
+#' @param n number of observations to simulate
+#' @param seed seed value
+#' @param post.transformation Boolean value. Default @TRUE i.e., post transformation is applied.
+#' @param A number of score components used in \code{PLSc}.
 #' @author Angela Andreella
 #' @return Returns a simulated matrix under the alternative hypothesis.
 #' @export
 #' @importFrom simukde simulate_kde
 
 
-sim_XY <- function(out, n, seed = 123, post.transformation, A){
+sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A){
 
 
   set.seed(seed)

@@ -4,8 +4,8 @@
 \alias{computeSampleSize}
 \title{sample size calculation}
 \usage{
-computeSampleSize(n, X, Y, A, post.transformation, alpha, beta,
-nperm, Nsim, seed, scaling, test = "mcc",...)
+computeSampleSize(n, X, Y, A, alpha, beta,
+nperm, Nsim, seed, test = "R2",...)
 }
 \arguments{
 \item{n}{vector of sample sizes to consider}
@@ -13,28 +13,23 @@ nperm, Nsim, seed, scaling, test = "mcc",...)
 \item{X}{data matrix where columns represent the \eqn{p} variables and
 rows the \eqn{n} observations.}
 
-\item{Y}{data matrix where columns represent the \eqn{k} classes and
+\item{Y}{data matrix where columns represent the two classes and
 rows the \eqn{n} observations.}
 
-\item{A}{number of latent components}
+\item{A}{number of score components}
 
-\item{post.transformation}{TRUE if you want to apply post transformation.}
+\item{alpha}{level of type I error. Default 0.05}
 
-\item{alpha}{level of type I error}
+\item{beta}{level of type II error. Default 0.2.}
 
-\item{beta}{level of type II error}
+\item{nperm}{number of permutations. Default 100.}
 
-\item{nperm}{number of permutations}
-
-\item{Nsim}{number of simulations}
+\item{Nsim}{number of simulations. Default 100.}
 
 \item{seed}{seed value}
 
-\item{scaling}{type of scaling, one of
-\code{c("auto-scaling", "pareto-scaling", "mean-centering")}}
-
-\item{test}{type of test, one of \code{c("score", "mcc", "eigen")}.
-Default to "mcc".}
+\item{test}{type of test, one of \code{c("score", "mcc", "R2")}.
+Default to @R2.}
 
 \item{...}{Futher parameters.}
 }
@@ -44,6 +39,12 @@ sample size and number of components considered
 }
 \description{
 Compute optimal sample size calculation
+}
+\examples{
+\dontrun{
+datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,ncomp = 2)
+out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 3, n = 20)
+}
 }
 \author{
 Angela Andreella

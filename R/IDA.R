@@ -1,8 +1,9 @@
 #' @title Iteration Deflation Algorithm
 #' @description Performs Iteration Deflation Algorithm
 #' @usage IDA(X, Y, W)
-#' @param X data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.
-#' @param Y data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.
+#' @param X data matrix where columns represent the \eqn{p} variables and
+#' rows the \eqn{n} observations.
+#' @param Y vector of class probabilities
 #' @param W weight matrix where columns represent the \eqn{A} components and rows the \eqn{k} X variables.
 #' @author Angela Andreella
 #' @return Returns a matrix of scores vectors \code{Tscore}.

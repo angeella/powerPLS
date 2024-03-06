@@ -1,15 +1,15 @@
 #' @title R2 test
 #' @description Performs randomization test based on R2
-#' @usage R2Test(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps,...)
-#' @param X data matrix where columns represent the \eqn{p} classes and
+#' @usage R2Test(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...)
+#' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
-#' @param Y data matrix where columns represent the \eqn{k} variables and
+#' @param Y data matrix where columns represent the two classes and
 #' rows the \eqn{n} observations.
-#' @param nperm number of permutations
-#' @param A number of latent components
-#' @param randomization compute p-values?
-#' @param Y.prob Is Y a probability vector?
-#' @param eps parameter needed to transform dummy variable into a
+#' @param nperm number of permutations. Default 100.
+#' @param A number of score components
+#' @param randomization Boolean value. Default @FALSE. If @TRUE the permutation p-value is computed
+#' @param Y.prob Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector
+#' @param eps Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector
 #' @param ... Futher parameters.
 #' @author Angela Andreella
 #' @return Returns a list with the corresponding statistical tests,
@@ -17,11 +17,25 @@
 #' @importFrom compositions ilr
 #' @importFrom stats cor
 #' @export
+#' @seealso The type of tests implemented: \code{\link{scoreTest}} \code{\link{mccTest}}.
+#' @author Angela Andreella
+#' @return List with the following objects: \code{pv}: raw p-value, \code{pv_adj}: adjusted p-value, \code{test} estimated statistical test.
+#' @export
+#' @references For the general framework of power analysis for PLS-based methods see:
+#'
+#' @examples
+#' \dontrun{
+#' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
+#' out <- R2Test(X = datas$X, Y = datas$Y, A = 1)
+#' out
+#' }
 
-R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps,...){
+
+R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...){
 
 
-  out <- PLSc(X = X, Y = Y, A = A, Y.prob = Y.prob, transformation = "ilr", eps = eps, ...)
+  out <- PLSc(X = X, Y = Y, A = A, Y.prob = Y.prob,
+              eps = eps, ...)
 
   if(!Y.prob){
 

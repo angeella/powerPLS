@@ -4,33 +4,48 @@
 \alias{R2Test}
 \title{R2 test}
 \usage{
-R2Test(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps,...)
+R2Test(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...)
 }
 \arguments{
-\item{X}{data matrix where columns represent the \eqn{p} classes and
+\item{X}{data matrix where columns represent the \eqn{p} variables and
 rows the \eqn{n} observations.}
 
-\item{Y}{data matrix where columns represent the \eqn{k} variables and
+\item{Y}{data matrix where columns represent the two classes and
 rows the \eqn{n} observations.}
 
-\item{nperm}{number of permutations}
+\item{nperm}{number of permutations. Default 100.}
 
-\item{A}{number of latent components}
+\item{A}{number of score components}
 
-\item{randomization}{compute p-values?}
+\item{randomization}{Boolean value. Default @FALSE. If @TRUE the permutation p-value is computed}
 
-\item{Y.prob}{Is Y a probability vector?}
+\item{Y.prob}{Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector}
 
-\item{eps}{parameter needed to transform dummy variable into a}
+\item{eps}{Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector}
 
 \item{...}{Futher parameters.}
 }
 \value{
 Returns a list with the corresponding statistical tests,
 raw and adjusted p-values
+
+List with the following objects: \code{pv}: raw p-value, \code{pv_adj}: adjusted p-value, \code{test} estimated statistical test.
 }
 \description{
 Performs randomization test based on R2
+}
+\examples{
+\dontrun{
+datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
+out <- R2Test(X = datas$X, Y = datas$Y, A = 1)
+out
+}
+}
+\references{
+For the general framework of power analysis for PLS-based methods see:
+}
+\seealso{
+The type of tests implemented: \code{\link{scoreTest}} \code{\link{mccTest}}.
 }
 \author{
 Angela Andreella

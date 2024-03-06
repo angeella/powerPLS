@@ -7,9 +7,10 @@
 ptPLSc(X, Y, W)
 }
 \arguments{
-\item{X}{data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.}
+\item{X}{data matrix where columns represent the \eqn{p} variables and
+rows the \eqn{n} observations.}
 
-\item{Y}{data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.}
+\item{Y}{vector of class probabilities}
 
 \item{W}{weight matrix where columns represent the \eqn{A} components and rows the \eqn{k} X variables.}
 }
@@ -17,7 +18,7 @@ ptPLSc(X, Y, W)
 Returns a matrix of scores vectors \code{Tscore}.
 
 Returns a list with the following objects:
-- \code{W}: matrix of weigths
+- \code{W}: matrix of weights
 - \code{6}: post transformation matrix
 - \code{M}: number of orthogonal components.
 }

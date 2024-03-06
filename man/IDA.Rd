@@ -7,9 +7,10 @@
 IDA(X, Y, W)
 }
 \arguments{
-\item{X}{data matrix where columns represent the \eqn{p} classes and rows the \eqn{n} observations.}
+\item{X}{data matrix where columns represent the \eqn{p} variables and
+rows the \eqn{n} observations.}
 
-\item{Y}{data matrix where columns represent the \eqn{k} variables and rows the \eqn{n} observations.}
+\item{Y}{vector of class probabilities}
 
 \item{W}{weight matrix where columns represent the \eqn{A} components and rows the \eqn{k} X variables.}
 }

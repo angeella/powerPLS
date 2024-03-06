@@ -7,8 +7,8 @@ Description: It performs power analysis and sample size estimation for PLS-based
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
-Imports: compositions, ks, mvtnorm, progress, simukde, caret, nipals, psych
+RoxygenNote: 7.3.1
+Imports: compositions, ks, mvtnorm, progress, simukde, nipals, MASS
 Language: en-US
 BugReports: https://github.com/angeella/powerPLS/issues
 URL: https://github.com/angeella/powerPLS
