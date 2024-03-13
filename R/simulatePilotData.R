@@ -4,7 +4,7 @@
 #' @param seed seed value
 #' @param nvar number of variables
 #' @param clus.size Vector of two elements, specifying the size of classes (only two classes are considered)
-#' @param nvar_rel number of variables relavant to predict \code{Y}
+#' @param nvar_rel number of variables relevant to predict \code{Y}
 #' @param m separation between classes
 #' @param A oracle number of score components
 #' @param S1 covariance matrix for the first class. Default @NULL i.e., the identity is considered.

@@ -1,6 +1,6 @@
 Package: powerPLS
 Type: Package
-Title: power analysis for PLS classification
+Title: Power Analysis for PLS Classification
 Version: 0.1.0
 Authors@R: c(person(given="Angela", family="Andreella", comment=c("Main author", ORCID  = "0000-0002-1141-3041"), email="angela.andreella@unive.it", role=c("aut", "cre")))
 Description: It performs power analysis and sample size estimation for PLS-based methods.
@@ -12,3 +12,4 @@ Imports: compositions, ks, mvtnorm, progress, simukde, nipals, MASS
 Language: en-US
 BugReports: https://github.com/angeella/powerPLS/issues
 URL: https://github.com/angeella/powerPLS
+
