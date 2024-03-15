@@ -15,6 +15,8 @@
 #' @return Returns a list with the corresponding statistical tests,
 #' raw and adjusted p-values
 #' @importFrom compositions ilr
+#' @importFrom foreach %dopar%
+#' @importFrom foreach foreach
 #' @importFrom stats cor
 #' @export
 #' @seealso The type of tests implemented: \code{\link{scoreTest}} \code{\link{R2Test}}.
@@ -35,6 +37,7 @@
 mccTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...){
 
   out <- PLSc(X = X, Y = Y, A = A, ...)
+
   if(!is.null(dim(out$Y_fitted))){
     Y_fitted <- as.factor(out$Y_fitted[,2])
   }else{
@@ -47,8 +50,9 @@ mccTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE,
   mcc_obs <- mcc(confMatrix = confMatrix)
 
   if(randomization){
-    pv <- 0
-    for(j in seq(nperm-1)){
+
+    null_distr <- foreach(j=seq(nperm-1))%dopar%{
+
       idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
       Xkp <- X[idx,]
 
@@ -65,11 +69,12 @@ mccTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE,
       confMatrix <- table(Yf, Y_fitted)
       mcc_p <- mcc(confMatrix = confMatrix)
 
-      if(mcc_p >= mcc_obs){pv <- pv+1}
-
     }
 
-    pv <- (pv+1)/nperm
+    null_distr <-c(mcc_obs, unlist(null_distr))
+    pv <- mean(null_distr >= mcc_obs)
+
+
   }else{
     pv <- NA
   }

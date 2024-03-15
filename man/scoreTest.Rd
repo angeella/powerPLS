@@ -23,7 +23,7 @@ rows the \eqn{n} observations.}
 
 \item{eps}{Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector}
 
-\item{...}{Futher parameters.}
+\item{...}{Further parameters.}
 }
 \value{
 Returns a list with the corresponding statistical tests,

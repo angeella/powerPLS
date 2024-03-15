@@ -22,7 +22,8 @@
 #' @author Angela Andreella
 #' @return Returns the corresponding estimated power
 #' @export
-#' @importFrom progress progress_bar
+#' @importFrom foreach %dopar%
+#' @importFrom foreach foreach
 #' @examples
 #' \dontrun{
 #' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
@@ -35,6 +36,10 @@ computePower <- function(X, Y, A, n, seed = 123,
                          Nsim = 100, nperm = 200, alpha = 0.05,
                          test = "R2", Y.prob = FALSE, eps = 0.01, ...){
 
+  if(any(!(test %in% c("R2", "mcc", "score")))){
+    stop("available tessts are R2, mcc and score")
+  }
+
   #Build the reference model PLS2c
 
   outPLS <- PLSc(X = X, Y = Y, A = A, Y.prob = Y.prob, eps = eps, ...)
@@ -42,9 +47,9 @@ computePower <- function(X, Y, A, n, seed = 123,
   pw <- matrix(0, ncol = length(test), nrow = A)
   colnames(pw)<- test
 
-  pb <- progress_bar$new(total = Nsim)
-  for(i in seq(Nsim)){
-    #sapply(seq(Nsim), function(x) {
+i <- NULL
+pw <-  foreach(i = c(1:Nsim)) %dopar% {
+
     #Model the distribution of the X-data
     outsim <- sim_XY(out = outPLS, n = n, seed = 1234+i, A = A, ...)
     #Model the distribution of the Y-data
@@ -53,86 +58,91 @@ computePower <- function(X, Y, A, n, seed = 123,
 
 
     #Apply one test
-
     if(length(test) == 1){
-   # if(test == "eigen"){
-  #    pv <- eigenTest(X = Xsim, Y = Ysim, A = A, nperm = nperm, ...)
-  #  }
 
-    if(test == "mcc"){
-      pv <- sapply(seq(A), function(x) mccTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                    randomization = TRUE, ...))
-      pv <- data.frame(pv = unlist(as.matrix(pv)[1,]), pv_adjust = unlist(as.matrix(pv)[2,]))
-    }
-    if(test == "score"){
-      pv <- sapply(seq(A), function(x) scoreTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                    randomization = TRUE,...))
-      pv <- data.frame(pv = unlist(as.matrix(pv)[1,]), pv_adjust = unlist(as.matrix(pv)[2,]))
-    }
+      if(test == "mcc"){
+
+        pv <- foreach(x = seq(A), .combine=rbind) %dopar%{
+          mccTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
+                  randomization = TRUE, ...)
+        }
+
+      }
+      if(test == "score"){
+        pv <- foreach(x = seq(A), .combine=rbind) %dopar%{
+          scoreTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
+                  randomization = TRUE, ...)
+        }
+
+      }
       if(test == "R2"){
-        pv <- sapply(seq(A), function(x) R2Test(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                                                   randomization = TRUE, ...))
-        pv <- data.frame(pv = unlist(as.matrix(pv)[1,]), pv_adjust = unlist(as.matrix(pv)[2,]))
+        pv <- foreach(x = seq(A), .combine=rbind) %dopar%{
+          R2Test(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
+                    randomization = TRUE, ...)
+        }
+
       }
 
-    for(x in seq(A)){
-      if(pv$pv_adj[x] <= alpha){pw[x] <- pw[x] + 1}
-    }
+      pv <- as.data.frame(pv)
+      pv <- data.frame(pv = unlist(pv$pv),
+                       pv_adjust = unlist(pv$pv_adj))
+      for(x in seq(A)){
+        if(pv$pv_adj[x] <= alpha){pw[x] <- pw[x] + 1}
+      }
     }else{
 
       #Apply more than one test.
-      pv <- data.frame(NA)
-
-   #   if("eigen" %in% test){
-    #    pv <- cbind(pv, eigen = eigenTest(X = Xsim, Y = Ysim, A = A, nperm = nperm,
-    #                    scaling = scaling, ...)[["pv_adj"]])
-   #   }
 
       if("mcc" %in% test){
-        pv_out <- sapply(seq(A), function(x) mccTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                                                     randomization = TRUE,...))
+        pv_mcc <- foreach(x = seq(A), .combine=cbind) %dopar%{
+          mccTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
+                    randomization = TRUE, ...)
+        }
 
-        pv_out <- data.frame(pv = unlist(as.matrix(pv_out)[1,]), pv_adjust = unlist(as.matrix(pv_out)[2,]))
-
-        pv <- cbind(pv, mcc = pv_out$pv_adjust)
       }
       if("score" %in% test){
-        pv_out <- sapply(seq(A), function(x) scoreTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                                                       randomization = TRUE,...))
-
-        pv_out <- data.frame(pv = unlist(as.matrix(pv_out)[1,]), pv_adjust = unlist(as.matrix(pv_out)[2,]))
-        pv <- cbind(pv, score = pv_out$pv_adjust)
+        pv_score <- foreach(x = seq(A), .combine=cbind) %dopar%{
+          scoreTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
+                  randomization = TRUE, ...)
+        }
 
       }
       if("R2" %in% test){
-        pv_out <- sapply(seq(A), function(x) R2Test(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                                                    randomization = TRUE,...))
-
-        pv_out <- data.frame(pv = unlist(as.matrix(pv_out)[1,]), pv_adjust = unlist(as.matrix(pv_out)[2,]))
-        pv <- cbind(pv, score = pv_out$pv_adjust)
+        pv_R2 <- foreach(x = seq(A), .combine=cbind) %dopar%{
+          R2Test(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
+                  randomization = TRUE, ...)
+        }
 
       }
 
-      pv <- pv[,-1]
+      names_test <- ls()[ls() %in% c("pv_mcc", "pv_score", "pv_R2")]
+
+      pv_out <- t(sapply(seq(length(names_test)),
+                         function(x) eval(as.name(names_test[x]))[2,]))
+
+      colnames(pv_out) <- gsub("pv_", "", names_test)
+      rownames(pv_out) <- seq(A)
 
       for(x in seq(A)){
         for(y in seq(length(test))){
-          if(pv[x,y] <= alpha){
+          if(pv_out[x,y] <= alpha){
             pw[x,y] <- pw[x,y] + 1
           }
         }
 
       }
-
     }
 
 
+    pw
 
-    pb$tick()
-    Sys.sleep(1 / Nsim)
- #   })
-}
-  pw <- pw/Nsim
+
+  }
+
+
+pw <- pw[[Nsim]]
+pw <- pw/Nsim
+
 
   return(pw)
 }

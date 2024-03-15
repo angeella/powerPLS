@@ -10,13 +10,16 @@
 #' @param randomization Boolean value. Default @FALSE. If @TRUE the permutation p-value is computed
 #' @param Y.prob Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector
 #' @param eps Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector
-#' @param ... Futher parameters.
+#' @param ... Further parameters.
 #' @author Angela Andreella
 #' @return Returns a list with the corresponding statistical tests,
 #' raw and adjusted p-values
 #' @importFrom compositions ilr
 #' @importFrom stats cor
+#' @importFrom stats t.test
 #' @importFrom stats var
+#' @importFrom foreach %dopar%
+#' @importFrom foreach foreach
 #' @export
 #' @seealso The type of tests implemented: \code{\link{mccTest}} \code{\link{R2Test}}.
 #' @author Angela Andreella
@@ -55,16 +58,15 @@ scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALS
   lev <- unique(as.vector(Y))
 
   if(is.null(dim(Tp))){
-    effect_obs <- abs(mean(Tp[Y == lev[1]]) -  mean(Tp[Y == lev[2]]))/
-      sqrt((var(Tp[Y == lev[1]]) +  var(Tp[Y == lev[2]]))/2)
+    effect_obs <- t.test(Tp[Y == lev[1]], Tp[Y == lev[2]],var.equal = FALSE)$statistic
   }else{
-    effect_obs <- abs(mean(Tp[Y == lev[1],]) -  mean(Tp[Y == lev[2],]))/
-      sqrt((var(as.vector(Tp[Y == lev[1],])) +  var(as.vector(Tp[Y == lev[2],])))/2)
+    effect_obs <- t.test(Tp[Y == lev[1],], Tp[Y == lev[2],],var.equal = FALSE)$statistic
   }
 
   if(randomization){
-    pv <- 0
-    for(j in seq(nperm-1)){
+
+    null_distr <- foreach(j=seq(nperm-1)) %dopar% {
+
       idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
       Xkp <- X[idx,]
 
@@ -83,19 +85,16 @@ scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALS
       }
       lev <- unique(Y)
       if(is.null(dim(Tp))){
-        effect_p <- abs(mean(Tp[Y == lev[1]]) -  mean(Tp[Y == lev[2]]))/
-          sqrt((var(Tp[Y == lev[1]]) +  var(Tp[Y == lev[2]]))/2)
+        effect_p <- t.test(Tp[Y == lev[1]], Tp[Y == lev[2]],var.equal = FALSE)$statistic
       }else{
-        effect_p <- abs(mean(Tp[Y == lev[1],]) -  mean(Tp[Y == lev[2],]))/
-          sqrt((var(as.vector(Tp[Y == lev[1],])) +  var(as.vector(Tp[Y == lev[2],])))/2)
+        effect_p <- t.test(Tp[Y == lev[1],], Tp[Y == lev[2],],var.equal = FALSE)$statistic
       }
 
-      if(is.na(effect_p)){effect_p <- effect_obs}
-      if(effect_p >= effect_obs){pv <- pv+1}
+
 
     }
-
-    pv <- (pv+1)/nperm
+    null_distr <-c(effect_obs, unlist(null_distr))
+    pv <- mean(null_distr >= effect_obs)
   }else{
     pv <- NA
   }

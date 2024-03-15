@@ -13,7 +13,7 @@ simulatePilotData(seed = 123, nvar, clus.size, nvar_rel,m, A = 2, S1 = NULL, S2 
 
 \item{clus.size}{Vector of two elements, specifying the size of classes (only two classes are considered)}
 
-\item{nvar_rel}{number of variables relavant to predict \code{Y}}
+\item{nvar_rel}{number of variables relevant to predict \code{Y}}
 
 \item{m}{separation between classes}
 

@@ -16,6 +16,8 @@
 #' raw and adjusted p-values
 #' @importFrom compositions ilr
 #' @importFrom stats cor
+#' @importFrom foreach %dopar%
+#' @importFrom foreach foreach
 #' @export
 #' @seealso The type of tests implemented: \code{\link{scoreTest}} \code{\link{mccTest}}.
 #' @author Angela Andreella
@@ -65,24 +67,22 @@ R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, 
   r2_obs <- cor(Yfitted, P)
 
   if(randomization){
-    pv <- 0
-    for(j in seq(nperm-1)){
+    null_distr <- foreach(j=seq(nperm-1))%dopar%{
       idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
       Xkp <- X[idx,]
 
-      out <- PLSc(X = Xkp, Y = Y, A = A, Y.prob = Y.prob, eps = eps,...)
+      out <- PLSc(X = Xkp, Y = Y, A = A, Y.prob = Y.prob,
+                  eps = eps, ...)
 
       Yfitted =matrix(ilrInv(s*(Xkp %*% out$B))[,3], ncol = 1)
 
 
-      r2_p <- cor(Yfitted, P)
-
-
-      if(r2_p >= r2_obs){pv <- pv+1}
+      r2_p <- cor(Yfitted, P)[[1]]
 
     }
+    null_distr <-c(r2_obs, unlist(null_distr))
+    pv <- mean(null_distr >= r2_obs[[1]])
 
-    pv <- (pv+1)/nperm
   }else{
     pv <- NA
   }

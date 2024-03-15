@@ -19,6 +19,8 @@
 #' @author Angela Andreella
 #' @return Returns a dataframe that contains the estimated power for each
 #' sample size and number of components considered
+#' @importFrom foreach %dopar%
+#' @importFrom foreach foreach
 #' @export
 #' @examples
 #' \dontrun{
@@ -30,11 +32,13 @@
 computeSampleSize <- function(n, X, Y, A, alpha = 0.05, beta = 0.2,
                               nperm = 100, Nsim = 100, seed = 123, test = "R2",...){
 
-
-  samplesize <-  sapply(seq(length(n)), function(x) computePower(X = X, Y = Y, A = A,
-                                 n = n[x], nperm = nperm, Nsim = Nsim,
-                                 alpha = alpha, test = test, ...))
-
+  x <-1
+samplesize <- foreach(x = seq(length(n)), .combine=cbind) %dopar%
+    {
+      computePower(X = X, Y = Y, A = A,
+                   n = n[x], nperm = nperm, Nsim = Nsim,
+                   alpha = alpha, test = test, ...)
+    }
 
   samplesize <- list(size = n,
                      power = samplesize,
