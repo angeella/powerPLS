@@ -49,6 +49,9 @@ datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 
 out <- PLSc(X = datas$X, Y = datas$Y, A = 3)
 }
 }
+\references{
+Stocchero, M., De Nardi, M., & Scarpa, B. (2021). PLS for classification. Chemometrics and Intelligent Laboratory Systems, 216, 104374.
+}
 \author{
 Angela Andreella
 }

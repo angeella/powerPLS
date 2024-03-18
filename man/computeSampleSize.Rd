@@ -46,6 +46,9 @@ datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,ncom
 out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 3, n = 20)
 }
 }
+\references{
+Andreella, A., Finos, L., Scarpa, B. and Stocchero, M. "Towards a power analysis for PLS-based methods" 	arXiv:2403.10289 stat.ME.
+}
 \author{
 Angela Andreella
 }

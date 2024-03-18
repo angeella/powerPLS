@@ -25,6 +25,9 @@ Returns a list with the following objects:
 \description{
 Performs post transformed PLS
 }
+\references{
+Stocchero, M., & Paris, D. (2016). Post-transformation of PLS2 (ptPLS2) by orthogonal matrix: a new approach for generating predictive and orthogonal latent variables. Journal of Chemometrics, 30(5), 242-251.
+}
 \author{
 Angela Andreella
 }
