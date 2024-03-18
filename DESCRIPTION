@@ -12,4 +12,5 @@ Imports: compositions, ks, mvtnorm, simukde, nipals, MASS, foreach
 Language: en-US
 BugReports: https://github.com/angeella/powerPLS/issues
 URL: https://github.com/angeella/powerPLS
-
+Depends: 
+    R (>= 2.10)
