@@ -26,7 +26,7 @@ out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 3, n = c(10,20,30))
 
 ## References
 
-Andreella, A., Finos, L., Scarpa, B. and Stocchero, M. "Towards a power analysis for PLS-based methods" 	arXiv:2403.10289 stat.ME. \url{https://arxiv.org/abs/2403.10289}
+Andreella, A., Finos, L., Scarpa, B. and Stocchero, M. "Towards a power analysis for PLS-based methods" 	arXiv:2403.10289 stat.ME. **link**: https://arxiv.org/abs/2403.10289
 
 ## Did you find some bugs?
 
