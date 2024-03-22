@@ -1,5 +1,5 @@
 #' @title compute weight and score matrices from PLSc
-#' @description compute weight and score matrices from PLSc
+#' @description compute weight and score matrices for Partial Least Squares classification
 #' @usage computeWT(X, Y, A)
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
@@ -13,6 +13,7 @@
 #' - \code{T_score}: matrix of Y scores
 #' - \code{R}: matrix of Y residuals
 #' @export
+#' @keywords internal
 
 
 

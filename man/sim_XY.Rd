@@ -21,7 +21,12 @@ sim_XY(out, n, seed = 123, post.transformation = TRUE, A)
 Returns a simulated matrix under the alternative hypothesis.
 }
 \description{
-simulate data matrix under the alternative hypothesis using the score components estimated by PLS from the pilot data.
+simulate data matrix under the alternative hypothesis
+}
+\examples{
+datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
+out <- PLSc(X = datas$X, Y = datas$Y, A = 2)
+out_sim <- sim_XY(out = out, n = 10, A = 2)
 }
 \author{
 Angela Andreella

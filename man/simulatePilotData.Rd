@@ -27,7 +27,10 @@ simulatePilotData(seed = 123, nvar, clus.size, nvar_rel,m, A = 2, S1 = NULL, S2 
 Returns list of X and Y simulated data
 }
 \description{
-simulate simple cluster pilot data
+simulate cluster pilot data
+}
+\examples{
+datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
 }
 \author{
 Angela Andreella

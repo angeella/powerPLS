@@ -1,5 +1,5 @@
 #' @title simulate pilot data
-#' @description simulate simple cluster pilot data
+#' @description simulate cluster pilot data
 #' @usage simulatePilotData(seed = 123, nvar, clus.size, nvar_rel,m, A = 2, S1 = NULL, S2 = NULL)
 #' @param seed seed value
 #' @param nvar number of variables
@@ -15,7 +15,8 @@
 #' @author Angela Andreella
 #' @return Returns list of X and Y simulated data
 #' @export
-
+#' @examples
+#' datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
 
 simulatePilotData <- function(seed = 123, nvar, clus.size, nvar_rel,m, A = 2, S1 = NULL, S2 = NULL){
 

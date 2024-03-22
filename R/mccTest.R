@@ -1,5 +1,5 @@
 #' @title MCC test
-#' @description Performs randomization test based on MCC
+#' @description Performs randomization test based on Matthews Correlation Coefficient
 #' @usage mccTest(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...)
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
@@ -26,11 +26,10 @@
 #' @references For the general framework of power analysis for PLS-based methods see:
 #'
 #' @examples
-#' \dontrun{
 #' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
 #' out <- mccTest(X = datas$X, Y = datas$Y, A = 1)
 #' out
-#' }
+
 
 
 

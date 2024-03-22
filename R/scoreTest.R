@@ -28,11 +28,10 @@
 #' @references For the general framework of power analysis for PLS-based methods see:
 #'
 #' @examples
-#' \dontrun{
 #' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
 #' out <- scoreTest(X = datas$X, Y = datas$Y, A = 1)
 #' out
-#' }
+
 
 
 

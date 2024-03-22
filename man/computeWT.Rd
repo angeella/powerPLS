@@ -22,8 +22,9 @@ Returns a list with the following objects:
 - \code{R}: matrix of Y residuals
 }
 \description{
-compute weight and score matrices from PLSc
+compute weight and score matrices for Partial Least Squares classification
 }
 \author{
 Angela Andreella
 }
+\keyword{internal}

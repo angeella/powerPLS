@@ -1,5 +1,5 @@
 #' @title post transformed PLS
-#' @description Performs post transformed PLS
+#' @description Performs post transformed Partial Least Squares
 #' @usage ptPLSc(X, Y, W)
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
@@ -16,6 +16,9 @@
 #' @references
 #'
 #' Stocchero, M., & Paris, D. (2016). Post-transformation of PLS2 (ptPLS2) by orthogonal matrix: a new approach for generating predictive and orthogonal latent variables. Journal of Chemometrics, 30(5), 242-251.
+#' @keywords internal
+
+
 
 ptPLSc <- function(X, Y, W){
 

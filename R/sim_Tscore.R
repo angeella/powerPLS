@@ -12,6 +12,7 @@
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom stats cov
 #' @importFrom stats runif
+#' @keywords internal
 
 
 sim_Tscore <- function(Tscore, n, seed){

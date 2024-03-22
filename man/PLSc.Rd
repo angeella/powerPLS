@@ -41,13 +41,12 @@ Returns a list with the following objects:
 - \code{M}: number of orthogonal components if post transformation is applied.
 }
 \description{
-Performs PLS two class
+Performs Partial Least Squares two class
 }
 \examples{
-\dontrun{
 datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
 out <- PLSc(X = datas$X, Y = datas$Y, A = 3)
-}
+
 }
 \references{
 Stocchero, M., De Nardi, M., & Scarpa, B. (2021). PLS for classification. Chemometrics and Intelligent Laboratory Systems, 216, 104374.

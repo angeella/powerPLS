@@ -25,8 +25,8 @@
 #' @importFrom foreach %dopar%
 #' @importFrom foreach foreach
 #' @examples
-#' \dontrun{
-#' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
+#' \donttest{
+#' datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
 #' out <- computePower(X = datas$X, Y = datas$Y, A = 3, n = 20)
 #' }
 #' @references

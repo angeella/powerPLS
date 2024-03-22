@@ -1,4 +1,4 @@
-#' @title sample size calculation
+#' @title sample size estimation
 #' @description Compute optimal sample size calculation
 #' @usage computeSampleSize(n, X, Y, A, alpha, beta,
 #' nperm, Nsim, seed, test = "R2",...)
@@ -23,9 +23,9 @@
 #' @importFrom foreach foreach
 #' @export
 #' @examples
-#' \dontrun{
-#' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,ncomp = 2)
-#' out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 3, n = 20)
+#' \donttest{
+#' datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
+#' out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 2, n = 20)
 #' }
 #' @references
 #'

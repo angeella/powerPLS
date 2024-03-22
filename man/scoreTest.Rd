@@ -35,11 +35,9 @@ List with the following objects: \code{pv}: raw p-value, \code{pv_adj}: adjusted
 Performs randomization test based on predictive score vector
 }
 \examples{
-\dontrun{
 datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
 out <- scoreTest(X = datas$X, Y = datas$Y, A = 1)
 out
-}
 }
 \references{
 For the general framework of power analysis for PLS-based methods see:

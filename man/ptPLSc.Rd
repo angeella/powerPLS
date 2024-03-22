@@ -23,7 +23,7 @@ Returns a list with the following objects:
 - \code{M}: number of orthogonal components.
 }
 \description{
-Performs post transformed PLS
+Performs post transformed Partial Least Squares
 }
 \references{
 Stocchero, M., & Paris, D. (2016). Post-transformation of PLS2 (ptPLS2) by orthogonal matrix: a new approach for generating predictive and orthogonal latent variables. Journal of Chemometrics, 30(5), 242-251.
@@ -31,3 +31,4 @@ Stocchero, M., & Paris, D. (2016). Post-transformation of PLS2 (ptPLS2) by ortho
 \author{
 Angela Andreella
 }
+\keyword{internal}

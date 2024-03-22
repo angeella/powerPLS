@@ -23,3 +23,4 @@ distribution by using kernel density estimation and the accept-reject method.
 \author{
 Angela Andreella
 }
+\keyword{internal}

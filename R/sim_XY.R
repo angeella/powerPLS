@@ -1,5 +1,5 @@
 #' @title simulate data matrix under the alternative hypothesis
-#' @description simulate data matrix under the alternative hypothesis using the score components estimated by PLS from the pilot data.
+#' @description simulate data matrix under the alternative hypothesis
 #' @usage sim_XY(out, n, seed = 123, post.transformation = TRUE, A)
 #' @param out output from \code{PLSc}
 #' @param n number of observations to simulate
@@ -10,7 +10,10 @@
 #' @return Returns a simulated matrix under the alternative hypothesis.
 #' @export
 #' @importFrom simukde simulate_kde
-
+#' @examples
+#' datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
+#' out <- PLSc(X = datas$X, Y = datas$Y, A = 2)
+#' out_sim <- sim_XY(out = out, n = 10, A = 2)
 
 sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A){
 

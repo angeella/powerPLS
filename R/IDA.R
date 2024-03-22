@@ -8,7 +8,8 @@
 #' @author Angela Andreella
 #' @return Returns a matrix of scores vectors \code{Tscore}.
 #' @export
-#'
+#' @keywords internal
+
 
 IDA <- function(X, Y, W){
 
