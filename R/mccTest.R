@@ -52,10 +52,18 @@ mccTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE,
 
     null_distr <- foreach(j=seq(nperm-1))%dopar%{
 
-      idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
-      Xkp <- X[idx,]
+      #idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
+     # Xkp <- X[idx,]
 
-      out <- PLSc(X = Xkp, Y = Y, A = A, ...)
+     # out <- PLSc(X = Xkp, Y = Y, A = A, ...)
+       if(is.null(dim(Y))){
+         idx <- sample(seq(length(Y)), length(Y), replace = FALSE)
+         Yp <- Y[idx]
+       }else{
+         idx <- sample(seq(nrow(Y)), nrow(Y), replace = FALSE)
+         Yp <- Y[idx,]
+       }
+      out <- PLSc(X = X, Y = Yp, A = A, ...)
 
       if(!is.null(dim(out$Y_fitted))){
         Y_fitted <- as.factor(out$Y_fitted[,2])

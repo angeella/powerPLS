@@ -41,9 +41,9 @@ sample size and number of components considered
 Compute optimal sample size calculation
 }
 \examples{
-\donttest{
+\dontrun{
 datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 2, n = 20)
+out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 2, A = 3, n = 20, test = "R2")
 }
 }
 \references{

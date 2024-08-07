@@ -25,8 +25,8 @@ simulate data matrix under the alternative hypothesis
 }
 \examples{
 datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-out <- PLSc(X = datas$X, Y = datas$Y, A = 2)
-out_sim <- sim_XY(out = out, n = 10, A = 2)
+out <- PLSc(X = datas$X, Y = datas$Y, A = 3)
+out_sim <- sim_XY(out = out, n = 10, A = 3)
 }
 \author{
 Angela Andreella

@@ -63,16 +63,29 @@ R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, 
   Yfitted = matrix(ilrInv(s*(X %*% out$B))[,3], ncol = 1)
 
   r2_obs <- cor(Yfitted, P)
-
+  null_distr<-c()
   if(randomization){
     null_distr <- foreach(j=seq(nperm-1))%dopar%{
-      idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
+
+      idx <- sample(seq(nrow(X)),
+                    nrow(X), replace = FALSE)
       Xkp <- X[idx,]
+      out <- PLSc(X = Xkp, Y = Y, A = A, Y.prob = Y.prob,
+                  eps = eps, ...)
+      #
+      #       if(is.null(dim(Y))){
+      #         idx <- sample(seq(length(Y)), length(Y), replace = FALSE)
+      #         Yp <- Y[idx]
+      #       }else{
+      #         idx <- sample(seq(nrow(Y)), nrow(Y), replace = FALSE)
+      #         Yp <- Y[idx,]
+      #       }
 
       out <- PLSc(X = Xkp, Y = Y, A = A, Y.prob = Y.prob,
                   eps = eps, ...)
 
-      Yfitted =matrix(ilrInv(s*(Xkp %*% out$B))[,3], ncol = 1)
+      #Yfitted =matrix(ilrInv(s*(Xkp %*% out$B))[,3], ncol = 1)
+      Yfitted =matrix(ilrInv(s*(X %*% out$B))[,3], ncol = 1)
 
 
       r2_p <- cor(Yfitted, P)[[1]]
@@ -84,6 +97,7 @@ R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, 
   }else{
     pv <- NA
   }
+
 
 
   return(list(pv = pv,

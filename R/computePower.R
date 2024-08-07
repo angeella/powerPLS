@@ -3,7 +3,8 @@
 #' of score components.
 #' @usage computePower(X, Y, A, n, seed = 123,
 #' Nsim = 100, nperm = 200, alpha = 0.05,
-#' test = "R2", Y.prob = FALSE, eps = 0.01, ...)
+#' scaling = "auto-scaling", test = "R2",
+#'Y.prob = FALSE, eps = 0.01, post.transformation = TRUE,...)
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the two classes and
@@ -14,20 +15,27 @@
 #' @param Nsim number of simulations
 #' @param nperm number of permutations
 #' @param alpha type I error
+#' @param scaling type of scaling, one of
+#' \code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default @auto-scaling
 #' @param test type of test, one of \code{c("score", "mcc", "R2")}.
 #' @param Y.prob Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector
 #' @param eps Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector.
 #' Default to "R2".
+#' @param post.transformation Boolean value. @TRUE if you want to apply post transformation. Default @TRUE
 #' @param ... Futher parameters see \code{\link{PLSc}}
 #' @author Angela Andreella
 #' @return Returns the corresponding estimated power
 #' @export
 #' @importFrom foreach %dopar%
 #' @importFrom foreach foreach
+#' @importFrom parallel detectCores
+#' @importFrom parallel makeCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom parallel stopCluster
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-#' out <- computePower(X = datas$X, Y = datas$Y, A = 3, n = 20)
+#' out <- computePower(X = datas$X, Y = datas$Y, A = 3, n = 20, test = "R2")
 #' }
 #' @references
 #'
@@ -38,114 +46,84 @@
 
 computePower <- function(X, Y, A, n, seed = 123,
                          Nsim = 100, nperm = 200, alpha = 0.05,
-                         test = "R2", Y.prob = FALSE, eps = 0.01, ...){
+                         scaling = "auto-scaling",
+                         test = "R2", Y.prob = FALSE, eps = 0.01,
+                         post.transformation = TRUE,...) {
 
-  if(any(!(test %in% c("R2", "mcc", "score")))){
-    stop("available tessts are R2, mcc and score")
+  if (any(!(test %in% c("R2", "mcc", "score")))) {
+    stop("available tests are R2, mcc and score")
   }
 
-  #Build the reference model PLS2c
+  # Build the reference model PLS2c
+  outPLS <- PLSc(X = X, Y = Y, A = A, Y.prob = Y.prob, eps = eps, scaling = scaling, post.transformation = post.transformation,...)
 
-  outPLS <- PLSc(X = X, Y = Y, A = A, Y.prob = Y.prob, eps = eps, ...)
+  # Funzione per eseguire una singola simulazione
+  simulate_once <- function(i,...) {
+    # Model the distribution of the pilot data
+    outsim <- sim_XY(out = outPLS, n = n, seed = 1234 + i, A = A, post.transformation = post.transformation)
 
-  pw <- matrix(0, ncol = length(test), nrow = A)
-  colnames(pw)<- test
-
-i <- NULL
-pw <-  foreach(i = c(1:Nsim)) %dopar% {
-
-    #Model the distribution of the X-data
-    outsim <- sim_XY(out = outPLS, n = n, seed = 1234+i, A = A, ...)
-    #Model the distribution of the Y-data
     Xsim <- outsim$X_H1
     Ysim <- outsim$Y_H1
 
+    results <- list()
 
-    #Apply one test
-    if(length(test) == 1){
-
-      if(test == "mcc"){
-
-        pv <- foreach(x = seq(A), .combine=rbind) %dopar%{
-          mccTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                  randomization = TRUE, ...)
-        }
-
+    if ("mcc" %in% test) {
+      results$pv_mcc <- foreach(x = seq(A), .combine = 'cbind', .packages = c("powerPLS")) %dopar% {
+        mccTest(X = Xsim, Y = Ysim[, 2], A = x, nperm = nperm, randomization = TRUE, Y.prob = Y.prob,eps = eps)
       }
-      if(test == "score"){
-        pv <- foreach(x = seq(A), .combine=rbind) %dopar%{
-          scoreTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                  randomization = TRUE, ...)
-        }
-
+    }
+    if ("score" %in% test) {
+      results$pv_score <- foreach(x = seq(A), .combine = 'cbind', .packages = c("powerPLS")) %dopar% {
+        scoreTest(X = Xsim, Y = Ysim[, 2], A = x, nperm = nperm, randomization = TRUE, Y.prob = Y.prob, eps = eps)
       }
-      if(test == "R2"){
-        pv <- foreach(x = seq(A), .combine=rbind) %dopar%{
-          R2Test(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                    randomization = TRUE, ...)
-        }
-
-      }
-
-      pv <- as.data.frame(pv)
-      pv <- data.frame(pv = unlist(pv$pv),
-                       pv_adjust = unlist(pv$pv_adj))
-      for(x in seq(A)){
-        if(pv$pv_adj[x] <= alpha){pw[x] <- pw[x] + 1}
-      }
-    }else{
-
-      #Apply more than one test.
-
-      if("mcc" %in% test){
-        pv_mcc <- foreach(x = seq(A), .combine=cbind) %dopar%{
-          mccTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                    randomization = TRUE, ...)
-        }
-
-      }
-      if("score" %in% test){
-        pv_score <- foreach(x = seq(A), .combine=cbind) %dopar%{
-          scoreTest(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                  randomization = TRUE, ...)
-        }
-
-      }
-      if("R2" %in% test){
-        pv_R2 <- foreach(x = seq(A), .combine=cbind) %dopar%{
-          R2Test(X = Xsim, Y = Ysim[,2], A = x, nperm = nperm,
-                  randomization = TRUE, ...)
-        }
-
-      }
-
-      names_test <- ls()[ls() %in% c("pv_mcc", "pv_score", "pv_R2")]
-
-      pv_out <- t(sapply(seq(length(names_test)),
-                         function(x) eval(as.name(names_test[x]))[2,]))
-
-      colnames(pv_out) <- gsub("pv_", "", names_test)
-      rownames(pv_out) <- seq(A)
-
-      for(x in seq(A)){
-        for(y in seq(length(test))){
-          if(pv_out[x,y] <= alpha){
-            pw[x,y] <- pw[x,y] + 1
-          }
-        }
-
+    }
+    if ("R2" %in% test) {
+      results$pv_R2 <- foreach(x = seq(A), .combine = 'cbind', .packages = c("powerPLS")) %dopar% {
+        R2Test(X = Xsim, Y = Ysim[, 2], A = x, nperm = nperm, randomization = TRUE, Y.prob = Y.prob, eps = eps)
       }
     }
 
+    pv_out <- data.frame(matrix(unlist(results), ncol = length(test), nrow=A))
 
-    pw
+    colnames(pv_out) <- test
+    rownames(pv_out) <- seq(A)
 
+    pw_sim <- matrix(0, ncol = length(test), nrow = A)
+    colnames(pw_sim) <- test
 
+    for (x in seq(A)) {
+      for (y in seq(length(test))) {
+        if (pv_out[x, y] <= alpha) {
+          pw_sim[x, y] <- pw_sim[x, y] + 1
+        }
+      }
+    }
+
+    return(pw_sim)
   }
 
+  # Numero di core da utilizzare
 
-pw <- pw[[Nsim]]
-pw <- pw/Nsim
+  chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+
+  if (nzchar(chk) && chk == "TRUE") {
+    # use 2 cores in CRAN/Travis/AppVeyor
+    num_cores <- 2L
+  } else {
+    # use all cores in devtools::test()
+    num_cores <- parallel::detectCores() -2
+  }
+
+  cl <- makeCluster(num_cores)
+  registerDoParallel(cl)
+
+  # Esegui le simulazioni in parallelo usando foreach
+  pw <- foreach(i = seq(Nsim), .combine = "+", .packages = c("powerPLS", "foreach")) %dopar% {
+    simulate_once(i)
+  }
+  pw/Nsim
+
+  stopCluster(cl)
 
 
   return(pw)

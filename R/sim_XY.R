@@ -9,17 +9,19 @@
 #' @author Angela Andreella
 #' @return Returns a simulated matrix under the alternative hypothesis.
 #' @export
-#' @importFrom simukde simulate_kde
+#' @importFrom FKSUM fk_density
+#' @importFrom foreach %dopar%
+#' @importFrom foreach foreach
 #' @examples
 #' datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-#' out <- PLSc(X = datas$X, Y = datas$Y, A = 2)
-#' out_sim <- sim_XY(out = out, n = 10, A = 2)
+#' out <- PLSc(X = datas$X, Y = datas$Y, A = 3)
+#' out_sim <- sim_XY(out = out, n = 10, A = 3)
 
 sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A){
 
 
   set.seed(seed)
-#  out <- PLSc(X = X, Y = Y, A = A, scaling = scaling, post.transformation = post.transformation)
+  #  out <- PLSc(X = X, Y = Y, A = A, scaling = scaling, post.transformation = post.transformation)
   if(post.transformation){
     M <- out$M
   }else{
@@ -31,12 +33,21 @@ sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A){
   Y_loading <- out$Y_loading
   B <- out$B
   X <- out$X
-
   if(A == M){
     T_scoreO <- T_score
-    sim_TO <- sapply(seq(A), function(x) simulate_kde(x = T_scoreO[,x], n = n)$random.values)
-    T_sim <- sim_TO #T target
+   # sim_TO <- sapply(seq(A), function(x) {
+   #   out_kde <- fk_density(x = T_scoreO[,x])
+    #  sample(out_kde$x, size = n, prob = out_kde$y)}
+   # )
+    sim_TO <- foreach(x=seq(A),
+                      .combine = cbind,
+                      .packages = "FKSUM",
+                      .errorhandling = "remove")%dopar%{
+      out_kde <- fk_density(x = T_scoreO[,x])
+      sample(out_kde$x, size = n, prob = out_kde$y)
+    }
 
+    T_sim <- sim_TO #T target
   }else{
     T_scoreO <- T_score[,1:M]
     if(is.null(ncol(T_score[,((M+1):A)]))){
@@ -50,22 +61,30 @@ sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A){
     }else{
       nco <- ncol(T_score[,1:M])
     }
+
     T_scoreO <- matrix(T_score[,(1:M)], ncol = nco)
     T_scoreP <- matrix(T_score[,((M+1):A)], ncol = ncp)
 
+    sim_TP <- foreach(x=seq(ncol(T_scoreP)),
+                             .combine = cbind,
+                             .packages = "FKSUM",
+                             .errorhandling = "remove")%dopar%{
+      out_kde <- fk_density(x = T_scoreP[,x])
+      sample(out_kde$x, size = n, prob = out_kde$y)}
 
-    sim_TP <- unlist(sapply(seq(ncol(T_scoreP)), function(x) simulate_kde(x = T_scoreP[,x],
-                                                                          n = n)$random.values))
-    sim_TO <- unlist(sapply(seq(ncol(T_scoreO)), function(x) simulate_kde(x = T_scoreO[,x],
-                                                                          n = n)$random.values))
-  #  sim_TP <- scale(sim_TP, center = FALSE)
-  #  sim_TO <- scale(sim_TO, center = FALSE)
+    sim_TO <- foreach(x=seq(ncol(T_scoreO)),
+                             .combine = cbind,
+                             .packages = "FKSUM",
+                             .errorhandling = "remove")%dopar%{
+      out_kde <- fk_density(x = T_scoreO[,x])
+      sample(out_kde$x, size = n, prob = out_kde$y)}
+    #  sim_TP <- scale(sim_TP, center = FALSE)
+    #  sim_TO <- scale(sim_TO, center = FALSE)
 
 
     T_sim <- cbind(sim_TO, sim_TP) #T target
 
   }
-
 
   out1 <- svd(T_sim %*% t(T_score) %*% T_score)
 
@@ -88,7 +107,6 @@ sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A){
 
 
   Y_H1 <- fitY(X = X_H1, B = B, Mm = 0, s = 1)
-
 
 
   return(list(Y_H1 = Y_H1, X_H1 = X_H1))

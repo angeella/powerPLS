@@ -6,7 +6,8 @@
 \usage{
 computePower(X, Y, A, n, seed = 123,
 Nsim = 100, nperm = 200, alpha = 0.05,
-test = "R2", Y.prob = FALSE, eps = 0.01, ...)
+scaling = "auto-scaling", test = "R2",
+Y.prob = FALSE, eps = 0.01, post.transformation = TRUE,...)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and
@@ -27,12 +28,17 @@ rows the \eqn{n} observations.}
 
 \item{alpha}{type I error}
 
+\item{scaling}{type of scaling, one of
+\code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default @auto-scaling}
+
 \item{test}{type of test, one of \code{c("score", "mcc", "R2")}.}
 
 \item{Y.prob}{Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector}
 
 \item{eps}{Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector.
 Default to "R2".}
+
+\item{post.transformation}{Boolean value. @TRUE if you want to apply post transformation. Default @TRUE}
 
 \item{...}{Futher parameters see \code{\link{PLSc}}}
 }
@@ -44,9 +50,9 @@ estimate power for a given sample size, alpha level and number
 of score components.
 }
 \examples{
-\donttest{
+\dontrun{
 datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-out <- computePower(X = datas$X, Y = datas$Y, A = 3, n = 20)
+out <- computePower(X = datas$X, Y = datas$Y, A = 3, n = 20, test = "R2")
 }
 }
 \references{
