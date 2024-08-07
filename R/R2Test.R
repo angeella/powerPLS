@@ -84,8 +84,7 @@ R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, 
       out <- PLSc(X = Xkp, Y = Y, A = A, Y.prob = Y.prob,
                   eps = eps, ...)
 
-      #Yfitted =matrix(ilrInv(s*(Xkp %*% out$B))[,3], ncol = 1)
-      Yfitted =matrix(ilrInv(s*(X %*% out$B))[,3], ncol = 1)
+      Yfitted =matrix(ilrInv(s*(Xkp %*% out$B))[,3], ncol = 1)
 
 
       r2_p <- cor(Yfitted, P)[[1]]

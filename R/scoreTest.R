@@ -80,21 +80,11 @@ scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALS
   if(randomization){
 
     null_distr <- foreach(j=seq(nperm-1),.errorhandling = "remove") %dopar% {
-   #   idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
-    #  Xkp <- X[idx,]
+    idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
+    Xkp <- X[idx,]
 
-   #  out <- PLSc(X = Xkp, Y = Y, A = A,...)
+    out <- PLSc(X = Xkp, Y = Y, A = A,...)
 
-      if(is.null(dim(Y))){
-
-        idx <- sample(seq(length(Y)), length(Y), replace = FALSE)
-        Yp <- Y[idx]
-      }else{
-
-        idx <- sample(seq(nrow(Y)), nrow(Y), replace = FALSE)
-        Yp <- Y[idx,]
-      }
-     out <- PLSc(X = X, Y = Yp, A = A,...)
 
       T_score <- out$T_score
       T_score
@@ -111,24 +101,24 @@ scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALS
       lev <- unique(Y)
 
       if(is.null(dim(Tp))){
-        if(sum(Yp == lev[1])==1){
-          effect_obs <- t.test(Tp[Yp == lev[2]] - Tp[Yp == lev[1]])$statistic
+        if(sum(Y == lev[1])==1){
+          effect_obs <- t.test(Tp[Y == lev[2]] - Tp[Y == lev[1]])$statistic
         }
-        if(sum(Yp == lev[2])==1){
-          effect_obs <- t.test(Tp[Yp == lev[1],] - Tp[Yp == lev[2],])$statistic
+        if(sum(Y == lev[2])==1){
+          effect_obs <- t.test(Tp[Y == lev[1]] - Tp[Y == lev[2]])$statistic
         }
-        if(sum(Yp == lev[1])!=1 & sum(Yp == lev[2])!=1){
-          effect_obs <- t.test(Tp[Yp == lev[1],], Tp[Yp == lev[2],],var.equal = FALSE)$statistic
+        if(sum(Y == lev[1])!=1 & sum(Y == lev[2])!=1){
+          effect_obs <- t.test(Tp[Y == lev[1]], Tp[Y == lev[2]],var.equal = FALSE)$statistic
         }
       }else{
-        if(sum(Yp == lev[1])==1){
-          effect_obs <- t.test(Tp[Yp == lev[2],] - Tp[Yp == lev[1],])$statistic
+        if(sum(Y == lev[1])==1){
+          effect_obs <- t.test(Tp[Y == lev[2],] - Tp[Y == lev[1],])$statistic
         }
-        if(sum(Yp == lev[2])==1){
-          effect_obs <- t.test(Tp[Yp == lev[1],] - Tp[Yp == lev[2],])$statistic
+        if(sum(Y == lev[2])==1){
+          effect_obs <- t.test(Tp[Y == lev[1],] - Tp[Y == lev[2],])$statistic
         }
-        if(sum(Yp == lev[1])!=1 & sum(Yp == lev[2])!=1){
-          effect_obs <- t.test(Tp[Yp == lev[1],], Tp[Yp == lev[2],],var.equal = FALSE)$statistic
+        if(sum(Y == lev[1])!=1 & sum(Y == lev[2])!=1){
+          effect_obs <- t.test(Tp[Y == lev[1],], Tp[Y == lev[2],],var.equal = FALSE)$statistic
         }
       }
 
