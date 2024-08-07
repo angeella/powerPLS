@@ -16,6 +16,8 @@ sim_XY(out, n, seed = 123, post.transformation = TRUE, A)
 \item{post.transformation}{Boolean value. Default @TRUE i.e., post transformation is applied.}
 
 \item{A}{number of score components used in \code{PLSc}.}
+
+\item{fast}{use fk_density from the FKSUM package for KDE. Default @FALSE.}
 }
 \value{
 Returns a simulated matrix under the alternative hypothesis.

@@ -22,6 +22,7 @@
 #' @param eps Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector.
 #' Default to "R2".
 #' @param post.transformation Boolean value. @TRUE if you want to apply post transformation. Default @TRUE
+#' @param fast use fk_density from the FKSUM package for KDE. Default @FALSE.
 #' @param ... Futher parameters see \code{\link{PLSc}}
 #' @author Angela Andreella
 #' @return Returns the corresponding estimated power
@@ -48,7 +49,7 @@ computePower <- function(X, Y, A, n, seed = 123,
                          Nsim = 100, nperm = 200, alpha = 0.05,
                          scaling = "auto-scaling",
                          test = "R2", Y.prob = FALSE, eps = 0.01,
-                         post.transformation = TRUE,...) {
+                         post.transformation = TRUE,fast=FALSE,...) {
 
   if (any(!(test %in% c("R2", "mcc", "score")))) {
     stop("available tests are R2, mcc and score")
@@ -60,7 +61,7 @@ computePower <- function(X, Y, A, n, seed = 123,
   # Funzione per eseguire una singola simulazione
   simulate_once <- function(i,...) {
     # Model the distribution of the pilot data
-    outsim <- sim_XY(out = outPLS, n = n, seed = 1234 + i, A = A, post.transformation = post.transformation)
+    outsim <- sim_XY(out = outPLS, n = n, seed = 1234 + i, A = A, post.transformation = post.transformation,fast=fast)
 
     Xsim <- outsim$X_H1
     Ysim <- outsim$Y_H1

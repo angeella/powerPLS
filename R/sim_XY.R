@@ -6,18 +6,20 @@
 #' @param seed seed value
 #' @param post.transformation Boolean value. Default @TRUE i.e., post transformation is applied.
 #' @param A number of score components used in \code{PLSc}.
+#' @param fast use fk_density from the FKSUM package for KDE. Default @FALSE.
 #' @author Angela Andreella
 #' @return Returns a simulated matrix under the alternative hypothesis.
 #' @export
 #' @importFrom FKSUM fk_density
 #' @importFrom foreach %dopar%
 #' @importFrom foreach foreach
+#' @importFrom simukde simulate_kde
 #' @examples
 #' datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
 #' out <- PLSc(X = datas$X, Y = datas$Y, A = 3)
 #' out_sim <- sim_XY(out = out, n = 10, A = 3)
 
-sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A){
+sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A, fast = FALSE){
 
 
   set.seed(seed)
@@ -43,8 +45,12 @@ sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A){
                       .combine = cbind,
                       .packages = "FKSUM",
                       .errorhandling = "remove")%dopar%{
+      if(fast){
       out_kde <- fk_density(x = T_scoreO[,x])
-      sample(out_kde$x, size = n, prob = out_kde$y)
+      sample(out_kde$x, size = n, prob = out_kde$y)}
+      else{
+      simulate_kde(x = T_scoreO[,x], n = n)$random.values
+      }
     }
 
     T_sim <- sim_TO #T target
@@ -69,15 +75,25 @@ sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A){
                              .combine = cbind,
                              .packages = "FKSUM",
                              .errorhandling = "remove")%dopar%{
+      if(fast){
       out_kde <- fk_density(x = T_scoreP[,x])
-      sample(out_kde$x, size = n, prob = out_kde$y)}
+      sample(out_kde$x, size = n, prob = out_kde$y)
+      }else{
+        simulate_kde(x = T_scoreP[,x], n = n)$random.values
+      }
+      }
 
     sim_TO <- foreach(x=seq(ncol(T_scoreO)),
                              .combine = cbind,
                              .packages = "FKSUM",
                              .errorhandling = "remove")%dopar%{
+      if(fast){
       out_kde <- fk_density(x = T_scoreO[,x])
-      sample(out_kde$x, size = n, prob = out_kde$y)}
+      sample(out_kde$x, size = n, prob = out_kde$y)
+      }else{
+        simulate_kde(x = T_scoreO[,x], n = n)$random.values
+      }
+      }
     #  sim_TP <- scale(sim_TP, center = FALSE)
     #  sim_TO <- scale(sim_TO, center = FALSE)
 
