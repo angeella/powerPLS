@@ -121,10 +121,9 @@ computePower <- function(X, Y, A, n, seed = 123,
   pw <- foreach(i = seq(Nsim), .combine = "+", .packages = c("powerPLS", "foreach")) %dopar% {
     simulate_once(i)
   }
-  pw/Nsim
 
   stopCluster(cl)
 
 
-  return(pw)
+  return(pw/Nsim)
 }
