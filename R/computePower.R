@@ -62,17 +62,8 @@ computePower <- function(X, Y, A, n, seed = 123,
                  scaling, post.transformation = post.transformation,
                  transformation = "clr")
 
-  chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
-  if (nzchar(chk) && chk == "TRUE") {
-    cores <- 2L
-  } else {
-    cores <- parallel::detectCores() -2
-  }
-
-  cl <- parallel::makeCluster(cores)
-
-pw <- foreach(a = c(1:Nsim), .combine = "+")%dopar%{
+pw <- sapply(seq(Nsim), function(a){
 
   pw_sim <- matrix(0, ncol = length(test), nrow = A)
 
@@ -118,8 +109,9 @@ pw <- foreach(a = c(1:Nsim), .combine = "+")%dopar%{
   colnames(pw_sim) <- gsub("pv_", "", names(results))
   rownames(pw_sim) <- seq(A)
   pw_sim
-  }
-parallel::stopCluster(cl)
+  },simplify =FALSE)
 
-  return(pw_sim/Nsim)
+  pw <- Reduce('+', pw)
+
+  return(pw/Nsim)
 }
