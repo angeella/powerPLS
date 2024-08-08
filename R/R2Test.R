@@ -1,6 +1,7 @@
 #' @title R2 test
 #' @description Performs randomization test based on R2
-#' @usage R2Test(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...)
+#' @usage R2Test(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,
+#' scaling = "auto-scaling", post.transformation = TRUE)
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the two classes and
@@ -10,7 +11,9 @@
 #' @param randomization Boolean value. Default @FALSE. If @TRUE the permutation p-value is computed
 #' @param Y.prob Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector
 #' @param eps Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector
-#' @param ... Futher parameters.
+#' @param scaling type of scaling, one of
+#' \code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default @auto-scaling
+#' @param post.transformation Boolean value. @TRUE if you want to apply post transformation. Default @TRUE
 #' @author Angela Andreella
 #' @return Returns a list with the corresponding statistical tests,
 #' raw and adjusted p-values
@@ -31,11 +34,14 @@
 #' out
 
 
-R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...){
+R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE,
+                   Y.prob = FALSE, eps = 0.01, scaling = "auto-scaling",
+                   post.transformation = TRUE){
 
 
-  out <- PLSc(X = X, Y = Y, A = A, Y.prob = Y.prob,
-              eps = eps, ...)
+  out <- PLSc(X = X, Y = Y, A = A, scaling = scaling,
+              post.transformation = post.transformation,eps = eps,
+              Y.prob = Y.prob,transformation = "ilr")
 
   if(!Y.prob){
 
@@ -51,11 +57,12 @@ R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, 
     }
 
     #Transform to probability matrix
-    Y[which(Y==0)]<-eps
-    Y[which(Y==1)]<-1-(ncol(Y)-1)*eps
+    Yp <- Y
+    Yp[which(Yp==0)]<-eps
+    Yp[which(Yp==1)]<-1-(ncol(Yp)-1)*eps
 
     #Centered log ratio transform transformation
-    P <- matrix(ilr(Y), ncol = 1)
+    P <- matrix(ilr(Yp), ncol = 1)
   }else{
     P <- Y
   }
@@ -65,22 +72,23 @@ R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, 
   r2_obs <- cor(Yfitted, P)
   null_distr<-c()
   if(randomization){
-    null_distr <- foreach(j=seq(nperm-1))%dopar%{
+    null_distr <- replicate(nperm-1, {
 
       idx <- sample(seq(nrow(X)),
                     nrow(X), replace = FALSE)
       Xkp <- X[idx,]
-      out <- PLSc(X = Xkp, Y = Y, A = A, Y.prob = Y.prob,
-                  eps = eps, ...)
+      out <- PLSc(X = Xkp, Y = Y[,2], A = A, scaling = scaling,
+                  post.transformation = post.transformation,eps = eps,
+                  Y.prob = Y.prob,transformation = "ilr")
 
 
       Yfitted =matrix(ilrInv(s*(Xkp %*% out$B))[,3], ncol = 1)
 
 
-      r2_p <- cor(Yfitted, P)[[1]]
+      cor(Yfitted, P)[[1]]
 
-    }
-    null_distr <-c(r2_obs, unlist(null_distr))
+    })
+    null_distr <-c(r2_obs, null_distr)
     pv <- mean(null_distr >= r2_obs[[1]])
 
   }else{

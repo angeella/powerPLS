@@ -1,16 +1,19 @@
 #' @title Score test
 #' @description Performs randomization test based on predictive score vector
-#' @usage scoreTest(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...)
+#' @usage scoreTest(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,
+#' scaling = "auto-scaling", post.transformation = TRUE)
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the two classes and
 #' rows the \eqn{n} observations.
-#' @param nperm number of permutations. Default 100.
+#' @param nperm number of permutations. Default 200.
 #' @param A number of score components
 #' @param randomization Boolean value. Default @FALSE. If @TRUE the permutation p-value is computed
 #' @param Y.prob Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector
 #' @param eps Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector
-#' @param ... Further parameters.
+#' @param scaling type of scaling, one of
+#' \code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default @auto-scaling
+#' @param post.transformation Boolean value. @TRUE if you want to apply post transformation. Default @TRUE
 #' @author Angela Andreella
 #' @return Returns a list with the corresponding statistical tests,
 #' raw and adjusted p-values
@@ -36,9 +39,13 @@
 
 
 
-scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...){
+scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
+                      Y.prob = FALSE, eps = 0.01, scaling = "auto-scaling",
+                      post.transformation = TRUE){
 
-  out <- PLSc(X = X, Y = Y, A = A,...)
+  out <- PLSc(X = X, Y = Y, A = A, scaling = scaling,
+              post.transformation = post.transformation,
+              eps = eps, Y.prob = Y.prob, transformation = "clr")
 
 
   T_score <- out$T_score
@@ -79,11 +86,14 @@ scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALS
   }
   if(randomization){
 
-    null_distr <- foreach(j=seq(nperm-1),.errorhandling = "remove") %dopar% {
+    null_distr <- replicate(nperm-1,{
+
     idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
     Xkp <- X[idx,]
 
-    out <- PLSc(X = Xkp, Y = Y, A = A,...)
+    out <- PLSc(X = Xkp, Y = Y, A = A, scaling = scaling,
+                post.transformation = post.transformation,
+                eps = eps, Y.prob = Y.prob, transformation = "clr")
 
 
       T_score <- out$T_score
@@ -102,30 +112,31 @@ scoreTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALS
 
       if(is.null(dim(Tp))){
         if(sum(Y == lev[1])==1){
-          effect_obs <- t.test(Tp[Y == lev[2]] - Tp[Y == lev[1]])$statistic
+          t.test(Tp[Y == lev[2]] - Tp[Y == lev[1]])$statistic
         }
         if(sum(Y == lev[2])==1){
-          effect_obs <- t.test(Tp[Y == lev[1]] - Tp[Y == lev[2]])$statistic
+          t.test(Tp[Y == lev[1]] - Tp[Y == lev[2]])$statistic
         }
         if(sum(Y == lev[1])!=1 & sum(Y == lev[2])!=1){
-          effect_obs <- t.test(Tp[Y == lev[1]], Tp[Y == lev[2]],var.equal = FALSE)$statistic
+          t.test(Tp[Y == lev[1]], Tp[Y == lev[2]],var.equal = FALSE)$statistic
         }
       }else{
         if(sum(Y == lev[1])==1){
-          effect_obs <- t.test(Tp[Y == lev[2],] - Tp[Y == lev[1],])$statistic
+          t.test(Tp[Y == lev[2],] - Tp[Y == lev[1],])$statistic
         }
         if(sum(Y == lev[2])==1){
-          effect_obs <- t.test(Tp[Y == lev[1],] - Tp[Y == lev[2],])$statistic
+          t.test(Tp[Y == lev[1],] - Tp[Y == lev[2],])$statistic
         }
         if(sum(Y == lev[1])!=1 & sum(Y == lev[2])!=1){
-          effect_obs <- t.test(Tp[Y == lev[1],], Tp[Y == lev[2],],var.equal = FALSE)$statistic
+          t.test(Tp[Y == lev[1],], Tp[Y == lev[2],],var.equal = FALSE)$statistic
         }
       }
 
 
 
-    }
-    null_distr <-c(effect_obs, unlist(null_distr))
+    })
+
+    null_distr <-c(effect_obs, null_distr)
     pv <- mean(null_distr >= effect_obs)
   }else{
     pv <- NA

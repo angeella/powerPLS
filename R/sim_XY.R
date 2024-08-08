@@ -23,7 +23,7 @@ sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A, fast = FAL
 
 
   set.seed(seed)
-  #  out <- PLSc(X = X, Y = Y, A = A, scaling = scaling, post.transformation = post.transformation)
+
   if(post.transformation){
     M <- out$M
   }else{
@@ -41,17 +41,17 @@ sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A, fast = FAL
    #   out_kde <- fk_density(x = T_scoreO[,x])
     #  sample(out_kde$x, size = n, prob = out_kde$y)}
    # )
-    sim_TO <- foreach(x=seq(A),
-                      .combine = cbind,
-                      .packages = "FKSUM",
-                      .errorhandling = "remove")%dopar%{
+    sim_TO <- sapply(seq(ncol(T_scoreO)),function(x){
       if(fast){
       out_kde <- fk_density(x = T_scoreO[,x])
-      sample(out_kde$x, size = n, prob = out_kde$y)}
+      sample(out_kde$x, size = n, prob = out_kde$y)
+     # kde_transf <- ks::kde(x = T_scoreO[,x])
+     # ks::rkde(n = n, fhat = kde_transf)
+        }
       else{
       simulate_kde(x = T_scoreO[,x], n = n)$random.values
       }
-    }
+    })
 
     T_sim <- sim_TO #T target
   }else{
@@ -71,29 +71,27 @@ sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A, fast = FAL
     T_scoreO <- matrix(T_score[,(1:M)], ncol = nco)
     T_scoreP <- matrix(T_score[,((M+1):A)], ncol = ncp)
 
-    sim_TP <- foreach(x=seq(ncol(T_scoreP)),
-                             .combine = cbind,
-                             .packages = "FKSUM",
-                             .errorhandling = "remove")%dopar%{
+    sim_TP <- sapply(seq(ncol(T_scoreP)),function(x){
       if(fast){
       out_kde <- fk_density(x = T_scoreP[,x])
       sample(out_kde$x, size = n, prob = out_kde$y)
+     # kde_transf <- ks::kde(x = T_scoreP[,x])
+     # ks::rkde(n = n, fhat = kde_transf)
       }else{
         simulate_kde(x = T_scoreP[,x], n = n)$random.values
       }
-      }
+      })
 
-    sim_TO <- foreach(x=seq(ncol(T_scoreO)),
-                             .combine = cbind,
-                             .packages = "FKSUM",
-                             .errorhandling = "remove")%dopar%{
+    sim_TO <- sapply(seq(ncol(T_scoreO)),function(x){
       if(fast){
       out_kde <- fk_density(x = T_scoreO[,x])
       sample(out_kde$x, size = n, prob = out_kde$y)
+    #  kde_transf <- ks::kde(x = T_scoreO[,x])
+    #  ks::rkde(n = n, fhat = kde_transf)
       }else{
         simulate_kde(x = T_scoreO[,x], n = n)$random.values
       }
-      }
+      })
     #  sim_TP <- scale(sim_TP, center = FALSE)
     #  sim_TO <- scale(sim_TO, center = FALSE)
 

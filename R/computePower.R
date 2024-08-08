@@ -4,7 +4,8 @@
 #' @usage computePower(X, Y, A, n, seed = 123,
 #' Nsim = 100, nperm = 200, alpha = 0.05,
 #' scaling = "auto-scaling", test = "R2",
-#'Y.prob = FALSE, eps = 0.01, post.transformation = TRUE,...)
+#'Y.prob = FALSE, eps = 0.01, post.transformation = TRUE,
+#'transformation = "clr",)
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the two classes and
@@ -23,7 +24,7 @@
 #' Default to "R2".
 #' @param post.transformation Boolean value. @TRUE if you want to apply post transformation. Default @TRUE
 #' @param fast use fk_density from the FKSUM package for KDE. Default @FALSE.
-#' @param ... Futher parameters see \code{\link{PLSc}}
+#' @param transformation transformation used to map \code{Y} in probability data vector. The options are @ilr and @clr.
 #' @author Angela Andreella
 #' @return Returns the corresponding estimated power
 #' @export
@@ -49,82 +50,76 @@ computePower <- function(X, Y, A, n, seed = 123,
                          Nsim = 100, nperm = 200, alpha = 0.05,
                          scaling = "auto-scaling",
                          test = "R2", Y.prob = FALSE, eps = 0.01,
-                         post.transformation = TRUE,fast=FALSE,...) {
+                         post.transformation = TRUE,
+                         fast=FALSE,transformation = "clr") {
 
   if (any(!(test %in% c("R2", "mcc", "score")))) {
     stop("available tests are R2, mcc and score")
   }
 
   # Build the reference model PLS2c
-  outPLS <- PLSc(X = X, Y = Y, A = A, Y.prob = Y.prob, eps = eps, scaling = scaling, post.transformation = post.transformation,...)
-
-  # Funzione per eseguire una singola simulazione
-  simulate_once <- function(i,...) {
-    # Model the distribution of the pilot data
-    outsim <- sim_XY(out = outPLS, n = n, seed = 1234 + i, A = A, post.transformation = post.transformation,fast=fast)
-
-    Xsim <- outsim$X_H1
-    Ysim <- outsim$Y_H1
-
-    results <- list()
-
-    if ("mcc" %in% test) {
-      results$pv_mcc <- foreach(x = seq(A), .combine = 'cbind', .packages = c("powerPLS")) %dopar% {
-        mccTest(X = Xsim, Y = Ysim[, 2], A = x, nperm = nperm, randomization = TRUE, Y.prob = Y.prob,eps = eps)
-      }
-    }
-    if ("score" %in% test) {
-      results$pv_score <- foreach(x = seq(A), .combine = 'cbind', .packages = c("powerPLS")) %dopar% {
-        scoreTest(X = Xsim, Y = Ysim[, 2], A = x, nperm = nperm, randomization = TRUE, Y.prob = Y.prob, eps = eps)
-      }
-    }
-    if ("R2" %in% test) {
-      results$pv_R2 <- foreach(x = seq(A), .combine = 'cbind', .packages = c("powerPLS")) %dopar% {
-        R2Test(X = Xsim, Y = Ysim[, 2], A = x, nperm = nperm, randomization = TRUE, Y.prob = Y.prob, eps = eps)
-      }
-    }
-
-    pv_out <- data.frame(matrix(unlist(results), ncol = length(test), nrow=A))
-
-    colnames(pv_out) <- test
-    rownames(pv_out) <- seq(A)
-
-    pw_sim <- matrix(0, ncol = length(test), nrow = A)
-    colnames(pw_sim) <- test
-
-    for (x in seq(A)) {
-      for (y in seq(length(test))) {
-        if (pv_out[x, y] <= alpha) {
-          pw_sim[x, y] <- pw_sim[x, y] + 1
-        }
-      }
-    }
-
-    return(pw_sim)
-  }
-
-  # Numero di core da utilizzare
+  outPLS <- PLSc(X = X, Y = Y, A = A, Y.prob = Y.prob, eps = eps, scaling =
+                 scaling, post.transformation = post.transformation,
+                 transformation = "clr")
 
   chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
   if (nzchar(chk) && chk == "TRUE") {
-    # use 2 cores in CRAN/Travis/AppVeyor
-    num_cores <- 2L
+    cores <- 2L
   } else {
-    # use all cores in devtools::test()
-    num_cores <- parallel::detectCores() -2
+    cores <- parallel::detectCores() -2
   }
 
-  cl <- makeCluster(num_cores)
-  registerDoParallel(cl)
+  cl <- parallel::makeCluster(cores)
 
-  # Esegui le simulazioni in parallelo usando foreach
-  pw <- foreach(i = seq(Nsim), .combine = "+", .packages = c("powerPLS", "foreach")) %dopar% {
-    simulate_once(i)
+pw <- foreach(a = c(1:Nsim), .combine = "+")%dopar%{
+
+  pw_sim <- matrix(0, ncol = length(test), nrow = A)
+
+  outsim <- sim_XY(out = outPLS, n = n, seed = a, A = A,
+                   post.transformation = post.transformation,fast=fast)
+
+  Xsim <- outsim$X_H1
+  Ysim <- outsim$Y_H1
+
+  results <- list()
+
+  if ("mcc" %in% test) {
+
+    results$pv_mcc <- sapply(c(1:A), function(x){
+                                mccTest(X = Xsim, Y = Ysim[,2],
+                                        nperm = nperm, A=x,
+                                        randomization = TRUE,
+                                        Y.prob = Y.prob, eps = eps,
+                                        scaling = scaling,
+                                        post.transformation = post.transformation)$pv_adj
+                              })
+  }
+  if ("score" %in% test) {
+    results$pv_score <- sapply(c(1:A), function(x){
+                                  scoreTest(X = Xsim, Y = Ysim[,2], nperm = nperm, A=x,
+                                            randomization = TRUE,
+                                            Y.prob = Y.prob, eps = eps, scaling = scaling,
+                                            post.transformation = post.transformation)$pv_adj
+                                })
+  }
+  if ("R2" %in% test) {
+    results$pv_R2 <- sapply(c(1:A), function(x){
+                               R2Test(X = Xsim, Y = Ysim[,2], nperm = nperm, A=x,
+                                      randomization = TRUE,
+                                      Y.prob = Y.prob, eps = eps, scaling = scaling,
+                                      post.transformation = post.transformation)$pv_adj
+       })
   }
 
-  stopCluster(cl)
+  pv_out <- data.frame(matrix(unlist(results), nrow = A))
 
+  pw_sim<-ifelse(pv_out<=alpha, pw_sim +1, pw_sim)
+  colnames(pw_sim) <- gsub("pv_", "", names(results))
+  rownames(pw_sim) <- seq(A)
+  pw_sim
+  }
+parallel::stopCluster(cl)
 
-  return(pw/Nsim)
+  return(pw_sim/Nsim)
 }
