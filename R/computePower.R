@@ -67,7 +67,7 @@ computePower <- function(X, Y, A, n, seed = 123,
 
   cl <- parallel::makeCluster(parallel::detectCores())
 
-pw <- foreach(a = c(1:Nsim))%dopar%{
+pw <- foreach(a = c(1:Nsim),.errorhandling = "remove")%dopar%{
 
   pw_sim <- matrix(0, ncol = length(test), nrow = A)
 
@@ -133,7 +133,11 @@ pw <- foreach(a = c(1:Nsim))%dopar%{
   pw_sim
   }
   parallel::stopCluster(cl)
-  pw <- Reduce('+', pw)/Nsim
+  Nsim_final <- length(pw)
+  if(Nsim != Nsim_final){
+    warning(paste0("The power was calculated with "), Nsim_final, " simulations instead of ", Nsim)
+  }
+  pw <- Reduce('+', pw)/Nsim_final
 
   return(pw)
 }
