@@ -1,6 +1,6 @@
 #' @title simulate data matrix under the alternative hypothesis
 #' @description simulate data matrix under the alternative hypothesis
-#' @usage sim_XY(out, n, seed = 123, post.transformation = TRUE, A)
+#' @usage sim_XY(out, n, seed = 123, post.transformation = TRUE, A, fast = FALSE)
 #' @param out output from \code{PLSc}
 #' @param n number of observations to simulate
 #' @param seed seed value

@@ -1,7 +1,8 @@
 #' @title R2 test
 #' @description Performs randomization test based on R2
-#' @usage R2Test(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,
-#' scaling = "auto-scaling", post.transformation = TRUE)
+#' @usage R2Test(X, Y, nperm = 100, A, randomization = FALSE,
+#' Y.prob = FALSE, eps = 0.01, scaling = "auto-scaling",
+#' post.transformation = TRUE)
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the two classes and

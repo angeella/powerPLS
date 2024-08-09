@@ -1,7 +1,8 @@
 #' @title MCC test
 #' @description Performs randomization test based on Matthews Correlation Coefficient
-#' @usage mccTest(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,
-#' scaling = "auto-scaling", post.transformation = TRUE)
+#' @usage mccTest(X, Y, nperm = 200, A, randomization = FALSE,
+#' Y.prob = FALSE, eps = 0.01, scaling = "auto-scaling",
+#' post.transformation = TRUE)
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the two classes and

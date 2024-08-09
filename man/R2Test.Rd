@@ -4,8 +4,9 @@
 \alias{R2Test}
 \title{R2 test}
 \usage{
-R2Test(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,
-scaling = "auto-scaling", post.transformation = TRUE)
+R2Test(X, Y, nperm = 100, A, randomization = FALSE,
+Y.prob = FALSE, eps = 0.01, scaling = "auto-scaling",
+post.transformation = TRUE)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and

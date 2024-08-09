@@ -4,8 +4,9 @@
 \alias{mccTest}
 \title{MCC test}
 \usage{
-mccTest(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,
-scaling = "auto-scaling", post.transformation = TRUE)
+mccTest(X, Y, nperm = 200, A, randomization = FALSE,
+Y.prob = FALSE, eps = 0.01, scaling = "auto-scaling",
+post.transformation = TRUE)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and

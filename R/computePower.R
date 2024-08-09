@@ -4,8 +4,8 @@
 #' @usage computePower(X, Y, A, n, seed = 123,
 #' Nsim = 100, nperm = 200, alpha = 0.05,
 #' scaling = "auto-scaling", test = "R2",
-#'Y.prob = FALSE, eps = 0.01, post.transformation = TRUE,
-#'transformation = "clr",)
+#' Y.prob = FALSE, eps = 0.01, post.transformation = TRUE,
+#' fast=FALSE,transformation = "clr")
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the two classes and

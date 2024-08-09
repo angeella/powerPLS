@@ -8,7 +8,7 @@ License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.1
-Imports: compositions, ks, mvtnorm, FKSUM, nipals, MASS, foreach, parallel, doParallel, simukde
+Imports: compositions, ks, mvtnorm, FKSUM, nipals, MASS, foreach, parallel, simukde
 Language: en-US
 BugReports: https://github.com/angeella/powerPLS/issues
 URL: https://github.com/angeella/powerPLS
