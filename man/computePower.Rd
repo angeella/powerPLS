@@ -7,7 +7,8 @@
 computePower(X, Y, A, n, seed = 123,
 Nsim = 100, nperm = 200, alpha = 0.05,
 scaling = "auto-scaling", test = "R2",
-Y.prob = FALSE, eps = 0.01, post.transformation = TRUE,...)
+Y.prob = FALSE, eps = 0.01, post.transformation = TRUE,
+transformation = "clr",)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and
@@ -40,7 +41,9 @@ Default to "R2".}
 
 \item{post.transformation}{Boolean value. @TRUE if you want to apply post transformation. Default @TRUE}
 
-\item{...}{Futher parameters see \code{\link{PLSc}}}
+\item{fast}{use fk_density from the FKSUM package for KDE. Default @FALSE.}
+
+\item{transformation}{transformation used to map \code{Y} in probability data vector. The options are @ilr and @clr.}
 }
 \value{
 Returns the corresponding estimated power

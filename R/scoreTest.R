@@ -21,8 +21,6 @@
 #' @importFrom stats cor
 #' @importFrom stats t.test
 #' @importFrom stats var
-#' @importFrom foreach %dopar%
-#' @importFrom foreach foreach
 #' @export
 #' @seealso The type of tests implemented: \code{\link{mccTest}} \code{\link{R2Test}}.
 #' @author Angela Andreella

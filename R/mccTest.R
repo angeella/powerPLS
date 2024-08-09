@@ -18,8 +18,6 @@
 #' @return Returns a list with the corresponding statistical tests,
 #' raw and adjusted p-values
 #' @importFrom compositions ilr
-#' @importFrom foreach %dopar%
-#' @importFrom foreach foreach
 #' @importFrom stats cor
 #' @export
 #' @seealso The type of tests implemented: \code{\link{scoreTest}} \code{\link{R2Test}}.

@@ -30,10 +30,6 @@
 #' @export
 #' @importFrom foreach %dopar%
 #' @importFrom foreach foreach
-#' @importFrom parallel detectCores
-#' @importFrom parallel makeCluster
-#' @importFrom doParallel registerDoParallel
-#' @importFrom parallel stopCluster
 #' @examples
 #' \dontrun{
 #' datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
@@ -61,8 +57,17 @@ computePower <- function(X, Y, A, n, seed = 123,
                  scaling, post.transformation = post.transformation,
                  transformation = "clr")
 
+  chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
-pw <- sapply(seq(Nsim), function(a){
+  if (nzchar(chk) && chk == "TRUE") {
+    cl <- 2L # use 2 cores
+  } else {
+    cl <- parallel::detectCores() - 2 #not overload the computer
+  }
+
+  cl <- parallel::makeCluster(parallel::detectCores())
+
+pw <- foreach(a = c(1:Nsim))%dopar%{
 
   pw_sim <- matrix(0, ncol = length(test), nrow = A)
 
@@ -114,8 +119,8 @@ pw <- sapply(seq(Nsim), function(a){
   colnames(pw_sim) <- gsub("pv_", "", names(results))
   rownames(pw_sim) <- seq(A)
   pw_sim
-  }, simplify = FALSE)
-
+  }
+  parallel::stopCluster(cl)
   pw <- Reduce('+', pw)/Nsim
 
   return(pw)

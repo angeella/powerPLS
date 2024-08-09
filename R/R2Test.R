@@ -19,8 +19,6 @@
 #' raw and adjusted p-values
 #' @importFrom compositions ilr
 #' @importFrom stats cor
-#' @importFrom foreach %dopar%
-#' @importFrom foreach foreach
 #' @export
 #' @seealso The type of tests implemented: \code{\link{scoreTest}} \code{\link{mccTest}}.
 #' @author Angela Andreella

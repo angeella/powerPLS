@@ -4,7 +4,8 @@
 \alias{R2Test}
 \title{R2 test}
 \usage{
-R2Test(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...)
+R2Test(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,
+scaling = "auto-scaling", post.transformation = TRUE)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and
@@ -23,7 +24,10 @@ rows the \eqn{n} observations.}
 
 \item{eps}{Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector}
 
-\item{...}{Futher parameters.}
+\item{scaling}{type of scaling, one of
+\code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default @auto-scaling}
+
+\item{post.transformation}{Boolean value. @TRUE if you want to apply post transformation. Default @TRUE}
 }
 \value{
 Returns a list with the corresponding statistical tests,
