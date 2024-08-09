@@ -76,7 +76,19 @@ pw <- foreach(a = c(1:Nsim))%dopar%{
 
   Xsim <- outsim$X_H1
   rownames(outsim$Y_H1) <- NULL
-  Ysim <- outsim$Y_H1[,2]
+
+
+  if(length(table(outsim$Y_H1))==1){
+    Ysim <- as.numeric(outsim$Y_H1)
+    if(Ysim[1]==0){
+      Ysim[1] <- Ysim[1] +1
+    }else{
+      Ysim[1] <- Ysim[1] -1
+    }
+
+    }else{
+    Ysim <- outsim$Y_H1[,2]
+  }
 
   results <- list()
 

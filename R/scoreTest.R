@@ -65,10 +65,21 @@ scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
 
   if(length(lev)!=2){stop("Y must be a binary variable")}
 
+  if((sum(Y==lev[1])==1)|(sum(Y==lev[2])==1)){
+
+  if(is.null(dim(Tp))){
+      effect_obs <- t.test(Tp[Y == lev[1]]- Tp[Y == lev[2]], var.equal = FALSE)$statistic
+  }else{
+      effect_obs <- t.test(Tp[Y == lev[1],]- Tp[Y == lev[2],], var.equal = FALSE)$statistic
+  }
+
+  }else{
+
   if(is.null(dim(Tp))){
     effect_obs <- t.test(Tp[Y == lev[1]], Tp[Y == lev[2]], var.equal = FALSE)$statistic
   }else{
     effect_obs <- t.test(Tp[Y == lev[1],], Tp[Y == lev[2],], var.equal = FALSE)$statistic
+  }
   }
   if(randomization){
 
@@ -97,17 +108,28 @@ scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
         Tp <- T_score
       }
 
-      if(is.null(dim(Tp))){
-        t.test(Tp[Y == lev[1]], Tp[Y == lev[2]], var.equal = FALSE)$statistic
+      if((sum(Y==lev[1])==1)|(sum(Y==lev[2])==1)){
+
+        if(is.null(dim(Tp))){
+          effect_obs <- t.test(Tp[Y == lev[1]]- Tp[Y == lev[2]], var.equal = FALSE)$statistic
+        }else{
+          effect_obs <- t.test(Tp[Y == lev[1],]- Tp[Y == lev[2],], var.equal = FALSE)$statistic
+        }
+
       }else{
-        t.test(Tp[Y == lev[1],], Tp[Y == lev[2],], var.equal = FALSE)$statistic
+
+        if(is.null(dim(Tp))){
+          effect_obs <- t.test(Tp[Y == lev[1]], Tp[Y == lev[2]], var.equal = FALSE)$statistic
+        }else{
+          effect_obs <- t.test(Tp[Y == lev[1],], Tp[Y == lev[2],], var.equal = FALSE)$statistic
+        }
       }
 
 
 
     })
 
-    null_distr <-c(effect_obs, null_distr)
+    null_distr <-abs(c(effect_obs, null_distr))
     pv <- mean(null_distr >= effect_obs)
   }else{
     pv <- NA

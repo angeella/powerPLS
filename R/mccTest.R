@@ -63,8 +63,7 @@ mccTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
   mcc_obs <- mcc(confMatrix = confMatrix)
 
   if(randomization){
-    null_distr <-   replicate(nperm -1, {
-
+    null_distr <- replicate(nperm -1, {
       #Permute rows
       idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
       Xkp <- X[idx,]
@@ -77,13 +76,32 @@ mccTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
                   eps = eps, Y.prob = Y.prob)
 
       rownames(out$Y_fitted) <- NULL
-      Y_fitted <- as.factor(out$Y_fitted[,2])
-
-      levels(Y_fitted) <- c(0,1)
 
       #Compute permuted MCC
-      confMatrix <- table(Yf, Y_fitted)
-      mcc(confMatrix = confMatrix)
+      if(length(table(out$Y_fitted))==1){
+        Y_fitted <- as.factor(out$Y_fitted)
+        levels(Y_fitted) <- c(0,1)
+        Y_fitted <- ifelse(Y_fitted == 0, 1, 0)
+        lev_drop <- as.numeric(names(table(out$Y_fitted))) -2
+        confMatrix <- table(Yf, Y_fitted)
+
+        if(lev_drop== 0){
+        confMatrix <- cbind(c(0,0), confMatrix)
+        colnames(confMatrix) <- c(0,1)
+        mcc(confMatrix = confMatrix)
+        }else{
+        confMatrix <- cbind(confMatrix,c(0,0))
+        colnames(confMatrix) <- c(0,1)
+        mcc(confMatrix = confMatrix)
+        }
+
+      }else{
+        Y_fitted <- as.factor(out$Y_fitted[,2])
+        levels(Y_fitted) <- c(0,1)
+        confMatrix <- table(Yf, Y_fitted)
+        mcc(confMatrix = confMatrix)
+      }
+
 
     })
 
