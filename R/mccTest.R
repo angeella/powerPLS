@@ -29,7 +29,7 @@
 #' @references For the general framework of power analysis for PLS-based methods see:
 #'
 #' @examples
-#' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
+#' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 1)
 #' out <- mccTest(X = datas$X, Y = datas$Y, A = 1)
 #' out
 
@@ -47,6 +47,7 @@ mccTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
               eps = eps, Y.prob = Y.prob)
 
   #Fitted from pilot data
+  rownames(out$Y_fitted) <- NULL
   Y_fitted <- as.factor(out$Y_fitted[,2])
 
   #Observed one
@@ -76,10 +77,9 @@ mccTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
                   post.transformation = post.transformation,
                   eps = eps, Y.prob = Y.prob)
 
+      rownames(out$Y_fitted) <- NULL
       Y_fitted <- as.factor(out$Y_fitted[,2])
 
-      Yf <- as.factor(Y)
-      levels(Yf) <- c(0,1)
       levels(Y_fitted) <- c(0,1)
 
       #Compute permuted MCC

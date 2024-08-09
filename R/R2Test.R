@@ -46,38 +46,38 @@ R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE,
   if(!Y.prob){
 
     if(is.null(dim(Y)) | ncol(as.matrix(Y))==1){
-      Y <- as.matrix(Y)
+      Yf <- as.matrix(Y)
 
-      if(!is.factor(Y)){
-        Y <- as.factor(Y)
+      if(!is.factor(Yf)){
+        Yf <- as.factor(Yf)
 
       }
-      levels(Y) <- c(0,1)
-      Y <- model.matrix(~0+Y)
+      levels(Yf) <- c(0,1)
+      Yf <- model.matrix(~0+Yf)
     }
 
     #Transform to probability matrix
-    Yp <- Y
-    Yp[which(Yp==0)]<-eps
-    Yp[which(Yp==1)]<-1-(ncol(Yp)-1)*eps
+    Yf[which(Yf==0)]<-eps
+    Yf[which(Yf==1)]<-1-(ncol(Yf)-1)*eps
 
     #Centered log ratio transform transformation
-    P <- matrix(ilr(Yp), ncol = 1)
+    P <- matrix(ilr(Yf), ncol = 1)
   }else{
     P <- Y
   }
   s <- sd(P)
   Yfitted = matrix(ilrInv(s*(X %*% out$B))[,3], ncol = 1)
 
-  r2_obs <- cor(Yfitted, P)
-  null_distr<-c()
+  #observed R2
+  r2_obs <- cor(Yfitted, P)[[1]]
+
   if(randomization){
     null_distr <- replicate(nperm-1, {
 
-      idx <- sample(seq(nrow(X)),
-                    nrow(X), replace = FALSE)
+      idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
       Xkp <- X[idx,]
-      out <- PLSc(X = Xkp, Y = Y[,2], A = A, scaling = scaling,
+
+      out <- PLSc(X = Xkp, Y = Y, A = A, scaling = scaling,
                   post.transformation = post.transformation,eps = eps,
                   Y.prob = Y.prob,transformation = "ilr")
 
@@ -89,7 +89,7 @@ R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE,
 
     })
     null_distr <-c(r2_obs, null_distr)
-    pv <- mean(null_distr >= r2_obs[[1]])
+    pv <- mean(null_distr >= r2_obs)
 
   }else{
     pv <- NA

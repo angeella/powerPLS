@@ -56,7 +56,6 @@ computePower <- function(X, Y, A, n, seed = 123,
   if (any(!(test %in% c("R2", "mcc", "score")))) {
     stop("available tests are R2, mcc and score")
   }
-
   # Build the reference model PLS2c
   outPLS <- PLSc(X = X, Y = Y, A = A, Y.prob = Y.prob, eps = eps, scaling =
                  scaling, post.transformation = post.transformation,
@@ -71,14 +70,15 @@ pw <- sapply(seq(Nsim), function(a){
                    post.transformation = post.transformation,fast=fast)
 
   Xsim <- outsim$X_H1
-  Ysim <- outsim$Y_H1
+  rownames(outsim$Y_H1) <- NULL
+  Ysim <- outsim$Y_H1[,2]
 
   results <- list()
 
   if ("mcc" %in% test) {
 
     results$pv_mcc <- sapply(c(1:A), function(x){
-                                mccTest(X = Xsim, Y = Ysim[,2],
+                                mccTest(X = Xsim, Y = Ysim,
                                         nperm = nperm, A=x,
                                         randomization = TRUE,
                                         Y.prob = Y.prob, eps = eps,
@@ -88,17 +88,21 @@ pw <- sapply(seq(Nsim), function(a){
   }
   if ("score" %in% test) {
     results$pv_score <- sapply(c(1:A), function(x){
-                                  scoreTest(X = Xsim, Y = Ysim[,2], nperm = nperm, A=x,
+                                  scoreTest(X = Xsim, Y = Ysim,
+                                            nperm = nperm, A=x,
                                             randomization = TRUE,
-                                            Y.prob = Y.prob, eps = eps, scaling = scaling,
+                                            Y.prob = Y.prob, eps = eps,
+                                            scaling = scaling,
                                             post.transformation = post.transformation)$pv_adj
                                 })
   }
   if ("R2" %in% test) {
     results$pv_R2 <- sapply(c(1:A), function(x){
-                               R2Test(X = Xsim, Y = Ysim[,2], nperm = nperm, A=x,
+                               R2Test(X = Xsim, Y = Ysim,
+                                      nperm = nperm, A=x,
                                       randomization = TRUE,
-                                      Y.prob = Y.prob, eps = eps, scaling = scaling,
+                                      Y.prob = Y.prob, eps = eps,
+                                      scaling = scaling,
                                       post.transformation = post.transformation)$pv_adj
        })
   }
@@ -106,12 +110,13 @@ pw <- sapply(seq(Nsim), function(a){
   pv_out <- data.frame(matrix(unlist(results), nrow = A))
 
   pw_sim<-ifelse(pv_out<=alpha, pw_sim +1, pw_sim)
+
   colnames(pw_sim) <- gsub("pv_", "", names(results))
   rownames(pw_sim) <- seq(A)
   pw_sim
-  },simplify =FALSE)
+  }, simplify = FALSE)
 
-  pw <- Reduce('+', pw)
+  pw <- Reduce('+', pw)/Nsim
 
-  return(pw/Nsim)
+  return(pw)
 }

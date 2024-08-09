@@ -55,6 +55,7 @@ scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
   }else{
     M <- A
   }
+
   if(A!=M){
     Tp <- T_score[,(M+1):A]
   }else{
@@ -63,26 +64,12 @@ scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
 
   lev <- unique(as.vector(Y))
 
+  if(length(lev)!=2){stop("Y must be a binary variable")}
+
   if(is.null(dim(Tp))){
-    if(sum(Y == lev[1])==1){
-      effect_obs <- t.test(Tp[Y == lev[2]] - Tp[Y == lev[1]])$statistic
-    }
-    if(sum(Y == lev[2])==1){
-      effect_obs <- t.test(Tp[Y == lev[1]] - Tp[Y == lev[2]])$statistic
-    }
-    if(sum(Y == lev[1])!=1 & sum(Y == lev[2])!=1){
-      effect_obs <- t.test(Tp[Y == lev[1]], Tp[Y == lev[2]],var.equal = FALSE)$statistic
-    }
+    effect_obs <- t.test(Tp[Y == lev[1]], Tp[Y == lev[2]], var.equal = FALSE)$statistic
   }else{
-    if(sum(Y == lev[1])==1){
-      effect_obs <- t.test(Tp[Y == lev[2],] - Tp[Y == lev[1],])$statistic
-    }
-    if(sum(Y == lev[2])==1){
-      effect_obs <- t.test(Tp[Y == lev[1],] - Tp[Y == lev[2],])$statistic
-    }
-    if(sum(Y == lev[1])!=1 & sum(Y == lev[2])!=1){
-      effect_obs <- t.test(Tp[Y == lev[1],], Tp[Y == lev[2],],var.equal = FALSE)$statistic
-    }
+    effect_obs <- t.test(Tp[Y == lev[1],], Tp[Y == lev[2],], var.equal = FALSE)$statistic
   }
   if(randomization){
 
@@ -98,38 +85,23 @@ scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
 
       T_score <- out$T_score
       T_score
+
       if(!is.na(out$M)){
         M <- out$M
       }else{
         M <- A
       }
+
       if(A!=M){
         Tp <- T_score[,(M+1):A]
       }else{
         Tp <- T_score
       }
-      lev <- unique(Y)
 
       if(is.null(dim(Tp))){
-        if(sum(Y == lev[1])==1){
-          t.test(Tp[Y == lev[2]] - Tp[Y == lev[1]])$statistic
-        }
-        if(sum(Y == lev[2])==1){
-          t.test(Tp[Y == lev[1]] - Tp[Y == lev[2]])$statistic
-        }
-        if(sum(Y == lev[1])!=1 & sum(Y == lev[2])!=1){
-          t.test(Tp[Y == lev[1]], Tp[Y == lev[2]],var.equal = FALSE)$statistic
-        }
+        t.test(Tp[Y == lev[1]], Tp[Y == lev[2]], var.equal = FALSE)$statistic
       }else{
-        if(sum(Y == lev[1])==1){
-          t.test(Tp[Y == lev[2],] - Tp[Y == lev[1],])$statistic
-        }
-        if(sum(Y == lev[2])==1){
-          t.test(Tp[Y == lev[1],] - Tp[Y == lev[2],])$statistic
-        }
-        if(sum(Y == lev[1])!=1 & sum(Y == lev[2])!=1){
-          t.test(Tp[Y == lev[1],], Tp[Y == lev[2],],var.equal = FALSE)$statistic
-        }
+        t.test(Tp[Y == lev[1],], Tp[Y == lev[2],], var.equal = FALSE)$statistic
       }
 
 
