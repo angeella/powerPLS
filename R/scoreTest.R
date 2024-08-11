@@ -129,7 +129,7 @@ scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
 
     })
 
-    null_distr <-abs(c(effect_obs, null_distr))
+    null_distr <-c(effect_obs, null_distr)
     pv <- mean(null_distr >= effect_obs)
   }else{
     pv <- NA
