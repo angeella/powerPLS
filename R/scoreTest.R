@@ -66,11 +66,11 @@ scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
   if(length(lev)!=2){stop("Y must be a binary variable")}
 
   if(is.null(dim(Tp))){
-    Tp1 <- Tp[Y == lev[1]]
-    Tp2 <- Tp[Y == lev[2]]
+    Tp1 <- as.vector(Tp[Y == lev[1]])
+    Tp2 <- as.vector(Tp[Y == lev[2]])
   }else{
-    Tp1 <- Tp[Y == lev[1],]
-    Tp2 <- Tp[Y == lev[2],]
+    Tp1 <- as.vector(Tp[Y == lev[1],])
+    Tp2 <- as.vector(Tp[Y == lev[2],])
   }
 
   if(length(Tp1)==1){
@@ -116,11 +116,11 @@ scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
 
 
       if(is.null(dim(Tp))){
-        Tp1 <- Tp[Y == lev[1]]
-        Tp2 <- Tp[Y == lev[2]]
+        Tp1 <- as.vector(Tp[Y == lev[1]])
+        Tp2 <- as.vector(Tp[Y == lev[2]])
       }else{
-        Tp1 <- Tp[Y == lev[1],]
-        Tp2 <- Tp[Y == lev[2],]
+        Tp1 <- as.vector(Tp[Y == lev[1],])
+        Tp2 <- as.vector(Tp[Y == lev[2],])
       }
 
       if(length(Tp1)==1){
