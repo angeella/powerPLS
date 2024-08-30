@@ -73,7 +73,19 @@ scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
     Tp2 <- Tp[Y == lev[2],]
   }
 
-  effect_obs <- abs(mean(Tp1) - mean(Tp2)) / sqrt(var(Tp1)/length(Tp1) + var(Tp2)/length(Tp2))
+  if(length(Tp1)==1){
+    var1 <- 0
+  }else{
+    var1 <- var(Tp1)
+  }
+
+  if(length(Tp2)==1){
+    var2 <- 0
+  }else{
+    var2 <- var(Tp2)
+  }
+
+  effect_obs <- abs(mean(Tp1) - mean(Tp2)) / sqrt(var1/length(Tp1) + var2/length(Tp2))
 
   if(randomization){
 
@@ -111,7 +123,19 @@ scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
         Tp2 <- Tp[Y == lev[2],]
       }
 
-     abs(mean(Tp1) - mean(Tp2)) / sqrt(var(Tp1)/length(Tp1) + var(Tp2)/length(Tp2))
+      if(length(Tp1)==1){
+        var1 <- 0
+      }else{
+        var1 <- var(Tp1)
+      }
+
+      if(length(Tp2)==1){
+        var2 <- 0
+      }else{
+        var2 <- var(Tp2)
+      }
+
+      abs(mean(Tp1) - mean(Tp2)) / sqrt(var1/length(Tp1) + var2/length(Tp2))
 
     })
 
