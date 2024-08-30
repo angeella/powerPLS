@@ -66,29 +66,15 @@ scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
   if(length(lev)!=2){stop("Y must be a binary variable")}
 
   if(is.null(dim(Tp))){
-    effect_obs <- abs(mean(Tp[Y == lev[1]]) -  mean(Tp[Y == lev[2]]))/
-      sqrt((var(Tp[Y == lev[1]]) +  var(Tp[Y == lev[2]]))/2)
+    Tp1 <- Tp[Y == lev[1]]
+    Tp2 <- Tp[Y == lev[2]]
   }else{
-    effect_obs <- abs(mean(Tp[Y == lev[1],]) -  mean(Tp[Y == lev[2],]))/
-      sqrt((var(as.vector(Tp[Y == lev[1],])) +  var(as.vector(Tp[Y == lev[2],])))/2)
+    Tp1 <- Tp[Y == lev[1],]
+    Tp2 <- Tp[Y == lev[2],]
   }
 
-  # if((sum(Y==lev[1])==1)|(sum(Y==lev[2])==1)){
-  #
-  # if(is.null(dim(Tp))){
-  #     effect_obs <- t.test(Tp[Y == lev[1]]- Tp[Y == lev[2]], var.equal = FALSE)$statistic
-  # }else{
-  #     effect_obs <- t.test(Tp[Y == lev[1],]- Tp[Y == lev[2],], var.equal = FALSE)$statistic
-  # }
-  #
-  # }else{
-  #
-  # if(is.null(dim(Tp))){
-  #   effect_obs <- t.test(Tp[Y == lev[1]], Tp[Y == lev[2]], var.equal = FALSE)$statistic
-  # }else{
-  #   effect_obs <- t.test(Tp[Y == lev[1],], Tp[Y == lev[2],], var.equal = FALSE)$statistic
-  # }
-  # }
+  effect_obs <- abs(mean(Tp1) - mean(Tp2)) / sqrt(var(Tp1)/length(Tp1) + var(Tp2)/length(Tp2))
+
   if(randomization){
 
     null_distr <- replicate(nperm-1,{
@@ -118,30 +104,14 @@ scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
 
 
       if(is.null(dim(Tp))){
-        effect_p <- abs(mean(Tp[Y == lev[1]]) -  mean(Tp[Y == lev[2]]))/
-          sqrt((var(Tp[Y == lev[1]]) +  var(Tp[Y == lev[2]]))/2)
+        Tp1 <- Tp[Y == lev[1]]
+        Tp2 <- Tp[Y == lev[2]]
       }else{
-        effect_p <- abs(mean(Tp[Y == lev[1],]) -  mean(Tp[Y == lev[2],]))/
-          sqrt((var(as.vector(Tp[Y == lev[1],])) +  var(as.vector(Tp[Y == lev[2],])))/2)
+        Tp1 <- Tp[Y == lev[1],]
+        Tp2 <- Tp[Y == lev[2],]
       }
-      # if((sum(Y==lev[1])==1)|(sum(Y==lev[2])==1)){
-      #
-      #   if(is.null(dim(Tp))){
-      #     effect_obs <- t.test(Tp[Y == lev[1]]- Tp[Y == lev[2]], var.equal = FALSE)$statistic
-      #   }else{
-      #     effect_obs <- t.test(Tp[Y == lev[1],]- Tp[Y == lev[2],], var.equal = FALSE)$statistic
-      #   }
-      #
-      # }else{
-      #
-      #   if(is.null(dim(Tp))){
-      #     effect_obs <- t.test(Tp[Y == lev[1]], Tp[Y == lev[2]], var.equal = FALSE)$statistic
-      #   }else{
-      #     effect_obs <- t.test(Tp[Y == lev[1],], Tp[Y == lev[2],], var.equal = FALSE)$statistic
-      #   }
-      # }
 
-
+     abs(mean(Tp1) - mean(Tp2)) / sqrt(var(Tp1)/length(Tp1) + var(Tp2)/length(Tp2))
 
     })
 
