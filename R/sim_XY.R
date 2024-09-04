@@ -1,15 +1,20 @@
-#' @title simulate data matrix under the alternative hypothesis
-#' @description simulate data matrix under the alternative hypothesis
+#' @title Simulate pilot data
+#' @description Simulate data matrix under the alternative hypothesis with \code{n} observations by kernel density estimation
 #' @usage sim_XY(out, n, seed = 123, post.transformation = TRUE, A, fast = FALSE)
-#' @param out output from \code{PLSc}
-#' @param n number of observations to simulate
-#' @param seed seed value
-#' @param post.transformation Boolean value. Default @TRUE i.e., post transformation is applied.
-#' @param A number of score components used in \code{PLSc}.
-#' @param fast use fk_density from the FKSUM package for KDE. Default @FALSE.
+#' @param out Output from \code{PLSc}
+#' @param n Number of observations to simulate
+#' @param seed Seed value
+#' @param post.transformation Boolean value. Default to \code{TRUE}, i.e., post transformation is applied in \code{PLSc}
+#' @param A Number of score components used in \code{PLSc}.
+#' @param fast Use the function \code{fk_density} from the \code{FKSUM} \code{R} package for kernel density estimation. Default to \code{FALSE}.
 #' @author Angela Andreella
-#' @return Returns a simulated matrix under the alternative hypothesis.
+#' @return Returns a list:
+#' \describe{
+#'   \item{Y_H1}{dependent variable, matrix with 2 columns and \code{n} rows (observations)}
+#'   \item{X_H1}{predictor variables, matrix with \code{n} rows (observations) and number of columns equal to \code{out$X} (i.e., original dataset)}
+#' }
 #' @export
+#' @seealso \code{\link{PLSc}}, \code{\link{ptPLSc}}
 #' @importFrom FKSUM fk_density
 #' @importFrom foreach %dopar%
 #' @importFrom foreach foreach
@@ -18,6 +23,9 @@
 #' datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
 #' out <- PLSc(X = datas$X, Y = datas$Y, A = 3)
 #' out_sim <- sim_XY(out = out, n = 10, A = 3)
+#' @references For the general framework of power analysis for PLS-based methods see:
+#'
+#' Andreella, A., Fino, L., Scarpa, B., & Stocchero, M. (2024). Towards a power analysis for PLS-based methods. arXiv preprint \url{https://arxiv.org/abs/2403.10289}.
 
 sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A, fast = FALSE){
 

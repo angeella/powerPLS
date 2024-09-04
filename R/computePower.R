@@ -1,32 +1,31 @@
 #' @title Power estimation
-#' @description estimate power for a given sample size, alpha level and number
+#' @description Estimates power for a given sample size, type I error level and number
 #' of score components.
 #' @usage computePower(X, Y, A, n, seed = 123,
 #' Nsim = 100, nperm = 200, alpha = 0.05,
 #' scaling = "auto-scaling", test = "R2",
 #' Y.prob = FALSE, eps = 0.01, post.transformation = TRUE,
 #' fast=FALSE,transformation = "clr")
-#' @param X data matrix where columns represent the \eqn{p} variables and
+#' @param X Data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
-#' @param Y data matrix where columns represent the two classes and
+#' @param Y Data matrix where columns represent the two classes and
 #' rows the \eqn{n} observations.
-#' @param A number of score components
-#' @param n sample size
-#' @param seed seed value
-#' @param Nsim number of simulations
-#' @param nperm number of permutations
-#' @param alpha type I error
-#' @param scaling type of scaling, one of
-#' \code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default @auto-scaling
-#' @param test type of test, one of \code{c("score", "mcc", "R2")}.
-#' @param Y.prob Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector
+#' @param A Number of score components
+#' @param n Sample size
+#' @param seed Seed value
+#' @param Nsim Number of simulations
+#' @param nperm Number of permutations
+#' @param alpha Type I error level
+#' @param scaling Type of scaling, one of
+#' \code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default to "auto-scaling"
+#' @param test Type of test statistic, one of \code{c("score", "mcc", "R2")}. Default to "R2".
+#' @param Y.prob Boolean value. Default \code{FALSE}. IF \code{TRUE} \code{Y} is a probability vector
 #' @param eps Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector.
-#' Default to "R2".
-#' @param post.transformation Boolean value. @TRUE if you want to apply post transformation. Default @TRUE
-#' @param fast use fk_density from the FKSUM package for KDE. Default @FALSE.
-#' @param transformation transformation used to map \code{Y} in probability data vector. The options are @ilr and @clr.
+#' @param post.transformation Boolean value. \code{TRUE} if you want to apply post transformation. Default to \code{TRUE}
+#' @param fast Use the function \code{fk_density} from the \code{FKSUM} \code{R} package for kernel density estimation. Default to \code{FALSE}.
+#' @param transformation Transformation used to map \code{Y} in probability data vector. The options are "ilr" and "clr".
 #' @author Angela Andreella
-#' @return Returns the corresponding estimated power
+#' @return Returns a vector of estimated power with length equals the length of \code{test}.
 #' @export
 #' @importFrom foreach %dopar%
 #' @importFrom foreach foreach
@@ -35,10 +34,10 @@
 #' datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
 #' out <- computePower(X = datas$X, Y = datas$Y, A = 3, n = 20, test = "R2")
 #' }
-#' @references
+#' @references For the general framework of power analysis for PLS-based methods see:
 #'
-#' Andreella, A., Finos, L., Scarpa, B. and Stocchero, M. "Towards a power analysis for PLS-based methods" 	arXiv:2403.10289 stat.ME.
-#'
+#' Andreella, A., Fino, L., Scarpa, B., & Stocchero, M. (2024). Towards a power analysis for PLS-based methods. arXiv preprint \url{https://arxiv.org/abs/2403.10289}.
+
 
 
 
