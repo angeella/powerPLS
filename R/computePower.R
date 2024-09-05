@@ -25,7 +25,7 @@
 #' @param fast Use the function \code{fk_density} from the \code{FKSUM} \code{R} package for kernel density estimation. Default to \code{FALSE}.
 #' @param transformation Transformation used to map \code{Y} in probability data vector. The options are "ilr" and "clr".
 #' @author Angela Andreella
-#' @return Returns a vector of estimated power with length equals the length of \code{test}.
+#' @return Returns a matrix of estimated power for each number of components and tests selected.
 #' @export
 #' @importFrom foreach %dopar%
 #' @importFrom foreach foreach

@@ -45,7 +45,7 @@ rows the \eqn{n} observations.}
 \item{transformation}{Transformation used to map \code{Y} in probability data vector. The options are "ilr" and "clr".}
 }
 \value{
-Returns a vector of estimated power with length equals the length of \code{test}.
+Returns a matrix of estimated power for each number of components and tests selected.
 }
 \description{
 Estimates power for a given sample size, type I error level and number
