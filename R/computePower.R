@@ -46,7 +46,8 @@ computePower <- function(X, Y, A, n, seed = 123,
                          scaling = "auto-scaling",
                          test = "R2", Y.prob = FALSE, eps = 0.01,
                          post.transformation = TRUE,
-                         fast=FALSE,transformation = "clr") {
+                         fast=FALSE,transformation = "clr",
+                         parallel.run = TRUE) {
 
   if (any(!(test %in% c("R2", "mcc", "score")))) {
     stop("available tests are R2, mcc and score")
@@ -58,13 +59,14 @@ computePower <- function(X, Y, A, n, seed = 123,
 
   chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
+  if(parallel.run){
   if (nzchar(chk) && chk == "TRUE") {
     cl <- 2L # use 2 cores
   } else {
     cl <- parallel::detectCores() - 2 #not overload the computer
   }
-
-  cl <- parallel::makeCluster(parallel::detectCores())
+  }
+ # cl <- parallel::makeCluster(parallel::detectCores())
 
 pw <- foreach(a = c(1:Nsim),.errorhandling = "remove")%dopar%{
 
@@ -130,8 +132,10 @@ pw <- foreach(a = c(1:Nsim),.errorhandling = "remove")%dopar%{
   colnames(pw_sim) <- gsub("pv_", "", names(results))
   rownames(pw_sim) <- seq(A)
   pw_sim
-  }
+}
+if(parallel.run){
   parallel::stopCluster(cl)
+}
   Nsim_final <- length(pw)
   if(Nsim != Nsim_final){
     warning(paste0("The power was calculated with "), Nsim_final, " simulations instead of ", Nsim)
