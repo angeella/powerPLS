@@ -7,8 +7,8 @@ Description: It estimates power and sample size for Partial Least Squares-based 
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.1
-Imports: compositions, FKSUM, nipals, MASS, foreach, parallel, simukde, ks, mvtnorm
+RoxygenNote: 7.3.2
+Imports: compositions, FKSUM, nipals, MASS, foreach, parallel, simukde, ks, mvtnorm, pROC, caret
 Language: en-US
 BugReports: https://github.com/angeella/powerPLS/issues
 URL: https://github.com/angeella/powerPLS
