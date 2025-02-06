@@ -65,7 +65,7 @@ computePower <- function(X, Y, A, n, seed = 123, Nsim = 100, nperm = 200, alpha 
     }
   }
 
-  cl <- parallel::makeCluster(parallel::detectCores())
+  cl <- parallel::makeCluster(cl)
 
   pw <- foreach(a = c(1:Nsim), .errorhandling = "remove") %dopar% {
 
